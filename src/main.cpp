@@ -1,4 +1,5 @@
 #include "main.h"
+#include "init.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -74,20 +75,72 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor left_mtr(1);
-	pros::Motor right_mtr(2);
-
 	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
 
-		left_mtr = left;
-		right_mtr = right;
+	//Drivetrain
+    	drvtrFB = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+    	drvtrLR = Master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 
-		pros::delay(20);
+		if ((abs(drvtrFB) > drvtrDZ) || (abs(drvtrLR) > drvtrDZ)) {
+      		// ^^ Checks to see if either joystick has moved out of the deadzone
+			if (intakePTOvalue == true){
+
+				RightWheels.move((drvtrFB-(drvtrLR)));
+      			LeftWheels.move((drvtrFB+(drvtrLR)));
+			
+			} else if (intakePTOvalue == false){
+
+				AllRightWheels.move((drvtrFB-(drvtrLR)));
+      			AllLeftWheels.move((drvtrFB+(drvtrLR)));
+			
+			}
+      			
+    	} else {
+			
+			if (intakePTOvalue == true){
+
+				RightWheels.brake();
+      			LeftWheels.brake();
+			
+			} else if (intakePTOvalue == false){
+
+				AllRightWheels.brake();
+      			AllLeftWheels.brake();
+			
+			}
+      			
+    	}  
+
+	//Intake Conveyor (Transport)
+		if (Master.get_digital(DIGITAL_RIGHT)){
+			Intake.move(-128);
+		} else if(Master.get_digital(DIGITAL_LEFT)){
+			Intake.move(128);
+		} else {
+			Intake.brake();
+		}
+
+	// Intake Arm
+		if (intakePTOvalue == true) {
+			if (Master.get_digital(DIGITAL_UP)) {
+				IntakePTO.move(-128);
+			}else if (Master.get_digital(DIGITAL_DOWN)) {
+				IntakePTO.move(128);
+			}
+		}
+
+	// Intake PTO
+		if (Master.get_digital(DIGITAL_X)) {
+			if (!intakePTOvalue) {
+				IntakePTOPiston.set_value(true);
+				intakePTOvalue = true;
+			} else {
+				IntakePTOPiston.set_value(false);
+				intakePTOvalue = false;
+			}
+		}
+
+	pros::delay(20);
+
 	}
 }
