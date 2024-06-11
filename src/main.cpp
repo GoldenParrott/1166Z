@@ -1,6 +1,6 @@
 #include "main.h"
 #include "init.h"
-
+#include "pros/llemu.hpp"
 /**
  * A callback function for LLEMU's center button.
  *
@@ -14,6 +14,7 @@ void on_center_button() {
 		pros::lcd::set_text(2, "I was pressed!");
 	} else {
 		pros::lcd::clear_line(2);
+		pros::lcd::read_buttons();
 	}
 }
 
@@ -26,6 +27,7 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
+	AutonSelect.calibrate();
 
 	pros::lcd::register_btn1_cb(on_center_button);
 }
@@ -87,7 +89,7 @@ void opcontrol() {
 
 				RightWheels.move((drvtrFB-(drvtrLR)));
       			LeftWheels.move((drvtrFB+(drvtrLR)));
-			
+
 			} else if (intakePTOvalue == false){
 
 				AllRightWheels.move((drvtrFB-(drvtrLR)));
@@ -138,7 +140,23 @@ void opcontrol() {
 				IntakePTOPiston.set_value(false);
 				intakePTOvalue = false;
 			}
+
+			waitUntil(Master.get_digital(DIGITAL_X) == false);
 		}
+
+	//Mgm
+		if(Master.get_digital(DIGITAL_R1)){
+			if (!mgmvalue) {
+				Mgm.set_value(true);
+				mgmvalue = true;
+			} else {
+				Mgm.set_value(false);
+				mgmvalue = false;
+			}
+
+			waitUntil(Master.get_digital(DIGITAL_R1) == false);
+		}
+
 
 	pros::delay(20);
 

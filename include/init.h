@@ -26,8 +26,8 @@
     pros::Motor_Group AllWheels({FrontLeft, BackLeft, FrontRight, BackRight});
     pros::Motor_Group AllAllWheels({FrontLeft, BackLeft, FrontRight, BackRight, UpLeft, UpRight});
 
-    pros::Motor IntakeLeft(7,0);
-    pros::Motor IntakeRight(8,1); //Not in use
+    pros::Motor IntakeLeft(11,0);
+    pros::Motor IntakeRight(12,1);
     pros::Motor_Group Intake({IntakeLeft,IntakeRight});
 
 
@@ -36,8 +36,12 @@ ABCDEFGH
 12345678
 Pnuematics*/
 
-    pros::ADIDigitalOut IntakePTOPiston(1);
-    pros::ADIDigitalOut Mgm(2);
+    pros::ADIDigitalOut Mgm(1);
+    pros::ADIDigitalOut IntakePTOPiston(2);
+
+//Other ADI
+
+    pros::ADIAnalogIn AutonSelect(3);
 
 //Variables
 int autonnumber;
@@ -46,8 +50,10 @@ int drvtrDZ = 10;
 int drvtrFB;
 int drvtrLR;
 
-int intakePTOvalue = false;
+bool intakePTOvalue = false;
+bool mgmvalue = false;
 
 
+int help;
 
 #endif
