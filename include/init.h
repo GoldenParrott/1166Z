@@ -27,7 +27,7 @@
     pros::Motor_Group AllAllWheels({FrontLeft, BackLeft, FrontRight, BackRight, UpLeft, UpRight});
 
     pros::Motor IntakeLeft(7,0);
-    pros::Motor IntakeRight(8,1); //Not in use
+    pros::Motor IntakeRight(11,1); //Not in use
     pros::Motor_Group Intake({IntakeLeft,IntakeRight});
 
 
