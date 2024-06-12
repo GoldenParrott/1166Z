@@ -61,7 +61,10 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+
+	
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -77,6 +80,14 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+
+	IntakePTOPiston.set_value(false);
+	intakePTOvalue = false;
+
+	IntakePTO.set_brake_modes(MOTOR_BRAKE_HOLD);
+	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
+	AllAllWheels.move_velocity(1000);
+
 	while (true) {
 
 	//Drivetrain
@@ -124,10 +135,12 @@ void opcontrol() {
 
 	// Intake Arm
 		if (intakePTOvalue == true) {
-			if (Master.get_digital(DIGITAL_UP)) {
-				IntakePTO.move(-128);
-			}else if (Master.get_digital(DIGITAL_DOWN)) {
+			if (Master.get_digital(DIGITAL_DOWN)) {
 				IntakePTO.move(128);
+			}else if (Master.get_digital(DIGITAL_UP)) {
+				IntakePTO.move(-128);
+			}else{
+				IntakePTO.brake();
 			}
 		}
 
@@ -142,6 +155,9 @@ void opcontrol() {
 			}
 
 			waitUntil(Master.get_digital(DIGITAL_X) == false);
+		}
+		if (!intakePTOvalue) {
+				Master.print(0, 0, "PTO in arm mode");
 		}
 
 	//Mgm

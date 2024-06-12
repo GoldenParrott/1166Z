@@ -9,8 +9,8 @@
 
 //Motors
 
-    pros::Motor UpLeft(5,1);
-    pros::Motor UpRight(6,0);
+    pros::Motor UpLeft(5,0);
+    pros::Motor UpRight(6,1);
     pros::Motor_Group IntakePTO({UpLeft, UpRight});
     
     pros::Motor FrontLeft(1,1);
