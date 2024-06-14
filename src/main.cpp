@@ -27,7 +27,6 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
-	AutonSelect.calibrate();
 
 	pros::lcd::register_btn1_cb(on_center_button);
 }
@@ -87,6 +86,7 @@ void opcontrol() {
 	IntakePTO.set_brake_modes(MOTOR_BRAKE_HOLD);
 	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 	AllAllWheels.move_velocity(1000);
+	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 
 	while (true) {
 
@@ -134,15 +134,42 @@ void opcontrol() {
 		}
 
 	// Intake Arm
+		
+		if (LowerLimit.get_value() == true){
+			UpRight.tare_position(); //set to zero
+			armmax = 1850.0;
+			pros::lcd::set_text(1, "Limit Hit");
+			armCalibrated = true;
+		}
+		if (LowerLimit.get_value() == false){
+			pros::lcd::set_text(1, "Limit Released");
+		}
+
+		armpos = UpRight.get_position();
+		Master.print(0, 0, "%f",UpRight.get_position());
+		Master.clear();
+
 		if (intakePTOvalue == true) {
-			if (Master.get_digital(DIGITAL_DOWN)) {
+			if ((Master.get_digital(DIGITAL_DOWN))&&(LowerLimit.get_value() == false)) {
 				IntakePTO.move(128);
-			}else if (Master.get_digital(DIGITAL_UP)) {
+			}else if ((Master.get_digital(DIGITAL_UP))&&(armpos>(-armmax))) {
 				IntakePTO.move(-128);
 			}else{
 				IntakePTO.brake();
 			}
 		}
+
+		if ((Master.get_digital(DIGITAL_L1)==true)&&(armCalibrated == true)){
+			//Up
+
+
+		}else if((Master.get_digital(DIGITAL_L2)==true)&&(armCalibrated == true)){
+			//Down
+
+		}
+
+		//Go to desired height
+
 
 	// Intake PTO
 		if (Master.get_digital(DIGITAL_X)) {
@@ -162,12 +189,12 @@ void opcontrol() {
 
 	//Mgm
 		if(Master.get_digital(DIGITAL_R1)){
-			if (!mgmvalue) {
+			if (!mgmValue) {
 				Mgm.set_value(true);
-				mgmvalue = true;
+				mgmValue = true;
 			} else {
 				Mgm.set_value(false);
-				mgmvalue = false;
+				mgmValue = false;
 			}
 
 			waitUntil(Master.get_digital(DIGITAL_R1) == false);

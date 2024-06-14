@@ -42,6 +42,7 @@ Pnuematics*/
 //Other ADI
 
     pros::ADIAnalogIn AutonSelect(3);
+    pros::ADIDigitalIn LowerLimit(4);
 
 //Variables
 int autonnumber;
@@ -49,9 +50,14 @@ int autonnumber;
 int drvtrDZ = 10;
 int drvtrFB;
 int drvtrLR;
+double armmax;
+double armpos;
+// upright = 1900, upleft = -1900
 
+bool armCalibrated = false;
 bool intakePTOvalue = false;
-bool mgmvalue = false;
+bool mgmValue = false;
+bool goToGoal;
 
 
 int help;
