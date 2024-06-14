@@ -1,7 +1,6 @@
 #ifndef _PROS_INIT_H_
 #define _PROS_INIT_H_
 
-#include "api.h"
 
 //Controllers
     pros::Controller Master(pros::E_CONTROLLER_MASTER);
@@ -30,7 +29,6 @@
     pros::Motor IntakeRight(12,1);
     pros::Motor_Group Intake({IntakeLeft,IntakeRight});
 
-
 /*
 ABCDEFGH
 12345678
@@ -50,6 +48,7 @@ int autonnumber;
 int drvtrDZ = 10;
 int drvtrFB;
 int drvtrLR;
+double armGoal;
 double armmax;
 double armpos;
 // upright = 1900, upleft = -1900
@@ -57,9 +56,9 @@ double armpos;
 bool armCalibrated = false;
 bool intakePTOvalue = false;
 bool mgmValue = false;
-bool goToGoal;
+bool armMoving = false;
+bool armMovementComplete = false;
 
 
-int help;
 
 #endif

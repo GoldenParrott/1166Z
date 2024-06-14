@@ -1,6 +1,49 @@
 #include "main.h"
-#include "init.h"
-#include "pros/llemu.hpp"
+
+/*
+ * Runs the arm up or down to a defined location. There are 15 degrees of buffer around
+ * 
+ * goal is the degree of rotation of the motors from 0-1900
+*/
+/*
+void armraiser(double goal){
+	// Makes a new variable for the arm position. The value gotten is a negative so we 
+	// change that to a posive value before moving on
+
+	double current = abs(UpRight.get_position());
+	
+	if (((goal - 15) < current) && (current < (goal + 15))){
+		// Used if the arm is within the threashold of the desired position
+		IntakePTO.brake();
+	} else if (current >= (goal + 15)){
+		// Used if the arm is above the desired position
+		if ((current - goal) >= 200){
+			// Used if the arm is far away from the desired position
+			// Runs motors at max speed
+			IntakePTO.move(-128);
+		} else if ((current - goal) < 200){
+			// Used if the arm is close to the desired position
+			// Runs motors at ~1/3 speed for more accurate movement
+			IntakePTO.move(-43);
+		}
+	} else if (current <= (goal - 15)) {
+		Master.print(0,0,"c=%f, g=%f",current, goal);
+		// Used if the arm is below the desired position
+		if ((goal - current) >= 200){
+			// Used if the arm is far away from the desired position
+			// Runs motors at max speed
+			IntakePTO.move(128);
+		} else if ((goal - current) < 200){
+			// Used if the arm is close to the desired position
+			// Runs motors at ~1/3 speed for more accurate movement
+			IntakePTO.move(43);
+		}
+	} else {
+		Master.print(0,0,"Listen man, I don't even know");
+	}
+}
+*/
+
 /**
  * A callback function for LLEMU's center button.
  *
@@ -65,6 +108,9 @@ void autonomous() {
 	
 }
 
+
+
+
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -78,13 +124,14 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
 void opcontrol() {
 
 	IntakePTOPiston.set_value(false);
 	intakePTOvalue = false;
 
-	IntakePTO.set_brake_modes(MOTOR_BRAKE_HOLD);
-	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
+	
+	
 	AllAllWheels.move_velocity(1000);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 
@@ -100,12 +147,11 @@ void opcontrol() {
 
 				RightWheels.move((drvtrFB-(drvtrLR)));
       			LeftWheels.move((drvtrFB+(drvtrLR)));
-
+				
 			} else if (intakePTOvalue == false){
 
 				AllRightWheels.move((drvtrFB-(drvtrLR)));
       			AllLeftWheels.move((drvtrFB+(drvtrLR)));
-			
 			}
       			
     	} else {
@@ -145,46 +191,66 @@ void opcontrol() {
 			pros::lcd::set_text(1, "Limit Released");
 		}
 
-		armpos = UpRight.get_position();
-		Master.print(0, 0, "%f",UpRight.get_position());
-		Master.clear();
+		armpos = abs(UpRight.get_position());
+		//Master.print(0, 0, "%f",UpRight.get_position());
+		//Master.clear();
 
 		if (intakePTOvalue == true) {
 			if ((Master.get_digital(DIGITAL_DOWN))&&(LowerLimit.get_value() == false)) {
 				IntakePTO.move(128);
-			}else if ((Master.get_digital(DIGITAL_UP))&&(armpos>(-armmax))) {
+			}else if ((Master.get_digital(DIGITAL_UP))&&(armpos<(armmax))) {
 				IntakePTO.move(-128);
-			}else{
-				IntakePTO.brake();
 			}
 		}
 
-		if ((Master.get_digital(DIGITAL_L1)==true)&&(armCalibrated == true)){
+		if ((Master.get_digital(DIGITAL_X) == true)){
 			//Up
-
-
-		}else if((Master.get_digital(DIGITAL_L2)==true)&&(armCalibrated == true)){
+			armGoal = 1900;
+			if (armGoal < armpos) {
+				IntakePTO.move_relative((armpos-armGoal),128);
+			} else if (armpos < armGoal) {
+				IntakePTO.move_relative(-(armGoal-armpos),128);
+			}
+		}else if((Master.get_digital(DIGITAL_B) == true)){
 			//Down
-
+			armGoal = 0;
+			if (armGoal < armpos) {
+				IntakePTO.move_relative((armpos-armGoal),128);
+			} else if (armpos < armGoal) {
+				IntakePTO.move_relative(-(armGoal-armpos),128);
+			}
+		}else if (Master.get_digital(DIGITAL_A)){
+			//Midpoint
+			armGoal = 800;
+			if (armGoal < armpos) {
+				IntakePTO.move_relative((armpos-armGoal),128);
+			} else if (armpos < armGoal) {
+				IntakePTO.move_relative(-(armGoal-armpos),128);
+			}
+			
 		}
 
-		//Go to desired height
-
+		if (Master.get_digital(DIGITAL_A)){
+			IntakePTO.brake();
+		}
 
 	// Intake PTO
-		if (Master.get_digital(DIGITAL_X)) {
+		if (Master.get_digital(DIGITAL_Y)) {
 			if (!intakePTOvalue) {
 				IntakePTOPiston.set_value(true);
 				intakePTOvalue = true;
+				IntakePTO.set_brake_modes(MOTOR_BRAKE_HOLD);
+				AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 			} else {
 				IntakePTOPiston.set_value(false);
 				intakePTOvalue = false;
+				AllAllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 			}
 
-			waitUntil(Master.get_digital(DIGITAL_X) == false);
+			waitUntil(Master.get_digital(DIGITAL_Y) == false);
 		}
 		if (!intakePTOvalue) {
-				Master.print(0, 0, "PTO in arm mode");
+			//Master.print(0, 0, "PTO in arm mode");
 		}
 
 	//Mgm
