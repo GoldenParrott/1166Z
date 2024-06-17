@@ -34,7 +34,7 @@ ABCDEFGH
 12345678
 Pnuematics*/
 
-    pros::ADIDigitalOut Mgm(1);
+    pros::ADIDigitalOut MobileGoalManipulator(1);
     pros::ADIDigitalOut IntakePTOPiston(2);
 
 //Other ADI
@@ -50,12 +50,12 @@ int drvtrFB;
 int drvtrLR;
 double armGoal;
 double armmax;
-double armpos;
+double armPosition;
 // upright = 1900, upleft = -1900
 
 bool armCalibrated = false;
 bool intakePTOvalue = false;
-bool mgmValue = false;
+bool mobileGoalManipulatorValue = false;
 bool armMoving = false;
 bool armMovementComplete = false;
 

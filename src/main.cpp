@@ -105,7 +105,12 @@ void competition_initialize() {}
  */
 void autonomous() {
 
-	
+	AllAllWheels.move_relative(1000,50);
+	pros::delay(2000);
+	AllAllWheels.move_relative(-1000,50);
+
+
+
 }
 
 
@@ -191,14 +196,14 @@ void opcontrol() {
 			pros::lcd::set_text(1, "Limit Released");
 		}
 
-		armpos = abs(UpRight.get_position());
+		armPosition = abs(UpRight.get_position());
 		//Master.print(0, 0, "%f",UpRight.get_position());
 		//Master.clear();
 
 		if (intakePTOvalue == true) {
 			if ((Master.get_digital(DIGITAL_DOWN))&&(LowerLimit.get_value() == false)) {
 				IntakePTO.move(128);
-			}else if ((Master.get_digital(DIGITAL_UP))&&(armpos<(armmax))) {
+			}else if ((Master.get_digital(DIGITAL_UP))&&(armPosition<(armmax))) {
 				IntakePTO.move(-128);
 			}
 		}
@@ -206,26 +211,26 @@ void opcontrol() {
 		if ((Master.get_digital(DIGITAL_X) == true)){
 			//Up
 			armGoal = 1900;
-			if (armGoal < armpos) {
-				IntakePTO.move_relative((armpos-armGoal),128);
-			} else if (armpos < armGoal) {
-				IntakePTO.move_relative(-(armGoal-armpos),128);
+			if (armGoal < armPosition) {
+				IntakePTO.move_relative((armPosition-armGoal),128);
+			} else if (armPosition < armGoal) {
+				IntakePTO.move_relative(-(armGoal-armPosition),128);
 			}
 		}else if((Master.get_digital(DIGITAL_B) == true)){
 			//Down
 			armGoal = 0;
-			if (armGoal < armpos) {
-				IntakePTO.move_relative((armpos-armGoal),128);
-			} else if (armpos < armGoal) {
-				IntakePTO.move_relative(-(armGoal-armpos),128);
+			if (armGoal < armPosition) {
+				IntakePTO.move_relative((armPosition-armGoal),128);
+			} else if (armPosition < armGoal) {
+				IntakePTO.move_relative(-(armGoal-armPosition),128);
 			}
 		}else if (Master.get_digital(DIGITAL_A)){
 			//Midpoint
 			armGoal = 800;
-			if (armGoal < armpos) {
-				IntakePTO.move_relative((armpos-armGoal),128);
-			} else if (armpos < armGoal) {
-				IntakePTO.move_relative(-(armGoal-armpos),128);
+			if (armGoal < armPosition) {
+				IntakePTO.move_relative((armPosition-armGoal),128);
+			} else if (armPosition < armGoal) {
+				IntakePTO.move_relative(-(armGoal-armPosition),128);
 			}
 			
 		}
@@ -234,35 +239,90 @@ void opcontrol() {
 			IntakePTO.brake();
 		}
 
+
 	// Intake PTO
+
+		// ↓↓ Pressing the Y Button toggles between modes
 		if (Master.get_digital(DIGITAL_Y)) {
-			if (!intakePTOvalue) {
+			// intakePTOvalue is a variable that gets changed
+			// between true and false every time the Y Button 
+			// is pressed to switch modes
+
+			// ↓↓ If PTO piston is deactivated, activate this code
+			if (intakePTOvalue == false) {
+
+				// Sets the PTO piston to change the connected 
+				// gear train ↓↓
 				IntakePTOPiston.set_value(true);
+
+				// Sets variable to allow the other portion of
+				// the code to run ↓↓
 				intakePTOvalue = true;
+
+				// Sets the motors on the PTO to HOLD their position
+				// while in control of the arm, and the wheels on the
+				// drivetrain to COAST to a stop ↓↓
 				IntakePTO.set_brake_modes(MOTOR_BRAKE_HOLD);
 				AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
-			} else {
+
+			// ↓↓ If PTO piston is activated, activate this code
+			} else if (intakePTOvalue == true) {
+
+				// Sets the PTO piston to change the connected 
+				// gear train ↓↓
 				IntakePTOPiston.set_value(false);
+
+				// Sets variable to allow the other portion of
+				// the code to run ↓↓
 				intakePTOvalue = false;
+
+				// Sets all motors now attached to the drivetrain
+				// to COAST to a stop ↓↓
 				AllAllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 			}
 
+			// Sets a condition to exit the code that is the 
+			// opposite of the condition to enter, preventing
+			// us from looping through the code repeatedly ↓↓
 			waitUntil(Master.get_digital(DIGITAL_Y) == false);
 		}
+
 		if (!intakePTOvalue) {
 			//Master.print(0, 0, "PTO in arm mode");
 		}
 
-	//Mgm
+	//Mobile Goal Manipulator
+
+		// ↓↓ Pressing the R1 Button toggles between modes
 		if(Master.get_digital(DIGITAL_R1)){
-			if (!mgmValue) {
-				Mgm.set_value(true);
-				mgmValue = true;
-			} else {
-				Mgm.set_value(false);
-				mgmValue = false;
+			// mobileGoalManipulatorValue is a variable that gets changed
+			// between true and false every time the R1 Button 
+			// is pressed to switch modes
+
+			// ↓↓ If the manipulator is open, activate this code
+			if (mobileGoalManipulatorValue == false) {
+
+				// ↓↓ Closes the manipulator to grab an object
+				MobileGoalManipulator.set_value(true);
+
+				// Sets variable to allow the other portion of
+				// the code to run ↓↓
+				mobileGoalManipulatorValue = true;
+
+			// ↓↓ If the manipulator is closed, activate this code
+			} else if (mobileGoalManipulatorValue == true){
+
+				// ↓↓ Opens the manipulator to grab an object
+				MobileGoalManipulator.set_value(false);
+
+				// Sets variable to allow the other portion of
+				// the code to run ↓↓
+				mobileGoalManipulatorValue = false;
 			}
 
+			// Sets a condition to exit the code that is the 
+			// opposite of the condition to enter, preventing
+			// us from looping through the code repeatedly ↓↓
 			waitUntil(Master.get_digital(DIGITAL_R1) == false);
 		}
 
