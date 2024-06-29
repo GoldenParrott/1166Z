@@ -1,6 +1,4 @@
-#ifndef _PROS_INIT_H_
-#define _PROS_INIT_H_
-
+#include "main.h"
 
 //Controllers
     pros::Controller Master(pros::E_CONTROLLER_MASTER);
@@ -25,8 +23,8 @@
     pros::Motor_Group AllWheels({FrontLeft, BackLeft, FrontRight, BackRight});
     pros::Motor_Group AllAllWheels({FrontLeft, BackLeft, FrontRight, BackRight, UpLeft, UpRight});
 
-    pros::Motor IntakeLeft(11,0);
-    pros::Motor IntakeRight(12,1);
+    pros::Motor IntakeLeft(17,0);
+    pros::Motor IntakeRight(18,1);
     pros::Motor_Group Intake({IntakeLeft,IntakeRight});
 
 /*
@@ -58,7 +56,3 @@ bool intakePTOvalue = false;
 bool mobileGoalManipulatorValue = false;
 bool armMoving = false;
 bool armMovementComplete = false;
-
-
-
-#endif

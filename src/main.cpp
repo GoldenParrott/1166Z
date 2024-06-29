@@ -135,7 +135,13 @@ void opcontrol() {
 	IntakePTOPiston.set_value(false);
 	intakePTOvalue = false;
 
+	/*
+	Key:
+		Right & Left : Intake
+
 	
+	
+	*/
 	
 	AllAllWheels.move_velocity(1000);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
@@ -175,64 +181,75 @@ void opcontrol() {
       			
     	}  
 
-	//Intake Conveyor (Transport)
+	// Intake Conveyor (Transport)
 		if (Master.get_digital(DIGITAL_RIGHT)){
-			Intake.move(-128);
+			Intake.move((-128));
 		} else if(Master.get_digital(DIGITAL_LEFT)){
-			Intake.move(128);
+			Intake.move((128));
 		} else {
 			Intake.brake();
 		}
 
 	// Intake Arm
 		
+		// The button 'LowerLimit' is used to set a reference point of the bottom of the arm's 
+		// rotation point. The button gets pressed when our arm is all the way down.
+
+		// ↓↓ If the button is pressed, run this code
 		if (LowerLimit.get_value() == true){
-			UpRight.tare_position(); //set to zero
+
+			// ↓↓ Sets rotation sensor is the arm to zero 
+			UpRight.tare_position();
+
+			// ↓↓ Sets the 
 			armmax = 1850.0;
-			pros::lcd::set_text(1, "Limit Hit");
 			armCalibrated = true;
+		} else if(LowerLimit.get_value() == false){
+
 		}
-		if (LowerLimit.get_value() == false){
-			pros::lcd::set_text(1, "Limit Released");
-		}
+
 
 		armPosition = abs(UpRight.get_position());
-		//Master.print(0, 0, "%f",UpRight.get_position());
-		//Master.clear();
 
 		if (intakePTOvalue == true) {
-			if ((Master.get_digital(DIGITAL_DOWN))&&(LowerLimit.get_value() == false)) {
+			if ((Master.get_digital(DIGITAL_DOWN))/*&&(LowerLimit.get_value() == false)*/) {
 				IntakePTO.move(128);
-			}else if ((Master.get_digital(DIGITAL_UP))&&(armPosition<(armmax))) {
+			} else if ((Master.get_digital(DIGITAL_UP))/*&&(armPosition<(armmax))*/) {
 				IntakePTO.move(-128);
+				
+			} else {
+				IntakePTO.brake();
 			}
-		}
 
-		if ((Master.get_digital(DIGITAL_X) == true)){
-			//Up
-			armGoal = 1900;
-			if (armGoal < armPosition) {
-				IntakePTO.move_relative((armPosition-armGoal),128);
-			} else if (armPosition < armGoal) {
-				IntakePTO.move_relative(-(armGoal-armPosition),128);
+			/*
+			// Need to recalibrate values, is preventing manual arm lifting 
+			if ((Master.get_digital(DIGITAL_X) == true)){
+				//Up
+				armGoal = 1900;
+				if (armGoal < armPosition) {
+					IntakePTO.move_relative((armPosition-armGoal),128);
+				} else if (armPosition < armGoal) {
+					IntakePTO.move_relative(-(armGoal-armPosition),128);
+				}
+			}else if((Master.get_digital(DIGITAL_B) == true)){
+				//Down
+				armGoal = 0;
+				if (armGoal < armPosition) {
+					IntakePTO.move_relative((armPosition-armGoal),128);
+				} else if (armPosition < armGoal) {
+					IntakePTO.move_relative(-(armGoal-armPosition),128);
+				}
+			}else if (Master.get_digital(DIGITAL_A)){
+				//Midpoint
+				armGoal = 800;
+				if (armGoal < armPosition) {
+					IntakePTO.move_relative((armPosition-armGoal),128);
+				} else if (armPosition < armGoal) {
+					IntakePTO.move_relative(-(armGoal-armPosition),128);
+				}
+				
 			}
-		}else if((Master.get_digital(DIGITAL_B) == true)){
-			//Down
-			armGoal = 0;
-			if (armGoal < armPosition) {
-				IntakePTO.move_relative((armPosition-armGoal),128);
-			} else if (armPosition < armGoal) {
-				IntakePTO.move_relative(-(armGoal-armPosition),128);
-			}
-		}else if (Master.get_digital(DIGITAL_A)){
-			//Midpoint
-			armGoal = 800;
-			if (armGoal < armPosition) {
-				IntakePTO.move_relative((armPosition-armGoal),128);
-			} else if (armPosition < armGoal) {
-				IntakePTO.move_relative(-(armGoal-armPosition),128);
-			}
-			
+			*/
 		}
 
 		if (Master.get_digital(DIGITAL_A)){
@@ -244,6 +261,7 @@ void opcontrol() {
 
 		// ↓↓ Pressing the Y Button toggles between modes
 		if (Master.get_digital(DIGITAL_Y)) {
+
 			// intakePTOvalue is a variable that gets changed
 			// between true and false every time the Y Button 
 			// is pressed to switch modes
@@ -295,6 +313,7 @@ void opcontrol() {
 
 		// ↓↓ Pressing the R1 Button toggles between modes
 		if(Master.get_digital(DIGITAL_R1)){
+
 			// mobileGoalManipulatorValue is a variable that gets changed
 			// between true and false every time the R1 Button 
 			// is pressed to switch modes
