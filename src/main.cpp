@@ -201,10 +201,12 @@ void opcontrol() {
 		//Master.clear();
 
 		if (intakePTOvalue == true) {
-			if ((Master.get_digital(DIGITAL_DOWN))&&(LowerLimit.get_value() == false)) {
+			if ((Master.get_digital(DIGITAL_DOWN))) {
 				IntakePTO.move(128);
-			}else if ((Master.get_digital(DIGITAL_UP))&&(armPosition<(armmax))) {
+			}else if ((Master.get_digital(DIGITAL_UP))) {
 				IntakePTO.move(-128);
+			}else {
+				IntakePTO.brake();
 			}
 		}
 

@@ -309,7 +309,9 @@
       }
     },
     "upload_options": {
-      "after": "run"
+      "after": "run",
+      "slot": 1,
+      "icon": "pros"
     },
     "use_early_access": true
   }
