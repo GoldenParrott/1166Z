@@ -1,6 +1,3 @@
-#ifndef _PROS_INIT_H_
-#define _PROS_INIT_H_
-
 #include "main.h"
 
 //Controllers
@@ -60,7 +57,3 @@ bool intakePTOvalue = false;
 bool mobileGoalManipulatorValue = false;
 bool armMoving = false;
 bool armMovementComplete = false;
-
-
-
-#endif
