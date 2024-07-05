@@ -134,6 +134,8 @@ void opcontrol() {
 
 	IntakePTOPiston.set_value(false);
 	intakePTOvalue = false;
+	Eject.set_value(false);
+	inputOn = false;
 
 	/*
 	Key:
@@ -181,7 +183,7 @@ void opcontrol() {
       			
     	}  
 
-	// Intake Conveyor (Transport)
+	// Intake Conveyor (Transport) and Input
 		if (Master.get_digital(DIGITAL_RIGHT)){
 			Intake.move((-128));
 		} else if(Master.get_digital(DIGITAL_LEFT)){
@@ -189,7 +191,13 @@ void opcontrol() {
 		} else {
 			Intake.brake();
 		}
-
+	// Input Only
+		if (Master.get_digital(DIGITAL_L1)) {
+			InputMotor.move(-128);
+		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
+			InputMotor.brake();
+		}
+		
 	// Intake Arm
 //hif
 		// The button 'LowerLimit' is used to set a reference point of the bottom of the arm's 
@@ -344,6 +352,33 @@ void opcontrol() {
 			// us from looping through the code repeatedly ↓↓
 			waitUntil(Master.get_digital(DIGITAL_R1) == false);
 		}
+
+	// input
+
+
+
+		if (Master.get_digital(DIGITAL_L2) == true) {
+			if (inputOn == false) {
+				InputPiston.set_value(true);
+				inputOn = true;
+			}
+			else {
+				InputPiston.set_value(false);
+				inputOn = false;
+			}
+			waitUntil(Master.get_digital(DIGITAL_L2) == false);
+		}
+
+
+	// color sensor
+
+		if (colorSense.get_hue() < 20) {
+			Eject.set_value(true);
+			pros::delay(100);
+		} else if (colorSense.get_hue() > 30) {
+			Eject.set_value(false);
+		}
+
 
 
 	pros::delay(20);

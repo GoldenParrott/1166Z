@@ -23,9 +23,9 @@
     pros::Motor_Group AllWheels({FrontLeft, BackLeft, FrontRight, BackRight});
     pros::Motor_Group AllAllWheels({FrontLeft, BackLeft, FrontRight, BackRight, UpLeft, UpRight});
 
-    pros::Motor IntakeLeft(11,1);
-    pros::Motor IntakeRight(18,1);
-    pros::Motor_Group Intake({IntakeLeft,IntakeRight});
+    pros::Motor InputMotor(11,1);
+    pros::Motor Transport(18,1);
+    pros::Motor_Group Intake({Transport, InputMotor});
 
 /*
 ABCDEFGH
@@ -35,11 +35,18 @@ Pnuematics
 
     pros::ADIDigitalOut MobileGoalManipulator(1);
     pros::ADIDigitalOut IntakePTOPiston(2);
+    pros::ADIDigitalOut InputPiston(6);
+    pros::ADIDigitalOut Eject(5);
+
 
 //Other ADI
 
     pros::ADIAnalogIn AutonSelect(3);
     pros::ADIDigitalIn LowerLimit(4);
+
+// Sensors
+
+    pros::Optical colorSense(9);
 
 //Variables
 int autonnumber;
@@ -57,3 +64,4 @@ bool intakePTOvalue = false;
 bool mobileGoalManipulatorValue = false;
 bool armMoving = false;
 bool armMovementComplete = false;
+bool inputOn = false;
