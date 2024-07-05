@@ -6,25 +6,25 @@
 
 //Motors
 
-    pros::Motor UpLeft(5,0);
-    pros::Motor UpRight(6,1);
+    pros::Motor UpLeft(13,0);
+    pros::Motor UpRight(19,1);
     pros::Motor_Group IntakePTO({UpLeft, UpRight});
     
-    pros::Motor FrontLeft(1,1);
-    pros::Motor BackLeft(2,1);
+    pros::Motor FrontLeft(11,1);
+    pros::Motor BackLeft(12,1);
     pros::Motor_Group LeftWheels({FrontLeft, BackLeft});
     pros::Motor_Group AllLeftWheels({FrontLeft, BackLeft, UpLeft});
 
-    pros::Motor FrontRight(3,0);
-    pros::Motor BackRight(4,0);
+    pros::Motor FrontRight(1,0);
+    pros::Motor BackRight(2,0);
     pros::Motor_Group RightWheels({FrontRight, BackRight});
     pros::Motor_Group AllRightWheels({FrontRight, BackRight, UpRight});
 
     pros::Motor_Group AllWheels({FrontLeft, BackLeft, FrontRight, BackRight});
     pros::Motor_Group AllAllWheels({FrontLeft, BackLeft, FrontRight, BackRight, UpLeft, UpRight});
 
-    pros::Motor InputMotor(11,1);
-    pros::Motor Transport(18,1);
+    pros::Motor InputMotor(14,1);
+    pros::Motor Transport(15,1);
     pros::Motor_Group Intake({Transport, InputMotor});
 
 /*
@@ -33,8 +33,8 @@ ABCDEFGH
 Pnuematics
 */
 
-    pros::ADIDigitalOut MobileGoalManipulator(1);
-    pros::ADIDigitalOut IntakePTOPiston(2);
+    pros::ADIDigitalOut MobileGoalManipulator(5);
+    pros::ADIDigitalOut IntakePTOPiston(1);
     pros::ADIDigitalOut InputPiston(6);
     pros::ADIDigitalOut Eject(5);
 
@@ -46,7 +46,7 @@ Pnuematics
 
 // Sensors
 
-    pros::Optical colorSense(9);
+    pros::Optical colorSense(16);
 
 //Variables
 int autonnumber;

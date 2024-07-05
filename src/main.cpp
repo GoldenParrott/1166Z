@@ -197,7 +197,13 @@ void opcontrol() {
 		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
 			InputMotor.brake();
 		}
-		
+	// Transport Only
+		if (Master.get_digital(DIGITAL_B)) {
+			Transport.move(-128);
+		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
+			Transport.brake();
+		}
+
 	// Intake Arm
 //hif
 		// The button 'LowerLimit' is used to set a reference point of the bottom of the arm's 
@@ -372,10 +378,10 @@ void opcontrol() {
 
 	// color sensor
 
-		if (colorSense.get_hue() < 20) {
+		if ((colorSense.get_hue() < 20) || (Master.get_digital(DIGITAL_R2))) {
 			Eject.set_value(true);
 			pros::delay(100);
-		} else if (colorSense.get_hue() > 30) {
+		} else if ((colorSense.get_hue() > 30) || (!Master.get_digital(DIGITAL_R2))) {
 			Eject.set_value(false);
 		}
 
