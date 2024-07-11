@@ -5,44 +5,7 @@
  * 
  * goal is the degree of rotation of the motors from 0-1900
 */
-/*
-void armraiser(double goal){
-	// Makes a new variable for the arm position. The value gotten is a negative so we 
-	// change that to a posive value before moving on
 
-	double current = abs(UpRight.get_position());
-	
-	if (((goal - 15) < current) && (current < (goal + 15))){
-		// Used if the arm is within the threashold of the desired position
-		IntakePTO.brake();
-	} else if (current >= (goal + 15)){
-		// Used if the arm is above the desired position
-		if ((current - goal) >= 200){
-			// Used if the arm is far away from the desired position
-			// Runs motors at max speed
-			IntakePTO.move(-128);
-		} else if ((current - goal) < 200){
-			// Used if the arm is close to the desired position
-			// Runs motors at ~1/3 speed for more accurate movement
-			IntakePTO.move(-43);
-		}
-	} else if (current <= (goal - 15)) {
-		Master.print(0,0,"c=%f, g=%f",current, goal);
-		// Used if the arm is below the desired position
-		if ((goal - current) >= 200){
-			// Used if the arm is far away from the desired position
-			// Runs motors at max speed
-			IntakePTO.move(128);
-		} else if ((goal - current) < 200){
-			// Used if the arm is close to the desired position
-			// Runs motors at ~1/3 speed for more accurate movement
-			IntakePTO.move(43);
-		}
-	} else {
-		Master.print(0,0,"Listen man, I don't even know");
-	}
-}
-*/
 
 /**
  * A callback function for LLEMU's center button.
@@ -133,7 +96,6 @@ void opcontrol() {
 	intakePTOvalue = false;
 	Eject.set_value(false);
 	GrabPiston.set_value(false);
-	inputOn = false;
 
 	/*
 	Key:
@@ -200,17 +162,6 @@ void opcontrol() {
 		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
 			Transport.brake();
 		}
-	/*	if (Master.get_digital(DIGITAL_B) == true) {
-			if (grabOn == false) {
-				GrabPiston.set_value(true);
-				grabOn = true;
-			}
-			else {
-				GrabPiston.set_value(false);
-				grabOn = false;
-			}
-			waitUntil(Master.get_digital(DIGITAL_B) == false);
-		} */
 
 	// Intake Arm
 
@@ -244,35 +195,6 @@ void opcontrol() {
 				}
 			}
 
-			/*
-			// Need to recalibrate values, is preventing manual arm lifting 
-			if ((Master.get_digital(DIGITAL_X) == true)){
-				//Up
-				armGoal = 1900;
-				if (armGoal < armPosition) {
-					IntakePTO.move_relative((armPosition-armGoal),128);
-				} else if (armPosition < armGoal) {
-					IntakePTO.move_relative(-(armGoal-armPosition),128);
-				}
-			}else if((Master.get_digital(DIGITAL_B) == true)){
-				//Down
-				armGoal = 0;
-				if (armGoal < armPosition) {
-					IntakePTO.move_relative((armPosition-armGoal),128);
-				} else if (armPosition < armGoal) {
-					IntakePTO.move_relative(-(armGoal-armPosition),128);
-				}
-			}else if (Master.get_digital(DIGITAL_A)){
-				//Midpoint
-				armGoal = 800;
-				if (armGoal < armPosition) {
-					IntakePTO.move_relative((armPosition-armGoal),128);
-				} else if (armPosition < armGoal) {
-					IntakePTO.move_relative(-(armGoal-armPosition),128);
-				}
-				
-			}
-			*/
 
 		// Arm Presets
 
@@ -358,29 +280,17 @@ void opcontrol() {
 		// ↓↓ Pressing the R1 Button toggles between modes
 		if(Master.get_digital(DIGITAL_R1)){
 
-			// mobileGoalManipulatorValue is a variable that gets changed
-			// between true and false every time the R1 Button 
-			// is pressed to switch modes
-
 			// ↓↓ If the manipulator is open, activate this code
-			if (mobileGoalManipulatorValue == false) {
+			if (MobileGoalManipulator.get_value() == false) {
 
 				// ↓↓ Closes the manipulator to grab an object
 				MobileGoalManipulator.set_value(true);
 
-				// Sets variable to allow the other portion of
-				// the code to run ↓↓
-				mobileGoalManipulatorValue = true;
-
 			// ↓↓ If the manipulator is closed, activate this code
-			} else if (mobileGoalManipulatorValue == true){
+			} else if (MobileGoalManipulator.get_value() == true){
 
 				// ↓↓ Opens the manipulator to grab an object
 				MobileGoalManipulator.set_value(false);
-
-				// Sets variable to allow the other portion of
-				// the code to run ↓↓
-				mobileGoalManipulatorValue = false;
 			}
 
 			// Sets a condition to exit the code that is the 
@@ -394,13 +304,11 @@ void opcontrol() {
 
 
 		if (Master.get_digital(DIGITAL_L2) == true) {
-			if (inputOn == false) {
+			if (InputPiston.get_value() == false) {
 				InputPiston.set_value(true);
-				inputOn = true;
 			}
 			else {
 				InputPiston.set_value(false);
-				inputOn = false;
 			}
 			waitUntil(Master.get_digital(DIGITAL_L2) == false);
 		}
@@ -428,6 +336,16 @@ void opcontrol() {
 
 
 	// grab arm
+
+		if (intakePTOvalue == false && Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+			if (GrabPiston.get_value() == false) {
+				GrabPiston.set_value(true);
+			}
+			else {
+				GrabPiston.set_value(false);
+			}
+			waitUntil(Master.get_digital(DIGITAL_X) == false);
+		}
 
 	pros::delay(20);
 

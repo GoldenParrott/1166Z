@@ -62,11 +62,8 @@ double armPosition;
 
 bool armCalibrated = false;
 bool intakePTOvalue = false;
-bool mobileGoalManipulatorValue = false;
 bool armMoving = false;
 bool armMovementComplete = false;
-bool inputOn = false;
-bool grabOn = false;
 bool toggleColorSensor = false;
 
 bool presettingA = false;
