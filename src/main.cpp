@@ -105,7 +105,8 @@ void competition_initialize() {}
  */
 void autonomous() {
 
-	PIDMover(30);
+	PIDTurner(90, 2);
+	Master.print(0, 0, "done");
 
 }
 
@@ -422,6 +423,11 @@ void opcontrol() {
 		} waitUntil(!Master.get_digital(DIGITAL_R2));
 
 		Master.print(0, 0, "toggle = %d", toggleColorSensor);
+
+
+
+
+	// grab arm
 
 	pros::delay(20);
 

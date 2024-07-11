@@ -54,9 +54,9 @@ void PIDMover(
 	int prevError;
 
 	// Constants (need to be tuned individually for every robot)
-	double kP = 1.28; // customizable
-	double kI = 0.0; // customizable
-	double kD = 0; // customizable
+	double kP = 1.2; // customizable
+	double kI = 0.1; // customizable
+	double kD = 0.8; // customizable
 
 	
 	
@@ -121,7 +121,7 @@ void PIDMover(
 		// starts the integral at the error, then compounds it with the new current error every loop
 		integral = int (integral + error);
 		// prevents the integral variable from causing the robot to overshoot
-		if ((isPositive && (error == 0)) || (!isPositive && (error == 0))) {
+		if ((isPositive && (error <= 0)) || (!isPositive && (error >= 0))) {
 			integral = 0;
 		}
 		// prevents the integral from winding up too much, causing the number to be beyond the control of
@@ -156,6 +156,7 @@ void PIDMover(
 		power = proportionalOut + integralOut + derivativeOut;
 
 	// moves the wheels at the desired power, ending the cycle
+		// if (power < 20) {power = 20;}
 		allWheels.move(power);
 
 
@@ -180,7 +181,6 @@ void PIDMover(
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
 				actionCompleted = true;
 				allWheels.brake();
-				allWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 		}
 	}
 }
