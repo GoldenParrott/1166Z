@@ -35,7 +35,6 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
-#include "init.h"
 
 /**
  * You should add more #includes here
@@ -69,6 +68,10 @@ void disabled(void);
 void competition_initialize(void);
 void armraiser(void);
 void opcontrol(void);
+
+void PIDMover(int setPoint);
+void PIDTurner(int setPoint, int direction);
+void PIDArc(int chordLength, int maxDist, int direction);
 #ifdef __cplusplus
 }
 #endif

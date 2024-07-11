@@ -328,6 +328,7 @@ class ADIDigitalOut : private ADIPort {
 	 * \return if the operation was successful or PROS_ERR if the operation failed, setting errno.
 	 */
 	using ADIPort::set_value;
+	using ADIPort::get_value;
 };
 
 class ADIDigitalIn : private ADIPort {

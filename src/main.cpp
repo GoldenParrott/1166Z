@@ -1,4 +1,4 @@
-#include "main.h"
+#include "init.h"
 
 /*
  * Runs the arm up or down to a defined location. There are 15 degrees of buffer around
@@ -105,11 +105,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 
-	AllAllWheels.move_relative(1000,50);
-	pros::delay(2000);
-	AllAllWheels.move_relative(-1000,50);
-
-
+	PIDMover(30);
 
 }
 
@@ -135,12 +131,12 @@ void opcontrol() {
 	IntakePTOPiston.set_value(false);
 	intakePTOvalue = false;
 	Eject.set_value(false);
+	GrabPiston.set_value(false);
 	inputOn = false;
 
 	/*
 	Key:
 		Right & Left : Intake
-
 	
 	
 	*/
@@ -185,11 +181,11 @@ void opcontrol() {
 
 	// Intake Conveyor (Transport) and Input
 		if (Master.get_digital(DIGITAL_RIGHT)){
-			Intake.move((-128));
+			InputMotor.move(-128);
+			Transport.move(-128);
 		} else if(Master.get_digital(DIGITAL_LEFT)){
-			Intake.move((128));
-		} else {
-			Intake.brake();
+			InputMotor.move(128);
+			Transport.move(128);
 		}
 	// Input Only
 		if (Master.get_digital(DIGITAL_L1)) {
@@ -199,40 +195,52 @@ void opcontrol() {
 		}
 	// Transport Only
 		if (Master.get_digital(DIGITAL_B)) {
-			Transport.move(-128);
+			Transport.move(128);
 		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
 			Transport.brake();
 		}
+	/*	if (Master.get_digital(DIGITAL_B) == true) {
+			if (grabOn == false) {
+				GrabPiston.set_value(true);
+				grabOn = true;
+			}
+			else {
+				GrabPiston.set_value(false);
+				grabOn = false;
+			}
+			waitUntil(Master.get_digital(DIGITAL_B) == false);
+		} */
 
 	// Intake Arm
-//hif
-		// The button 'LowerLimit' is used to set a reference point of the bottom of the arm's 
-		// rotation point. The button gets pressed when our arm is all the way down.
 
-		// ↓↓ If the button is pressed, run this code
-		if (LowerLimit.get_value() == true){
+		// When the intake PTO first switches on, this code resets the zero position of the arm to be the bottom (where it is currently at)
+		// as a reference point
 
-			// ↓↓ Sets rotation sensor is the arm to zero 
-			UpRight.tare_position();
-
-			// ↓↓ Sets the 
-			armmax = 1850.0;
+		// ↓↓ If the PTO is switched on, run this code
+		if (intakePTOvalue == true && !armCalibrated) {
+			// ↓↓ Sets the rotational sensor in the arm motor to zero as a reference point
+			UpLeft.tare_position();
+			// changes the armCalibrated value to ensure that this code is not run again until the next time it is switched on
 			armCalibrated = true;
-		} else if(LowerLimit.get_value() == false){
+		}
 
+		// switches the armCalibrated value back to false for the next time when the PTO is first switched off
+		if (intakePTOvalue == false && armCalibrated) {
+			armCalibrated = false;
 		}
 
 
-		armPosition = abs(UpRight.get_position());
+		armPosition = abs(UpLeft.get_position());
 
 		if (intakePTOvalue == true) {
-			if ((Master.get_digital(DIGITAL_DOWN))/*&&(LowerLimit.get_value() == false)*/) {
-				IntakePTO.move(128);
-			} else if ((Master.get_digital(DIGITAL_UP))/*&&(armPosition<(armmax))*/) {
-				IntakePTO.move(-128);
-				
-			} else {
-				IntakePTO.brake();
+			if (!presettingX && !presettingA) {
+				if ((Master.get_digital(DIGITAL_DOWN))/*&&(LowerLimit.get_value() == false)*/) {
+					IntakePTO.move(128);
+				} else if ((Master.get_digital(DIGITAL_UP))/*&&(armPosition<(armmax))*/) {
+					IntakePTO.move(-128);
+				} else {
+					IntakePTO.brake();
+				}
 			}
 
 			/*
@@ -264,10 +272,31 @@ void opcontrol() {
 				
 			}
 			*/
-		}
 
-		if (Master.get_digital(DIGITAL_A)){
-			IntakePTO.brake();
+		// Arm Presets
+
+
+		// Neutral Stake Preset
+			if (Master.get_digital(DIGITAL_X) && !presettingA) {
+				IntakePTO.move(-128);
+				presettingX = true;
+			} 
+		// Alliance Stake Preset
+			else if (Master.get_digital(DIGITAL_A) && !presettingX) {
+				IntakePTO.move(-128);
+				presettingA = true;
+			}
+
+		// These stop the preset movements in their own separate check to prevent the code from blocking other code
+			if (presettingX && armPosition >= 880) {
+				IntakePTO.brake();
+				presettingX = false;
+			}
+
+			if (presettingA && armPosition >= 550) {
+				IntakePTO.brake();
+				presettingA = false;
+			}
 		}
 
 
@@ -378,14 +407,21 @@ void opcontrol() {
 
 	// color sensor
 
-		if ((colorSense.get_hue() < 20) || (Master.get_digital(DIGITAL_R2))) {
+		if ((colorSense.get_hue() < 20) && (toggleColorSensor == true)) {
 			Eject.set_value(true);
-			pros::delay(100);
-		} else if ((colorSense.get_hue() > 30) || (!Master.get_digital(DIGITAL_R2))) {
+			waitUntil(!colorSense.get_hue() < 20);
+			pros::delay(1000);
+		} else if ((colorSense.get_hue() > 30) && (toggleColorSensor == true)) {
 			Eject.set_value(false);
 		}
 
+		if (Master.get_digital(DIGITAL_R2) && toggleColorSensor == false) {
+			toggleColorSensor = true;
+		} else if (Master.get_digital(DIGITAL_R2) && toggleColorSensor == true) {
+			toggleColorSensor = false;
+		} waitUntil(!Master.get_digital(DIGITAL_R2));
 
+		Master.print(0, 0, "toggle = %d", toggleColorSensor);
 
 	pros::delay(20);
 
