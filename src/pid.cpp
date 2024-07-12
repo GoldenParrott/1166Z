@@ -65,12 +65,11 @@ void PIDMover(
 
 
 // Odometry Measurement Setup
-	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
-
+	bool isPositive = setPoint > 0; // Checks if the movement is positive or negatives
 	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
+	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
 
 	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
-	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
 	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
 						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
 	long double singleDegree = wheelRevolution / 360; // the distance that the robot moves in one degree of rotation of its wheels
