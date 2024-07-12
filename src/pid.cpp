@@ -38,6 +38,7 @@ void PIDMover(
 	int error;
 	int power;
 	int tolerance = 2;
+	int cyclesAtGoal;
 	bool actionCompleted = false;
 
 	// Proportional Variables
@@ -55,8 +56,8 @@ void PIDMover(
 
 	// Constants (need to be tuned individually for every robot)
 	double kP = 1.2; // customizable
-	double kI = 0.1; // customizable
-	double kD = 0.8; // customizable
+	double kI = 0.3; // customizable
+	double kD = 0.2; // customizable
 
 	
 	
@@ -155,7 +156,11 @@ void PIDMover(
 		power = proportionalOut + integralOut + derivativeOut;
 
 	// moves the wheels at the desired power, ending the cycle
-		// if (power < 20) {power = 20;}
+		if (power < 20 && power > 0) {
+			power = 20;
+		} else if (power > -20 && power < 0) {
+			power = -20;
+		}
 		allWheels.move(power);
 
 
@@ -178,8 +183,14 @@ void PIDMover(
 
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
+			if (cyclesAtGoal >= 20) {
 				actionCompleted = true;
 				allWheels.brake();
+			} else {
+				cyclesAtGoal += 1;
+			}
+		} else {
+			cyclesAtGoal = 0;
 		}
 	}
 }
