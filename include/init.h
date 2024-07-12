@@ -65,6 +65,7 @@ bool intakePTOvalue = false;
 bool armMoving = false;
 bool armMovementComplete = false;
 bool toggleColorSensor = false;
+int colorDelay = 0;
 
 bool presettingA = false;
 bool presettingX = false;

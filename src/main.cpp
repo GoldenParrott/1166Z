@@ -318,16 +318,21 @@ void opcontrol() {
 
 		if ((colorSense.get_hue() < 20) && (toggleColorSensor == true)) {
 			Eject.set_value(true);
-			waitUntil(!colorSense.get_hue() < 20);
-			pros::delay(1000);
-		} else if ((colorSense.get_hue() > 30) && (toggleColorSensor == true)) {
+			colorDelay = 1;
+		} else if (colorDelay >= 1000) {
 			Eject.set_value(false);
+			colorDelay = 0;
+		}
+		if (colorDelay != 0) {
+			colorDelay += 20;
 		}
 
 		if (Master.get_digital(DIGITAL_R2) && toggleColorSensor == false) {
 			toggleColorSensor = true;
 		} else if (Master.get_digital(DIGITAL_R2) && toggleColorSensor == true) {
 			toggleColorSensor = false;
+			colorDelay = 0;
+			Eject.set_value(false);
 		} waitUntil(!Master.get_digital(DIGITAL_R2));
 
 		Master.print(0, 0, "toggle = %d", toggleColorSensor);
