@@ -197,8 +197,6 @@ void PIDTurner(
 		)
 {
 // controller, motor, and sensor declarations
-
-int i = 0;
 	pros::Controller Master(pros::E_CONTROLLER_MASTER);
 
 	pros::ADIDigitalOut IntakePTOPiston(1);
@@ -226,6 +224,10 @@ int i = 0;
 	pros::Motor_Group leftWheels(lWheels);
 	pros::Motor_Group rightWheels(rWheels);
 
+
+	leftWheels.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+	rightWheels.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+
 	pros::IMU Inertial(6);
 
 
@@ -234,7 +236,7 @@ int i = 0;
 // General Variables
 	int error;
 	int power;
-	int tolerance = 2;
+	int tolerance = 1;
 	bool actionCompleted = false;
 
 // Proportional Variables
@@ -251,9 +253,10 @@ int i = 0;
 	int prevError = error;
 
 // Constants -- tuning depends on whether the robot is moving or turning
-	double kP = 0.9;
-	double kI = 0.2;
-	double kD = 0.1;
+	double kP;
+	double kI;
+	double kD;
+
 
 // Checks if the movement is positive or negative
 	bool isPositive = setPoint > 0;
@@ -297,6 +300,20 @@ int i = 0;
 	int changeInReading = 0;
 
 	prevError = (int) (distanceToMove - changeInReading);
+
+
+
+	distanceToMove -= 2;
+
+	if (distanceToMove <= 90) {
+		kP = 1.25;
+		kI = 0.19;
+		kD = 0.1;
+	} else {
+		kP = 0.9;
+		kI = 0.13;
+		kD = 0.2;
+	}
 
 	 
 
@@ -375,20 +392,13 @@ int i = 0;
 		changeInReading = changeInDistance < 0
 		    ? changeInDistance + 360
 			: changeInDistance;
-
-		// int exampleVar = Inertial.get_heading() - inertialReadingInit;
-		// changeInReading = std::abs(Inertial.get_heading() - inertialReadingInit);
-
-		Master.print(0, 0, "%d", distanceToMove);
+		
 
 		if (((changeInReading <= (distanceToMove + tolerance)) && (changeInReading >= (distanceToMove - tolerance)))) {
-				Master.print(0, 0, "%d", i);
 				actionCompleted = true;
 				leftWheels.brake();
 				rightWheels.brake();
 		}
-
-		i++;
 	}
 }
 

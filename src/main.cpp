@@ -70,8 +70,17 @@ void autonomous() {
 
 	// PIDMover(50);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
-	PIDTurner(180, 2);
-	// Master.print(0, 0, "done");
+
+	/*
+	while (true) {
+		if (Master.get_digital(DIGITAL_A)) {PIDTurner(90, 2); Master.print(0, 0, "done90");}
+		if (Master.get_digital(DIGITAL_B)) {PIDTurner(180, 2); Master.print(0, 0, "done18");}
+		if (Master.get_digital(DIGITAL_Y)) {PIDTurner(270, 2); Master.print(0, 0, "done27");}
+	} */
+	PIDTurner(270, 2);
+	Master.print(0, 0, "done");
+	pros::delay(1250);
+	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 
 }
 
