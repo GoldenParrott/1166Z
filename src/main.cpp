@@ -68,8 +68,10 @@ void competition_initialize() {}
  */
 void autonomous() {
 
-	PIDTurner(90, 2);
-	Master.print(0, 0, "done");
+	// PIDMover(50);
+	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	PIDTurner(180, 2);
+	// Master.print(0, 0, "done");
 
 }
 

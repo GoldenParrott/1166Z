@@ -6,6 +6,7 @@ void PIDMover(
 		int setPoint // how far you want to move in inches
 		)
 {
+	
 // Controller and Motor Declarations
 	pros::Controller Master(pros::E_CONTROLLER_MASTER);
 
@@ -17,17 +18,17 @@ void PIDMover(
 	
 	std::vector<pros::Motor> wheels;
 
-	pros::Motor backLeft(5, 1); wheels.push_back(backLeft);
-	pros::Motor frontLeft(11, 1); wheels.push_back(frontLeft);
+	pros::Motor backLeft(5, pros::E_MOTOR_GEAR_600, 1); wheels.push_back(backLeft);
+	pros::Motor frontLeft(11, pros::E_MOTOR_GEAR_600, 1); wheels.push_back(frontLeft);
 	pros::Motor_Group leftWheels({backLeft, frontLeft});
 
-	pros::Motor backRight(2, 0); wheels.push_back(backRight);
-	pros::Motor frontRight(1, 0); wheels.push_back(frontRight);
+	pros::Motor backRight(2, pros::E_MOTOR_GEAR_600, 0); wheels.push_back(backRight);
+	pros::Motor frontRight(1, pros::E_MOTOR_GEAR_600, 0); wheels.push_back(frontRight);
 	pros::Motor_Group rightWheels({backRight, frontRight});
 
 	if (PTOon) {
-		pros::Motor upLeft(13, 1); wheels.push_back(upLeft);
-		pros::Motor upRight(19, 0); wheels.push_back(upRight);
+		pros::Motor upLeft(13, pros::E_MOTOR_GEAR_600, 1); wheels.push_back(upLeft);
+		pros::Motor upRight(19, pros::E_MOTOR_GEAR_600, 0); wheels.push_back(upRight);
 	}
 
 	pros::Motor_Group allWheels(wheels);
@@ -55,9 +56,9 @@ void PIDMover(
 	int prevError;
 
 	// Constants (need to be tuned individually for every robot)
-	double kP = 1.2; // customizable
-	double kI = 0.3; // customizable
-	double kD = 0.2; // customizable
+	double kP = 1.28; // customizable
+	double kI = 0.4; // customizable
+	double kD = 0.1; // customizable
 
 	
 	
@@ -156,11 +157,6 @@ void PIDMover(
 		power = proportionalOut + integralOut + derivativeOut;
 
 	// moves the wheels at the desired power, ending the cycle
-		if (power < 20 && power > 0) {
-			power = 20;
-		} else if (power > -20 && power < 0) {
-			power = -20;
-		}
 		allWheels.move(power);
 
 
@@ -183,12 +179,12 @@ void PIDMover(
 
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
-			if (cyclesAtGoal >= 20) {
+			// if (cyclesAtGoal >= 20) {
 				actionCompleted = true;
 				allWheels.brake();
-			} else {
+			/* else {
 				cyclesAtGoal += 1;
-			}
+			} */
 		} else {
 			cyclesAtGoal = 0;
 		}
@@ -201,6 +197,8 @@ void PIDTurner(
 		)
 {
 // controller, motor, and sensor declarations
+
+int i = 0;
 	pros::Controller Master(pros::E_CONTROLLER_MASTER);
 
 	pros::ADIDigitalOut IntakePTOPiston(1);
@@ -212,23 +210,23 @@ void PIDTurner(
 	std::vector<pros::Motor> rWheels;
 	std::vector<pros::Motor> lWheels;
 
-	pros::Motor backLeft(5, 1); lWheels.push_back(backLeft);
-	pros::Motor frontLeft(11, 1); lWheels.push_back(frontLeft);
+	pros::Motor backLeft(5, pros::E_MOTOR_GEAR_600, 1); lWheels.push_back(backLeft);
+	pros::Motor frontLeft(11, pros::E_MOTOR_GEAR_600, 1); lWheels.push_back(frontLeft);
 
-	pros::Motor backRight(2, 0); rWheels.push_back(backRight);
-	pros::Motor frontRight(1, 0); rWheels.push_back(frontRight);
+	pros::Motor backRight(2, pros::E_MOTOR_GEAR_600, 0); rWheels.push_back(backRight);
+	pros::Motor frontRight(1, pros::E_MOTOR_GEAR_600, 0); rWheels.push_back(frontRight);
 
 	std::vector<pros::Motor> wheels;
 
 	if (PTOon) {
-		pros::Motor upLeft(13, 1); lWheels.push_back(upLeft);
-		pros::Motor upRight(19, 0); rWheels.push_back(upRight);
+		pros::Motor upLeft(13, pros::E_MOTOR_GEAR_600, 1); lWheels.push_back(upLeft);
+		pros::Motor upRight(19, pros::E_MOTOR_GEAR_600, 0); rWheels.push_back(upRight);
 	}
 
 	pros::Motor_Group leftWheels(lWheels);
 	pros::Motor_Group rightWheels(rWheels);
 
-	pros::IMU Inertial(20);
+	pros::IMU Inertial(6);
 
 
 
@@ -236,6 +234,7 @@ void PIDTurner(
 // General Variables
 	int error;
 	int power;
+	int tolerance = 2;
 	bool actionCompleted = false;
 
 // Proportional Variables
@@ -380,11 +379,16 @@ void PIDTurner(
 		// int exampleVar = Inertial.get_heading() - inertialReadingInit;
 		// changeInReading = std::abs(Inertial.get_heading() - inertialReadingInit);
 
-		if (((changeInReading <= (distanceToMove + 3)) && (changeInReading >= (distanceToMove - 3)))) {
+		Master.print(0, 0, "%d", distanceToMove);
+
+		if (((changeInReading <= (distanceToMove + tolerance)) && (changeInReading >= (distanceToMove - tolerance)))) {
+				Master.print(0, 0, "%d", i);
 				actionCompleted = true;
 				leftWheels.brake();
 				rightWheels.brake();
 		}
+
+		i++;
 	}
 }
 
@@ -402,10 +406,10 @@ void PIDArc(
 
 	pros::ADIDigitalOut IntakePTOPiston(1);
 
-	pros::Motor backRight(2, 0);
-	pros::Motor frontRight(1, 0);
-	pros::Motor backLeft(5, 1);
-	pros::Motor frontLeft(11, 1); 
+	pros::Motor backRight(2, pros::E_MOTOR_GEAR_600, 0);
+	pros::Motor frontRight(1, pros::E_MOTOR_GEAR_600, 0);
+	pros::Motor backLeft(5, pros::E_MOTOR_GEAR_600, 1);
+	pros::Motor frontLeft(11, pros::E_MOTOR_GEAR_600, 1); 
 
 	bool PTOon;
 	if (IntakePTOPiston.get_value() == true) {PTOon = true;}
@@ -423,8 +427,8 @@ void PIDArc(
 		inners.push_back(backLeft); 
 		inners.push_back(frontLeft);
 		if (PTOon) {
-			pros::Motor upRight(19, 0); outers.push_back(upRight);
-			pros::Motor upLeft(13, 1); inners.push_back(upLeft);
+			pros::Motor upRight(19, pros::E_MOTOR_GEAR_600, 0); outers.push_back(upRight);
+			pros::Motor upLeft(13, pros::E_MOTOR_GEAR_600, 1); inners.push_back(upLeft);
 		}
 	} else {
 		direction = 2;
