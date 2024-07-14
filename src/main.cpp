@@ -1,5 +1,11 @@
-#include "main.h"
 #include "init.h"
+
+/*
+ * Runs the arm up or down to a defined location. There are 15 degrees of buffer around
+ * 
+ * goal is the degree of rotation of the motors from 0-1900
+*/
+
 
 /**
  * A callback function for LLEMU's center button.
@@ -14,6 +20,7 @@ void on_center_button() {
 		pros::lcd::set_text(2, "I was pressed!");
 	} else {
 		pros::lcd::clear_line(2);
+		pros::lcd::read_buttons();
 	}
 }
 
@@ -59,7 +66,26 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+
+	// PIDMover(50);
+	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
+
+	/*
+	while (true) {
+		if (Master.get_digital(DIGITAL_A)) {PIDTurner(90, 2); Master.print(0, 0, "done90");}
+		if (Master.get_digital(DIGITAL_B)) {PIDTurner(180, 2); Master.print(0, 0, "done18");}
+		if (Master.get_digital(DIGITAL_Y)) {PIDTurner(270, 2); Master.print(0, 0, "done27");}
+	} */
+	PIDTurner(270, 2);
+	Master.print(0, 0, "done");
+	pros::delay(1250);
+	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+
+}
+
+
+
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -74,7 +100,24 @@ void autonomous() {}
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
 void opcontrol() {
+
+	IntakePTOPiston.set_value(false);
+	intakePTOvalue = false;
+	Eject.set_value(false);
+	GrabPiston.set_value(false);
+
+	/*
+	Key:
+		Right & Left : Intake
+	
+	
+	*/
+	
+	AllAllWheels.move_velocity(1000);
+	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
+
 	while (true) {
 
 	//Drivetrain
@@ -87,12 +130,11 @@ void opcontrol() {
 
 				RightWheels.move((drvtrFB-(drvtrLR)));
       			LeftWheels.move((drvtrFB+(drvtrLR)));
-			
+				
 			} else if (intakePTOvalue == false){
 
 				AllRightWheels.move((drvtrFB-(drvtrLR)));
       			AllLeftWheels.move((drvtrFB+(drvtrLR)));
-			
 			}
       			
     	} else {
@@ -111,33 +153,214 @@ void opcontrol() {
       			
     	}  
 
-	//Intake Conveyor (Transport)
+	// Intake Conveyor (Transport) and Input
 		if (Master.get_digital(DIGITAL_RIGHT)){
-			Intake.move(-128);
+			InputMotor.move(-128);
+			Transport.move(-128);
 		} else if(Master.get_digital(DIGITAL_LEFT)){
-			Intake.move(128);
-		} else {
-			Intake.brake();
+			InputMotor.move(128);
+			Transport.move(128);
+		}
+	// Input Only
+		if (Master.get_digital(DIGITAL_L1)) {
+			InputMotor.move(-128);
+		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
+			InputMotor.brake();
+		}
+	// Transport Only
+		if (Master.get_digital(DIGITAL_B)) {
+			Transport.move(128);
+		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
+			Transport.brake();
 		}
 
 	// Intake Arm
+
+		// When the intake PTO first switches on, this code resets the zero position of the arm to be the bottom (where it is currently at)
+		// as a reference point
+
+		// ↓↓ If the PTO is switched on, run this code
+		if (intakePTOvalue == true && !armCalibrated) {
+			// ↓↓ Sets the rotational sensor in the arm motor to zero as a reference point
+			UpLeft.tare_position();
+			// changes the armCalibrated value to ensure that this code is not run again until the next time it is switched on
+			armCalibrated = true;
+		}
+
+		// switches the armCalibrated value back to false for the next time when the PTO is first switched off
+		if (intakePTOvalue == false && armCalibrated) {
+			armCalibrated = false;
+		}
+
+
+		armPosition = abs(UpLeft.get_position());
+
 		if (intakePTOvalue == true) {
-			if (Master.get_digital(DIGITAL_UP)) {
+			if (!presettingX && !presettingA) {
+				if ((Master.get_digital(DIGITAL_DOWN))/*&&(LowerLimit.get_value() == false)*/) {
+					IntakePTO.move(128);
+				} else if ((Master.get_digital(DIGITAL_UP))/*&&(armPosition<(armmax))*/) {
+					IntakePTO.move(-128);
+				} else {
+					IntakePTO.brake();
+				}
+			}
+
+
+		// Arm Presets
+
+
+		// Neutral Stake Preset
+			if (Master.get_digital(DIGITAL_X) && !presettingA) {
 				IntakePTO.move(-128);
-			}else if (Master.get_digital(DIGITAL_DOWN)) {
-				IntakePTO.move(128);
+				presettingX = true;
+			} 
+		// Alliance Stake Preset
+			else if (Master.get_digital(DIGITAL_A) && !presettingX) {
+				IntakePTO.move(-128);
+				presettingA = true;
+			}
+
+		// These stop the preset movements in their own separate check to prevent the code from blocking other code
+			if (presettingX && armPosition >= 880) {
+				IntakePTO.brake();
+				presettingX = false;
+			}
+
+			if (presettingA && armPosition >= 550) {
+				IntakePTO.brake();
+				presettingA = false;
 			}
 		}
 
+
 	// Intake PTO
-		if (Master.get_digital(DIGITAL_X)) {
-			if (!intakePTOvalue) {
+
+		// ↓↓ Pressing the Y Button toggles between modes
+		if (Master.get_digital(DIGITAL_Y)) {
+
+			// intakePTOvalue is a variable that gets changed
+			// between true and false every time the Y Button 
+			// is pressed to switch modes
+
+			// ↓↓ If PTO piston is deactivated, activate this code
+			if (intakePTOvalue == false) {
+
+				// Sets the PTO piston to change the connected 
+				// gear train ↓↓
 				IntakePTOPiston.set_value(true);
+
+				// Sets variable to allow the other portion of
+				// the code to run ↓↓
 				intakePTOvalue = true;
-			} else {
+
+				// Sets the motors on the PTO to HOLD their position
+				// while in control of the arm, and the wheels on the
+				// drivetrain to COAST to a stop ↓↓
+				IntakePTO.set_brake_modes(MOTOR_BRAKE_HOLD);
+				AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
+
+			// ↓↓ If PTO piston is activated, activate this code
+			} else if (intakePTOvalue == true) {
+
+				// Sets the PTO piston to change the connected 
+				// gear train ↓↓
 				IntakePTOPiston.set_value(false);
+
+				// Sets variable to allow the other portion of
+				// the code to run ↓↓
 				intakePTOvalue = false;
+
+				// Sets all motors now attached to the drivetrain
+				// to COAST to a stop ↓↓
+				AllAllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 			}
+
+			// Sets a condition to exit the code that is the 
+			// opposite of the condition to enter, preventing
+			// us from looping through the code repeatedly ↓↓
+			waitUntil(Master.get_digital(DIGITAL_Y) == false);
+		}
+
+		if (!intakePTOvalue) {
+			//Master.print(0, 0, "PTO in arm mode");
+		}
+
+	//Mobile Goal Manipulator
+
+		// ↓↓ Pressing the R1 Button toggles between modes
+		if(Master.get_digital(DIGITAL_R1)){
+
+			// ↓↓ If the manipulator is open, activate this code
+			if (MobileGoalManipulator.get_value() == false) {
+
+				// ↓↓ Closes the manipulator to grab an object
+				MobileGoalManipulator.set_value(true);
+
+			// ↓↓ If the manipulator is closed, activate this code
+			} else if (MobileGoalManipulator.get_value() == true){
+
+				// ↓↓ Opens the manipulator to grab an object
+				MobileGoalManipulator.set_value(false);
+			}
+
+			// Sets a condition to exit the code that is the 
+			// opposite of the condition to enter, preventing
+			// us from looping through the code repeatedly ↓↓
+			waitUntil(Master.get_digital(DIGITAL_R1) == false);
+		}
+
+	// input
+
+
+
+		if (Master.get_digital(DIGITAL_L2) == true) {
+			if (InputPiston.get_value() == false) {
+				InputPiston.set_value(true);
+			}
+			else {
+				InputPiston.set_value(false);
+			}
+			waitUntil(Master.get_digital(DIGITAL_L2) == false);
+		}
+
+
+	// color sensor
+
+		if ((colorSense.get_hue() < 20) && (toggleColorSensor == true)) {
+			Eject.set_value(true);
+			colorDelay = 1;
+		} else if (colorDelay >= 1000) {
+			Eject.set_value(false);
+			colorDelay = 0;
+		}
+		if (colorDelay != 0) {
+			colorDelay += 20;
+		}
+
+		if (Master.get_digital(DIGITAL_R2) && toggleColorSensor == false) {
+			toggleColorSensor = true;
+		} else if (Master.get_digital(DIGITAL_R2) && toggleColorSensor == true) {
+			toggleColorSensor = false;
+			colorDelay = 0;
+			Eject.set_value(false);
+		} waitUntil(!Master.get_digital(DIGITAL_R2));
+
+		Master.print(0, 0, "toggle = %d", toggleColorSensor);
+
+
+
+
+	// grab arm
+
+		if (intakePTOvalue == false && Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+			if (GrabPiston.get_value() == false) {
+				GrabPiston.set_value(true);
+			}
+			else {
+				GrabPiston.set_value(false);
+			}
+			waitUntil(Master.get_digital(DIGITAL_X) == false);
 		}
 
 	pros::delay(20);

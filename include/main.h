@@ -39,7 +39,7 @@
 /**
  * You should add more #includes here
  */
-//#include "okapi/api.hpp"
+#include "okapi/api.hpp"
 //#include "pros/api_legacy.h"
 
 /**
@@ -53,7 +53,7 @@
 // using namespace pros;
 // using namespace pros::literals;
 // using namespace okapi;
-
+#define waitUntil(condition) while (!(condition)) { pros::delay(50); }
 /**
  * Prototypes for the competition control tasks are redefined here to ensure
  * that they can be called from user code (i.e. calling autonomous from a
@@ -66,7 +66,12 @@ void autonomous(void);
 void initialize(void);
 void disabled(void);
 void competition_initialize(void);
+void armraiser(void);
 void opcontrol(void);
+
+void PIDMover(int setPoint);
+void PIDTurner(int setPoint, int direction);
+void PIDArc(int chordLength, int maxDist, int direction);
 #ifdef __cplusplus
 }
 #endif
