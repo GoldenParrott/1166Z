@@ -77,9 +77,52 @@ void autonomous() {
 		if (Master.get_digital(DIGITAL_B)) {PIDTurner(180, 2); Master.print(0, 0, "done18");}
 		if (Master.get_digital(DIGITAL_Y)) {PIDTurner(270, 2); Master.print(0, 0, "done27");}
 	} */
+	/*
 	PIDTurner(270, 2);
 	Master.print(0, 0, "done");
 	pros::delay(1250);
+	*/
+  
+	
+	
+
+	//drops the input
+	Transport.move_relative(1700,200);
+
+	//Starts spinning the Intake
+	InputMotor.move_velocity(-200);
+
+	//Moves tword the Ring
+	PIDMover(34);
+
+	//Intakes the second Ring
+	Transport.move_relative(-1700,200);
+
+	//Grabs the Mobile Goal
+	GrabPiston.set_value(true);
+	pros::delay(500);
+
+	//Stop intake
+	InputMotor.move_velocity(0);
+
+	//Moves away from the alliance line
+	//PIDMover(-38);
+	AllAllWheels.move_relative(-600,100);
+	pros::delay(2000);
+	
+	//Lets go of Mobile goal.
+	GrabPiston.set_value(false);
+	pros::delay(500);
+
+	//Turns to pick up Mobile Goal 
+	PIDTurner(180, 1);
+
+	//Moves away from the alliance line
+	PIDMover(-36);
+
+	//grabs Mobile Goal
+	MobileGoalManipulator.set_value(true);
+
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 
 }

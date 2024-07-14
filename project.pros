@@ -309,7 +309,7 @@
       }
     },
     "upload_options": {
-      "after": "run",
+      "after": "screen",
       "slot": 1,
       "icon": "pros"
     },
