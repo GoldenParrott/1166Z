@@ -1,9 +1,10 @@
 #include "main.h"
-#include <list>
-#include <math.h>
 
 void PIDMover(
-		int setPoint // how far you want to move in inches
+		int setPoint, // how far you want to move in inches
+
+		std::function<void(void)> custom, // a lambda function that will execute during the PID (optional)
+		int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
 	
@@ -40,6 +41,7 @@ void PIDMover(
 	int power;
 	int tolerance = 2;
 	int cyclesAtGoal;
+	bool customCompleted = false;
 	bool actionCompleted = false;
 
 	// Proportional Variables
@@ -161,6 +163,21 @@ void PIDMover(
 
 
 
+
+	// Custom lambda function that will execute if given and the robot has reached the point given by executeAt
+		
+		// ensures that the code will only run if the function has been provided and if executeAt has been reached
+		if (custom != 0 && currentDistanceMovedByWheel >= executeAt && !customCompleted) {
+			// runs the function
+			custom();
+			// prevents the function from running again
+			customCompleted = true;
+		}
+
+
+
+
+
 // PID Looping Odometry Measurement
 
 		// fifteen millisecond delay between cycles
@@ -193,7 +210,10 @@ void PIDMover(
 
 void PIDTurner(
 		int setPoint, // the goal inertial heading in degrees
-		int direction // 1 for left and 2 for right
+		int direction, // 1 for left and 2 for right
+
+		std::function<void(void)> custom, // a lambda function that will execute during the PID (optional)
+		int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
 // controller, motor, and sensor declarations
@@ -237,6 +257,7 @@ void PIDTurner(
 	int error;
 	int power;
 	int tolerance = 1;
+	bool customCompleted = true;
 	bool actionCompleted = false;
 
 // Proportional Variables
@@ -369,6 +390,17 @@ void PIDTurner(
 
 
 
+
+		// ensures that the code will only run if the function has been provided and if executeAt has been reached
+		if (custom != 0 && changeInReading >= executeAt && !customCompleted) {
+			// runs the function
+			custom();
+			// prevents the function from running again
+			customCompleted = true;
+		}
+
+
+
 	// PID LOOPING CODE
 
 		negativePower = power * -1;
@@ -405,7 +437,10 @@ void PIDTurner(
 void PIDArc(
 	int chordLength, // the distance between the robot's starting position and its destination position
 	int maxDist, // the maximum distance of the straight line from your current position and the setPoint to the arc (should be measured at half-point)
-	int direction // 1 for left, 2 for right
+	int direction, // 1 for left, 2 for right
+
+	std::function<void(void)> custom, // a lambda function that will execute during the PID (optional)
+	int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 	)
 {
 // Checks if the movement is positive or negative
@@ -461,6 +496,7 @@ void PIDArc(
 	int error;
 	int power;
 	int tolerance = 1;
+	bool customCompleted = false;
 	bool actionCompleted = false;
 
 // Proportional Variables
@@ -590,6 +626,22 @@ void PIDArc(
 
         // kD (derivative constant) prevents derivative from over- or under-scaling
         derivativeOut = derivative * kD;
+
+
+
+
+		// ensures that the code will only run if the function has been provided and if executeAt has been reached
+		if (custom != 0 && currentDistanceMovedByWheel >= executeAt && !customCompleted) {
+			// runs the function
+			custom();
+			// prevents the function from running again
+			customCompleted = true;
+
+		}
+
+
+
+
 
 		power = proportionalOut + integralOut + derivativeOut;
 

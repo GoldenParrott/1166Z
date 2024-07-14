@@ -82,7 +82,6 @@ void autonomous() {
 	Master.print(0, 0, "done");
 	pros::delay(1250);
 	*/
-  
 	
 	
 

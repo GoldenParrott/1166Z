@@ -69,9 +69,9 @@ void competition_initialize(void);
 void armraiser(void);
 void opcontrol(void);
 
-void PIDMover(int setPoint);
-void PIDTurner(int setPoint, int direction);
-void PIDArc(int chordLength, int maxDist, int direction);
+void PIDMover(int setPoint,                 std::function<void(void)> custom = 0, int executeAt = 0);
+void PIDTurner(int setPoint, int direction,                 std::function<void(void)> custom = 0, int executeAt = 0);
+void PIDArc(int chordLength, int maxDist, int direction,                std::function<void(void)> custom = 0, int executeAt = 0);
 #ifdef __cplusplus
 }
 #endif
@@ -81,6 +81,9 @@ void PIDArc(int chordLength, int maxDist, int direction);
  * You can add C++-only headers here
  */
 //#include <iostream>
+#include <list>
+#include <math.h>
+#include <functional>
 #endif
 
 #endif  // _PROS_MAIN_H_
