@@ -70,6 +70,7 @@ void autonomous() {
 
 	// PIDMover(50);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	Transport.tare_position();
 
 	/*
 	while (true) {
@@ -82,52 +83,43 @@ void autonomous() {
 	Master.print(0, 0, "done");
 	pros::delay(1250);
 	*/
-	auto extendSlapper = []() {GrabPiston.set_value(true);};
-
-	PIDMover(50);
-	// PIDMover(50, extendSlapper, 20);
-	
-	
 /*
+	auto extendMoGoM = []() {MobileGoalManipulator.set_value(true);};
+	PIDMover(50, extendMoGoM, 20);
+*/
+	
+	auto runTransportInReverse = []() {Transport.move_relative(-1700,200);};
+	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
+
 	//drops the input
-	Transport.move_relative(1700,200);
+	Transport.move_absolute(1700, 200);
+
 
 	//Starts spinning the Intake
-	InputMotor.move_velocity(-200);
+	InputMotor.move(-128);
 
-	//Moves tword the Ring
-	PIDMover(34);
-
-	//Intakes the second Ring
-	Transport.move_relative(-1700,200);
+	// moves toward the second Ring and intakes it after
+	PIDMover(36);
+	runTransportInReverse();
 
 	//Grabs the Mobile Goal
 	GrabPiston.set_value(true);
-	pros::delay(500);
-
-	//Stop intake
-	InputMotor.move_velocity(0);
+	pros::delay(125);
 
 	//Moves away from the alliance line
-	//PIDMover(-38);
-	AllAllWheels.move_relative(-600,100);
-	pros::delay(2000);
+	PIDMover(-28);
 	
 	//Lets go of Mobile goal.
 	GrabPiston.set_value(false);
-	pros::delay(500);
 
 	//Turns to pick up Mobile Goal 
-	PIDTurner(180, 1);
+	PIDTurner(170, 2);
 
-	//Moves away from the alliance line
-	PIDMover(-36);
+	//Moves to the Mobile Goal to pick it up
+	PIDMover(-20, gripMoGoM, -15);
 
-	//grabs Mobile Goal
-	MobileGoalManipulator.set_value(true);
 
-	*/
-
+	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 
 }
@@ -270,12 +262,12 @@ void opcontrol() {
 			}
 
 		// These stop the preset movements in their own separate check to prevent the code from blocking other code
-			if (presettingX && armPosition >= 880) {
+			if (presettingX && armPosition >= 910) {
 				IntakePTO.brake();
 				presettingX = false;
 			}
 
-			if (presettingA && armPosition >= 550) {
+			if (presettingA && armPosition >= 580) {
 				IntakePTO.brake();
 				presettingA = false;
 			}

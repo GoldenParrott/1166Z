@@ -7,7 +7,7 @@ void PIDMover(
 		int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
-	
+
 // Controller and Motor Declarations
 	pros::Controller Master(pros::E_CONTROLLER_MASTER);
 
@@ -48,7 +48,7 @@ void PIDMover(
 	int proportionalOut;
 
 	// Integral Variables
-	int integral;
+	int integral = 0;
 	int integralLimiter = 512; // customizable
 	int integralOut;
 
@@ -72,6 +72,8 @@ void PIDMover(
 	bool isPositive = setPoint > 0; // Checks if the movement is positive or negatives
 	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
 	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
+
+	executeAt = executeAt * 2.54;
 
 	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
 	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
@@ -173,9 +175,6 @@ void PIDMover(
 			// prevents the function from running again
 			customCompleted = true;
 		}
-
-
-
 
 
 // PID Looping Odometry Measurement
@@ -499,7 +498,7 @@ void PIDArc(
 	int proportionalOut;
 
 // Integral Variables
-	int integral;
+	int integral = 0;
 	int integralLimiter = 512; // customizable
 	int integralOut;
 
