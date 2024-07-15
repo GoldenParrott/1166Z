@@ -82,9 +82,13 @@ void autonomous() {
 	Master.print(0, 0, "done");
 	pros::delay(1250);
 	*/
-	
-	
+	auto extendSlapper = []() {GrabPiston.set_value(true);};
 
+	PIDMover(50);
+	// PIDMover(50, extendSlapper, 20);
+	
+	
+/*
 	//drops the input
 	Transport.move_relative(1700,200);
 
@@ -121,6 +125,8 @@ void autonomous() {
 
 	//grabs Mobile Goal
 	MobileGoalManipulator.set_value(true);
+
+	*/
 
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 
@@ -372,7 +378,7 @@ void opcontrol() {
 		if ((colorSense.get_hue() < 20) && (toggleColorSensor == true)) {
 			Eject.set_value(true);
 			colorDelay = 1;
-		} else if (colorDelay >= 1000) {
+		} else if (colorDelay >= 500) {
 			Eject.set_value(false);
 			colorDelay = 0;
 		}
