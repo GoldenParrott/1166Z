@@ -167,7 +167,7 @@ void PIDMover(
 	// Custom lambda function that will execute if given and the robot has reached the point given by executeAt
 		
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
-		if (custom != 0 && ((currentDistanceMovedByWheel >= executeAt && isPositive) || (currentDistanceMovedByWheel <= executeAt && !isPositive)) && !customCompleted) {
+		if (custom != 0 && currentDistanceMovedByWheel >= executeAt && !customCompleted) {
 			// runs the function
 			custom();
 			// prevents the function from running again
@@ -196,8 +196,12 @@ void PIDMover(
 
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
+			// if (cyclesAtGoal >= 20) {
 				actionCompleted = true;
 				allWheels.brake();
+			/* else {
+				cyclesAtGoal += 1;
+			} */
 		} else {
 			cyclesAtGoal = 0;
 		}
