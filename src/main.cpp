@@ -88,8 +88,9 @@ void autonomous() {
 	PIDMover(50, extendMoGoM, 20);
 */
 	
-	auto runTransportInReverse = []() {Transport.move_relative(-1700,200);};
+	auto runTransportInReverse = []() {Transport.move_relative(-1400,200);};
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
+	auto outtake = []() {InputMotor.move(128);};
 
 	//drops the input
 	Transport.move_absolute(1700, 200);
@@ -111,12 +112,30 @@ void autonomous() {
 	
 	//Lets go of Mobile goal.
 	GrabPiston.set_value(false);
+	pros::delay(125);
 
 	//Turns to pick up Mobile Goal 
-	PIDTurner(170, 2);
+	PIDTurner(180, 2);
 
 	//Moves to the Mobile Goal to pick it up
 	PIDMover(-20, gripMoGoM, -15);
+
+	// Puts the Rings on the Mobile Goal
+	Transport.move(-128);
+
+
+	// Turns toward Corner Rings and moves to them
+	PIDTurner(190, 2);
+	outtake();
+	PIDMover(45);
+	InputMotor.move(-128);
+
+	// Maneuvers back so the robot can turn around and move back to the center of the field
+	pros::delay(300);
+	InputMotor.brake();
+	Transport.brake();
+	PIDMover(-8); 
+
 
 
 	pros::delay(1000);
