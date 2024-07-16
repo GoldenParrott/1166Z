@@ -88,9 +88,10 @@ void autonomous() {
 	PIDMover(50, extendMoGoM, 20);
 */
 	
-	auto runTransportInReverse = []() {Transport.move_relative(-1400,200);};
+	auto transportIn = []() {Transport.move_relative(-1400,200);};
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
 	auto outtake = []() {InputMotor.move(128);};
+	auto activateGrabber = []() {GrabPiston.set_value(true);};
 
 	//drops the input
 	Transport.move_absolute(1700, 200);
@@ -100,38 +101,36 @@ void autonomous() {
 	InputMotor.move(-128);
 
 	// moves toward the second Ring and intakes it after
-	PIDMover(36);
+	PIDMover(34, activateGrabber, 32);
 
 	//Grabs the Mobile Goal
-	GrabPiston.set_value(true);
 	pros::delay(125);
-	runTransportInReverse();
+	transportIn();
 
-	//Moves away from the alliance line
+	//Moves away from the middle line
 	PIDMover(-28);
 	
-	//Lets go of Mobile goal.
+	// Lets go of Mobile Goal
 	GrabPiston.set_value(false);
-	pros::delay(125);
+	pros::delay(62);
 
 	//Turns to pick up Mobile Goal 
 	PIDTurner(185, 2);
 
 	//Moves to the Mobile Goal to pick it up
-	PIDMover(-25, gripMoGoM, -18);
+	PIDMover(-25, gripMoGoM, -20);
 
 	// Puts the Rings on the Mobile Goal
 	Transport.move(-128);
-	
-	Master.print(0, 0, "Done");
 
-/*
-	// Turns toward Corner Rings and moves to them
-	PIDTurner(190, 2);
-	outtake();
-	PIDMover(45);
+
+	// Turns toward Corner Rings, moves to them, and intakes them
+	PIDTurner(225, 2);
+
 	InputMotor.move(-128);
-
+	PIDMover(40);
+	PIDMover(5);
+/*
 	// Maneuvers back so the robot can turn around and move back to the center of the field
 	pros::delay(300);
 	InputMotor.brake();
@@ -139,6 +138,7 @@ void autonomous() {
 	PIDMover(-8); 
 */
 
+	Master.print(0, 0, "Done");
 
 	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
