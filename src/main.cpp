@@ -42,7 +42,9 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {}
+void disabled() {
+	MobileGoalManipulator.set_value(false);
+}
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
@@ -92,16 +94,17 @@ void autonomous() {
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
 	auto outtake = []() {InputMotor.move(128);};
 	auto activateGrabber = []() {GrabPiston.set_value(true);};
+	auto doAFlip = []() {MobileGoalManipulator.set_value(false);};
 
 	//drops the input
-	Transport.move_absolute(1700, 200);
+	Transport.move_relative(1400, 200);
 
 
 	//Starts spinning the Intake
 	InputMotor.move(-128);
 
 	// moves toward the second Ring and intakes it after
-	PIDMover(34, activateGrabber, 32);
+	PIDMover(35, activateGrabber, 33);
 
 	//Grabs the Mobile Goal
 	pros::delay(125);
@@ -115,7 +118,7 @@ void autonomous() {
 	pros::delay(62);
 
 	//Turns to pick up Mobile Goal 
-	PIDTurner(185, 2);
+	PIDTurner(175, 2);
 
 	//Moves to the Mobile Goal to pick it up
 	PIDMover(-25, gripMoGoM, -20);
@@ -125,11 +128,26 @@ void autonomous() {
 
 
 	// Turns toward Corner Rings, moves to them, and intakes them
-	PIDTurner(225, 2);
-
+	PIDTurner(215, 2);
 	InputMotor.move(-128);
-	PIDMover(40);
+	// slows down the robot more as it reaches the Corner by splitting the movement into two
+	PIDMover(36);
 	PIDMover(5);
+	// moves the robot back and forth some to guarantee that the third Ring will get in
+	pros::delay(200);
+	PIDMover(-4);
+	// moves the third Ring into the end of the intake
+	Transport.brake();
+	Transport.move_relative(-3000, 200);
+
+	// maneuvers the robot to the other Mobile Goal
+	PIDMover(-18);
+	PIDTurner(315, 2);
+	Transport.move_relative(-2000, 200);
+	PIDMover(-36, doAFlip, -32);
+	PIDMover(12);
+
+	// FUEEEELLL- I DESIRE GASOLIIIINE
 /*
 	// Maneuvers back so the robot can turn around and move back to the center of the field
 	pros::delay(300);
@@ -388,7 +406,8 @@ void opcontrol() {
 
 	// color sensor
 
-		if ((colorSense.get_hue() < 20) && (toggleColorSensor == true)) {
+		//                        < 020
+		if ((colorSense.get_hue() > 150) && (toggleColorSensor == true)) {
 			Eject.set_value(true);
 			colorDelay = 1;
 		} else if (colorDelay >= 500) {

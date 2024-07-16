@@ -455,7 +455,7 @@ void PIDArc(
 	if (IntakePTOPiston.get_value() == true) {PTOon = true;}
 	else {PTOon = false;}
 
-	pros::IMU Inertial(20);
+	pros::IMU Inertial(6);
 
 // sets the inner and outer wheel groups depending on direction - the first two lines are forward declarations to prevent errors, as an actual else produces errors
 	std::vector<pros::Motor> outers;
@@ -554,7 +554,7 @@ void PIDArc(
 
 // Arc Odometry
 	double oRadius = (((halfSetPoint * halfSetPoint) / maxDist) + maxDist) / 2;
-	double distBetweenWheels = 10 * 2.54;
+	double distBetweenWheels = 13 * 2.54;
 	double mult = ((oRadius - distBetweenWheels) / oRadius);
 
 // Arc Turning - turns the robot so that it starts the movement perpendicular to the center of the circle so it can move along the arc accurately
