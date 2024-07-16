@@ -101,11 +101,11 @@ void autonomous() {
 
 	// moves toward the second Ring and intakes it after
 	PIDMover(36);
-	runTransportInReverse();
 
 	//Grabs the Mobile Goal
 	GrabPiston.set_value(true);
 	pros::delay(125);
+	runTransportInReverse();
 
 	//Moves away from the alliance line
 	PIDMover(-28);
@@ -115,15 +115,17 @@ void autonomous() {
 	pros::delay(125);
 
 	//Turns to pick up Mobile Goal 
-	PIDTurner(180, 2);
+	PIDTurner(185, 2);
 
 	//Moves to the Mobile Goal to pick it up
-	PIDMover(-20, gripMoGoM, -15);
+	PIDMover(-25, gripMoGoM, -18);
 
 	// Puts the Rings on the Mobile Goal
 	Transport.move(-128);
+	
+	Master.print(0, 0, "Done");
 
-
+/*
 	// Turns toward Corner Rings and moves to them
 	PIDTurner(190, 2);
 	outtake();
@@ -135,7 +137,7 @@ void autonomous() {
 	InputMotor.brake();
 	Transport.brake();
 	PIDMover(-8); 
-
+*/
 
 
 	pros::delay(1000);
