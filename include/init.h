@@ -1,31 +1,34 @@
+#ifndef _PROS_INIT_H_
+#define _PROS_INIT_H_
+
 #include "main.h"
 
 //Controllers
-    pros::Controller Master(pros::E_CONTROLLER_MASTER);
-    pros::Controller Partner(pros::E_CONTROLLER_PARTNER);
+    extern pros::Controller Master;
+    extern pros::Controller Partner;
 
 //Motors
 
-    pros::Motor UpLeft(13,0);
-    pros::Motor UpRight(19,1);
-    pros::Motor_Group IntakePTO({UpLeft, UpRight});
+    extern pros::Motor UpLeft;
+    extern pros::Motor UpRight;
+    extern pros::Motor_Group IntakePTO;
     
-    pros::Motor FrontLeft(11,1);
-    pros::Motor BackLeft(5,1);
-    pros::Motor_Group LeftWheels({FrontLeft, BackLeft});
-    pros::Motor_Group AllLeftWheels({FrontLeft, BackLeft, UpLeft});
+    extern pros::Motor FrontLeft;
+    extern pros::Motor BackLeft;
+    extern pros::Motor_Group LeftWheels;
+    extern pros::Motor_Group AllLeftWheels;
 
-    pros::Motor FrontRight(1,0);
-    pros::Motor BackRight(2,0);
-    pros::Motor_Group RightWheels({FrontRight, BackRight});
-    pros::Motor_Group AllRightWheels({FrontRight, BackRight, UpRight});
+    extern pros::Motor FrontRight;
+    extern pros::Motor BackRight;
+    extern pros::Motor_Group RightWheels;
+    extern pros::Motor_Group AllRightWheels;
 
-    pros::Motor_Group AllWheels({FrontLeft, BackLeft, FrontRight, BackRight});
-    pros::Motor_Group AllAllWheels({FrontLeft, BackLeft, FrontRight, BackRight, UpLeft, UpRight});
+    extern pros::Motor_Group AllWheels;
+    extern pros::Motor_Group AllAllWheels;
 
-    pros::Motor InputMotor(14,1);
-    pros::Motor Transport(3,1);
-    pros::Motor_Group Intake({Transport, InputMotor});
+    extern pros::Motor InputMotor;
+    extern pros::Motor Transport;
+    extern pros::Motor_Group Intake;
 
 /*
 ABCDEFGH
@@ -33,11 +36,11 @@ ABCDEFGH
 Pnuematics
 */
 
-    pros::ADIDigitalOut MobileGoalManipulator(5);
-    pros::ADIDigitalOut IntakePTOPiston(1);
-    pros::ADIDigitalOut InputPiston(2);
-    pros::ADIDigitalOut Eject(8);
-    pros::ADIDigitalOut GrabPiston(4);
+    extern pros::ADIDigitalOut MobileGoalManipulator;
+    extern pros::ADIDigitalOut IntakePTOPiston;
+    extern pros::ADIDigitalOut InputPiston;
+    extern pros::ADIDigitalOut Eject;
+    extern pros::ADIDigitalOut GrabPiston;
 
 
 //Other ADI
@@ -46,26 +49,28 @@ Pnuematics
 
 // Sensors
 
-    pros::Optical colorSense(16);
-    pros::IMU Inertial(6);
+    extern pros::Optical colorSense;
+    extern pros::IMU Inertial;
 
-//Variables
-int autonnumber;
+// Variables
+extern int autonnumber;
 
-int drvtrDZ = 10;
-int drvtrFB;
-int drvtrLR;
-double armGoal;
-double armmax;
-double armPosition;
+extern int drvtrDZ;
+extern int drvtrFB;
+extern int drvtrLR;
+extern double armGoal;
+extern double armmax;
+extern double armPosition;
 // upright = 1900, upleft = -1900
 
-bool armCalibrated = false;
-bool intakePTOvalue = false;
-bool armMoving = false;
-bool armMovementComplete = false;
-bool toggleColorSensor = false;
-int colorDelay = 0;
+extern bool armCalibrated;
+extern bool intakePTOvalue;
+extern bool armMoving;
+extern bool armMovementComplete;
+extern bool toggleColorSensor;
+extern int colorDelay;
 
-bool presettingA = false;
-bool presettingX = false;
+extern bool presettingA;
+extern bool presettingX;
+
+#endif

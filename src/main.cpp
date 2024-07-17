@@ -35,6 +35,9 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+
+
+	IntakePTOPiston.set_value(false);
 }
 
 /**
@@ -70,7 +73,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 
-	// PIDMover(50);
+	
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Transport.tare_position();
 
@@ -89,12 +92,12 @@ void autonomous() {
 	auto extendMoGoM = []() {MobileGoalManipulator.set_value(true);};
 	PIDMover(50, extendMoGoM, 20);
 */
-	
-	auto transportIn = []() {Transport.move_relative(-1400,200);};
+
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
-	auto outtake = []() {InputMotor.move(128);};
 	auto activateGrabber = []() {GrabPiston.set_value(true);};
 	auto doAFlip = []() {MobileGoalManipulator.set_value(false);};
+
+
 
 	//drops the input
 	Transport.move_relative(1400, 200);
@@ -108,7 +111,7 @@ void autonomous() {
 
 	//Grabs the Mobile Goal
 	pros::delay(125);
-	transportIn();
+	Transport.move_relative(-1400,200);
 
 	//Moves away from the middle line
 	PIDMover(-28);
