@@ -6,7 +6,22 @@
  * goal is the degree of rotation of the motors from 0-1900
 */
 
-
+void colorSensorOn() {
+	int colorDelayTask;
+	while (true) {
+		if (colorSense.get_hue() > 150) {
+			Eject.set_value(true);
+			colorDelayTask = 1;
+		} else if (colorDelayTask >= 500) {
+			Eject.set_value(false);
+			colorDelayTask = 0;
+		}
+		if (colorDelayTask != 0) {
+			colorDelayTask += 20;
+		}
+		pros::delay(20);
+	}
+}
 /**
  * A callback function for LLEMU's center button.
  *
@@ -73,26 +88,13 @@ void competition_initialize() {}
  */
 void autonomous() {
 
-	
+	// autonomous setup
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Transport.tare_position();
+	pros::Task taskColorSensorOn(colorSensorOn, "Color Eject On");
 
-	/*
-	while (true) {
-		if (Master.get_digital(DIGITAL_A)) {PIDTurner(90, 2); Master.print(0, 0, "done90");}
-		if (Master.get_digital(DIGITAL_B)) {PIDTurner(180, 2); Master.print(0, 0, "done18");}
-		if (Master.get_digital(DIGITAL_Y)) {PIDTurner(270, 2); Master.print(0, 0, "done27");}
-	} */
-	/*
-	PIDTurner(270, 2);
-	Master.print(0, 0, "done");
-	pros::delay(1250);
-	*/
-/*
-	auto extendMoGoM = []() {MobileGoalManipulator.set_value(true);};
-	PIDMover(50, extendMoGoM, 20);
-*/
 
+	// lambda functions for use during PID movements
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
 	auto activateGrabber = []() {GrabPiston.set_value(true);};
 	auto doAFlip = []() {MobileGoalManipulator.set_value(false);};
@@ -149,8 +151,6 @@ void autonomous() {
 	Transport.move_relative(-2000, 200);
 	PIDMover(-36, doAFlip, -32);
 	PIDMover(12);
-
-	// FUEEEELLL- I DESIRE GASOLIIIINE
 /*
 	// Maneuvers back so the robot can turn around and move back to the center of the field
 	pros::delay(300);
@@ -163,6 +163,7 @@ void autonomous() {
 
 	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	taskColorSensorOn.remove();
 
 }
 
