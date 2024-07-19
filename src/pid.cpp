@@ -276,7 +276,7 @@ void PIDTurner(
 	distanceToMove -= 2;
 
 	if (distanceToMove <= 90) {
-		kP = 1.25;
+		kP = 1.35;
 		kI = 0.19;
 		kD = 0.1;
 	} else {

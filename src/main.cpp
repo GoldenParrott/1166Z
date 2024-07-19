@@ -1,15 +1,10 @@
 #include "init.h"
 
-/*
- * Runs the arm up or down to a defined location. There are 15 degrees of buffer around
- * 
- * goal is the degree of rotation of the motors from 0-1900
-*/
-
 void colorSensorOn() {
 	int colorDelayTask;
 	while (true) {
-		if (colorSense.get_hue() > 150) {
+		//                       < 020
+		if (colorSense.get_hue() < 20) {
 			Eject.set_value(true);
 			colorDelayTask = 1;
 		} else if (colorDelayTask >= 500) {
@@ -21,6 +16,25 @@ void colorSensorOn() {
 		}
 		pros::delay(20);
 	}
+}
+
+void raiseArm() {
+	UpLeft.tare_position();
+	IntakePTO.move(-128);
+	waitUntil(abs(UpLeft.get_position()) >= 1700);
+	IntakePTO.brake();
+}
+
+
+
+
+void transportThenGripTASK() {
+	Transport.move(-128);
+	// Odometry again
+	// 	      currentMotorReading     gearRatio    wheelCirc  wheelRev singleDeg setPoint
+	//                |					  |             |        |        |        |
+	waitUntil(BackRight.get_position() * 0.75 * (((3.25 * 3.14) * 2.54) / 360) >= 33);
+	GrabPiston.set_value(true);
 }
 /**
  * A callback function for LLEMU's center button.
@@ -51,8 +65,9 @@ void initialize() {
 
 	pros::lcd::register_btn1_cb(on_center_button);
 
-
-	IntakePTOPiston.set_value(false);
+	if (false) {
+		IntakePTOPiston.set_value(true);
+	}
 }
 
 /**
@@ -62,6 +77,7 @@ void initialize() {
  */
 void disabled() {
 	MobileGoalManipulator.set_value(false);
+	InputPiston.set_value(false);
 }
 
 /**
@@ -88,32 +104,39 @@ void competition_initialize() {}
  */
 void autonomous() {
 
+	// MoGo Auton
 	// autonomous setup
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	Transport.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Transport.tare_position();
-	pros::Task taskColorSensorOn(colorSensorOn, "Color Eject On");
+	UpLeft.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	UpLeft.tare_position();
+	pros::Task colorSensorOn_task(colorSensorOn, "Color Eject On");
+
+if (true) {
+	
 
 
 	// lambda functions for use during PID movements
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
 	auto activateGrabber = []() {GrabPiston.set_value(true);};
 	auto doAFlip = []() {MobileGoalManipulator.set_value(false);};
+	auto transportThenGrip = []() {pros::Task transportThenGrip_task(transportThenGripTASK);};
 
 
 
 	//drops the input
-	Transport.move_relative(1400, 200);
+	Transport.move_relative(300, 200);
 
 
 	//Starts spinning the Intake
 	InputMotor.move(-128);
 
-	// moves toward the second Ring and intakes it after
+	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
 	PIDMover(35, activateGrabber, 33);
-
-	//Grabs the Mobile Goal
+	Transport.move_relative(-1000,200);
 	pros::delay(125);
-	Transport.move_relative(-1400,200);
+
 
 	//Moves away from the middle line
 	PIDMover(-28);
@@ -123,7 +146,7 @@ void autonomous() {
 	pros::delay(62);
 
 	//Turns to pick up Mobile Goal 
-	PIDTurner(175, 2);
+	PIDTurner(170, 2);
 
 	//Moves to the Mobile Goal to pick it up
 	PIDMover(-25, gripMoGoM, -20);
@@ -136,8 +159,8 @@ void autonomous() {
 	PIDTurner(215, 2);
 	InputMotor.move(-128);
 	// slows down the robot more as it reaches the Corner by splitting the movement into two
-	PIDMover(36);
-	PIDMover(5);
+	PIDMover(37);
+	PIDMover(5.5);
 	// moves the robot back and forth some to guarantee that the third Ring will get in
 	pros::delay(200);
 	PIDMover(-4);
@@ -145,25 +168,68 @@ void autonomous() {
 	Transport.brake();
 	Transport.move_relative(-3000, 200);
 
-	// maneuvers the robot to the other Mobile Goal
+	// maneuvers the robot to the other Mobile Goal, droppng off the first one in the process
 	PIDMover(-18);
 	PIDTurner(315, 2);
-	Transport.move_relative(-2000, 200);
 	PIDMover(-36, doAFlip, -32);
 	PIDMover(12);
-/*
-	// Maneuvers back so the robot can turn around and move back to the center of the field
-	pros::delay(300);
-	InputMotor.brake();
-	Transport.brake();
-	PIDMover(-8); 
-*/
+	PIDTurner(260, 1);
 
+	// Picks up Mobile Goal
+	PIDMover(12, gripMoGoM, 10);
+	PIDTurner(120, 1);
+	Transport.move(128);
+}
+
+
+
+// Ring Auton
+else {
+	
+	// turns on the intake
+	Transport.tare_position();
+	Transport.move_relative(660, 200);
+	waitUntil(Transport.get_position() >= 660);
+
+	InputMotor.move(-128);
+	
+
+	// intakes the second Ring from the top of the stack and outtakes the bottom Ring
+	PIDMover(3);
+	Transport.tare_position();
+	Transport.move_relative(-740, 200);
+	waitUntil(Transport.get_position() <= -720);
+
+	InputMotor.move(128);
+
+	// Backs up and raises the arm
+	PIDMover(-8);
+	pros::Task raiseArm_task(raiseArm);
+
+	// Maneuvers to the Alliance Stake
+	PIDTurner(340, 1);
+	PIDMover(24.5);
+	PIDMover(-3);
+	PIDTurner(270, 1);
+
+	// Moves to the Alliance Stake
+	AllWheels.move(128);
+	pros::delay(250);
+	AllWheels.brake();
+
+	InputMotor.brake();
+
+	// Scores on the Alliance Stake
+	Transport.move_relative(10000, 200);
+
+}
+
+	// ending commands
 	Master.print(0, 0, "Done");
 
 	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
-	taskColorSensorOn.remove();
+	colorSensorOn_task.remove();
 
 }
 
@@ -305,12 +371,12 @@ void opcontrol() {
 			}
 
 		// These stop the preset movements in their own separate check to prevent the code from blocking other code
-			if (presettingX && armPosition >= 910) {
+			if (presettingX && armPosition >= 2630) {
 				IntakePTO.brake();
 				presettingX = false;
 			}
 
-			if (presettingA && armPosition >= 580) {
+			if (presettingA && armPosition >= 1700) {
 				IntakePTO.brake();
 				presettingA = false;
 			}
