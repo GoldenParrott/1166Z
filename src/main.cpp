@@ -30,7 +30,11 @@ void initialize() {
 
 	pros::lcd::register_btn1_cb(on_center_button);
 
-	if (false) {
+
+
+	autonnumber = 2;
+
+	if (abs(autonnumber) == 2) {
 		IntakePTOPiston.set_value(true);
 	}
 }
@@ -78,11 +82,6 @@ void autonomous() {
 	UpLeft.tare_position();
 	pros::Task colorSensorOn_task(colorSensorOn, "Color Eject On");
 
-if (autonnumber == 1) {
-	blueGoalside();
-} else {
-}
-
 
 switch (autonnumber) {
 	case 1: 
@@ -91,17 +90,17 @@ switch (autonnumber) {
 	case 2:
 		blueRingside();
 		break;
-	case 3:
+	case -1:
 		redGoalside();
 		break;
-	case 4:
+	case -2:
 		redRingside();
 		break;
 
 }
 
 	// ending commands
-	Master.print(0, 0, "Done");
+	//Master.print(0, 0, "Done");
 
 	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);

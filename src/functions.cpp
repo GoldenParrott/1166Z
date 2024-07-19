@@ -19,13 +19,6 @@ void colorSensorOn() {
 	}
 }
 
-void raiseArm() {
-	UpLeft.tare_position();
-	IntakePTO.move(-128);
-	waitUntil(abs(UpLeft.get_position()) >= 1700);
-	IntakePTO.brake();
-}
-
 
 
 

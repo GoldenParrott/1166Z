@@ -12,19 +12,20 @@ void blueRingside() {
 	// intakes the second Ring from the top of the stack and outtakes the bottom Ring
 	PIDMover(3);
 	Transport.tare_position();
-	Transport.move_relative(-740, 200);
+	Transport.move_relative(-720, 200);
 	waitUntil(Transport.get_position() <= -720);
 
 	InputMotor.move(128);
 
 	// Backs up and raises the arm
 	PIDMover(-8);
-	pros::Task raiseArm_task(raiseArm);
+	
+	IntakePTO.move_absolute(-1700, 600);
 
 	// Maneuvers to the Alliance Stake
-	PIDTurner(340, 1);
-	PIDMover(24.5);
-	PIDMover(-3);
+	PIDTurner(347.5, 1);
+	PIDMover(24);
+	PIDMover(-2);
 	PIDTurner(270, 1);
 
 	// Moves to the Alliance Stake
@@ -36,6 +37,12 @@ void blueRingside() {
 
 	// Scores on the Alliance Stake
 	Transport.move_relative(10000, 200);
+
+	// Goes to grab the next Mobile Goal
+
+	// Intakes the Ring across from the Mobile Goal
+
+	// Intakes the two Rings in the center of the field
 }
 
 
