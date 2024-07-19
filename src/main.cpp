@@ -311,11 +311,33 @@ void opcontrol() {
 			Transport.move(128);
 		}
 	// Input Only
-		if (Master.get_digital(DIGITAL_L1)) {
-			InputMotor.move(-128);
-		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
-			InputMotor.brake();
+
+		if (intakePTOvalue == false)
+		{
+			if (Master.get_digital(DIGITAL_L1)) 
+			{
+				InputMotor.move(-128);
+			}
+			else if(Master.get_digital(DIGITAL_DOWN))
+			{
+				InputMotor.move(128);
+			} 
+			else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
+				InputMotor.brake();
+			}
+			if (intakePTOvalue == false && Master.get_digital(DIGITAL_DOWN) == true){
+				InputMotor.move(128);
+			}
 		}
+		else 
+		{
+			if (Master.get_digital(DIGITAL_L1)) {
+				InputMotor.move(-128);
+			} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
+				InputMotor.brake();
+			}
+		}
+		
 	// Transport Only
 		if (Master.get_digital(DIGITAL_B)) {
 			Transport.move(128);
