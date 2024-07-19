@@ -1,0 +1,114 @@
+#include "init.h"
+
+void blueRingside() {
+    // turns on the intake
+	Transport.tare_position();
+	Transport.move_relative(660, 200);
+	waitUntil(Transport.get_position() >= 660);
+
+	InputMotor.move(-128);
+	
+
+	// intakes the second Ring from the top of the stack and outtakes the bottom Ring
+	PIDMover(3);
+	Transport.tare_position();
+	Transport.move_relative(-740, 200);
+	waitUntil(Transport.get_position() <= -720);
+
+	InputMotor.move(128);
+
+	// Backs up and raises the arm
+	PIDMover(-8);
+	pros::Task raiseArm_task(raiseArm);
+
+	// Maneuvers to the Alliance Stake
+	PIDTurner(340, 1);
+	PIDMover(24.5);
+	PIDMover(-3);
+	PIDTurner(270, 1);
+
+	// Moves to the Alliance Stake
+	AllWheels.move(128);
+	pros::delay(250);
+	AllWheels.brake();
+
+	InputMotor.brake();
+
+	// Scores on the Alliance Stake
+	Transport.move_relative(10000, 200);
+}
+
+
+
+
+
+void blueGoalside() {
+    // lambda functions for use during PID movements
+	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
+	auto activateGrabber = []() {GrabPiston.set_value(true);};
+	auto doAFlip = []() {MobileGoalManipulator.set_value(false);};
+	auto transportThenGrip = []() {pros::Task transportThenGrip_task(transportThenGripTASK);};
+
+
+
+	//drops the input
+	Transport.move_relative(300, 200);
+
+
+	//Starts spinning the Intake
+	InputMotor.move(-128);
+
+	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
+	PIDMover(35, activateGrabber, 33);
+	Transport.move_relative(-1000,200);
+	pros::delay(125);
+
+
+	//Moves away from the middle line
+	PIDMover(-28);
+	
+	// Lets go of Mobile Goal
+	GrabPiston.set_value(false);
+	pros::delay(62);
+
+	//Turns to pick up Mobile Goal 
+	PIDTurner(170, 2);
+
+	//Moves to the Mobile Goal to pick it up
+	PIDMover(-25, gripMoGoM, -20);
+
+	// Puts the Rings on the Mobile Goal
+	Transport.move(-128);
+
+
+	// Turns toward Corner Rings, moves to them, and intakes them
+	PIDTurner(215, 2);
+	InputMotor.move(-128);
+	// slows down the robot more as it reaches the Corner by splitting the movement into two
+	PIDMover(37);
+	PIDMover(5.5);
+	// moves the robot back and forth some to guarantee that the third Ring will get in
+	pros::delay(200);
+	PIDMover(-4);
+	// moves the third Ring into the end of the intake
+	Transport.brake();
+	Transport.move_relative(-3000, 200);
+
+	// maneuvers the robot to the other Mobile Goal, droppng off the first one in the process
+	PIDMover(-18);
+	PIDTurner(315, 2);
+	PIDMover(-36, doAFlip, -32);
+	PIDMover(12);
+	PIDTurner(260, 1);
+
+	// Picks up Mobile Goal
+	PIDMover(12, gripMoGoM, 10);
+	PIDTurner(120, 1);
+	Transport.move(128);
+}
+
+
+void redGoalside() {}
+
+
+void redRingside() {}

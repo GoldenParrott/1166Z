@@ -62,6 +62,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+// main.cpp
 void autonomous(void);
 void initialize(void);
 void disabled(void);
@@ -69,9 +70,22 @@ void competition_initialize(void);
 void armraiser(void);
 void opcontrol(void);
 
+// pid.cpp
 void PIDMover(int setPoint,                 std::function<void(void)> custom = 0, int executeAt = 0);
 void PIDTurner(int setPoint, int direction,                 std::function<void(void)> custom = 0, int executeAt = 0);
 void PIDArc(int chordLength, int maxDist, int direction,                std::function<void(void)> custom = 0, int executeAt = 0);
+
+// autons.cpp
+void blueGoalside(void);
+void blueRingside(void);
+void redGoalside(void);
+void redRingside(void);
+
+// functions.cpp
+void colorSensorOn(void);
+void raiseArm(void);
+void transportThenGripTASK(void);
+
 #ifdef __cplusplus
 }
 #endif
