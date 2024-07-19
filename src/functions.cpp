@@ -19,7 +19,20 @@ void colorSensorOn() {
 	}
 }
 
+void raiseArm() {
+	UpLeft.tare_position();
+	IntakePTO.move(-128);
+	waitUntil(abs(UpLeft.get_position()) >= 1650);
+	IntakePTO.brake();
+}
 
+
+void lowerArm() {
+	UpLeft.tare_position();
+	IntakePTO.move(128);
+	waitUntil(UpLeft.get_position() <= -1650);
+	IntakePTO.brake();
+}
 
 
 void transportThenGripTASK() {

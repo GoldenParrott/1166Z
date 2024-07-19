@@ -1,11 +1,15 @@
 #include "init.h"
 
 void blueRingside() {
-    // turns on the intake
+
+	// lambda functions for use during PID movements
+	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
+	auto transportIn = []() {Transport.move(-128);};
+
+    // turns on the intake to push the intake down
 	Transport.tare_position();
 	Transport.move_relative(660, 200);
 	waitUntil(Transport.get_position() >= 660);
-
 	InputMotor.move(-128);
 	
 
@@ -19,30 +23,66 @@ void blueRingside() {
 
 	// Backs up and raises the arm
 	PIDMover(-8);
-	
-	IntakePTO.move_absolute(-1700, 600);
+	pros::Task raiseArm_task(raiseArm);
+
 
 	// Maneuvers to the Alliance Stake
-	PIDTurner(347.5, 1);
+	PIDTurner(346.5, 1);
 	PIDMover(24);
 	PIDMover(-2);
-	PIDTurner(270, 1);
+	PIDTurner(279, 1);
 
 	// Moves to the Alliance Stake
 	AllWheels.move(128);
-	pros::delay(250);
+	pros::delay(275);
 	AllWheels.brake();
 
 	InputMotor.brake();
 
 	// Scores on the Alliance Stake
-	Transport.move_relative(10000, 200);
+	Transport.tare_position();
+	Transport.move(128);
+	waitUntil(Transport.get_position() >= 2400);
+	Transport.brake();
 
-	// Goes to grab the next Mobile Goal
+	// Maneuvers to grab the next Ring and drops the arm along the way
+	PIDMover(-3);
+	PIDTurner(143, 1);
+
+	InputMotor.move(-128);
+	pros::Task lowerArm_task(lowerArm);
+	PIDMover(52);
+	pros::delay(250);
+	
 
 	// Intakes the Ring across from the Mobile Goal
+	PIDTurner(190, 2);
+	pros::delay(100);
+	PIDTurner(165, 1);
+	Transport.move(-128);
+	PIDMover(3);
+	PIDMover(-35, gripMoGoM, -33);
 
-	// Intakes the two Rings in the center of the field
+	// Moves to the Ladder to contact it for AWP
+	PIDTurner(90, 1);
+	PIDMover(6.5);
+	PIDMover(3);
+
+
+	/*
+	// Intakes the two Rings in the center of the field\
+
+	// first Ring
+	PIDTurner(100, 1);
+	PIDMover(7.5);
+	pros::delay(250);
+	PIDMover(-7.5);
+	// second Ring
+	PIDTurner(65, 1);
+	PIDMover(7.5);
+	pros::delay(250);
+	PIDMover(-7.5);
+	*/
 }
 
 

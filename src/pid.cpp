@@ -180,7 +180,8 @@ void PIDMover(
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
 				actionCompleted = true;
-				AllAllWheels.brake();
+				if (PTOon) {AllWheels.brake();}
+				else if (!PTOon) {AllAllWheels.brake();}
 		}
 	}
 }
@@ -388,7 +389,8 @@ void PIDTurner(
 
 		if (((changeInReading <= (distanceToMove + tolerance)) && (changeInReading >= (distanceToMove - tolerance)))) {
 				actionCompleted = true;
-				AllAllWheels.brake();
+				if (PTOon) {AllWheels.brake();}
+				else if (!PTOon) {AllAllWheels.brake();}
 		}
 	}
 }
@@ -613,7 +615,8 @@ void PIDArc(
 
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
 				actionCompleted = true;
-				AllAllWheels.brake();
+				if (PTOon) {AllWheels.brake();}
+				else if (!PTOon) {AllAllWheels.brake();}
 		}
 	}
 }
