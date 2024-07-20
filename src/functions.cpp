@@ -43,3 +43,10 @@ void transportThenGripTASK() {
 	waitUntil(BackRight.get_position() * 0.75 * (((3.25 * 3.14) * 2.54) / 360) >= 33);
 	GrabPiston.set_value(true);
 }
+
+
+
+void blockBlueRing() {
+	waitUntil(colorSense.get_hue() > 150);
+	Transport.brake();
+}

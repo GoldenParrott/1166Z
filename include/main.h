@@ -86,6 +86,7 @@ void colorSensorOn(void);
 void raiseArm(void);
 void lowerArm(void);
 void transportThenGripTASK(void);
+void blockBlueRing(void);
 
 #ifdef __cplusplus
 }

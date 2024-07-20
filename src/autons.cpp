@@ -95,6 +95,10 @@ void blueGoalside() {
 	auto activateGrabber = []() {GrabPiston.set_value(true);};
 	auto doAFlip = []() {MobileGoalManipulator.set_value(false);};
 	auto transportThenGrip = []() {pros::Task transportThenGrip_task(transportThenGripTASK);};
+	auto stopTransport = []() {Transport.brake();};
+	auto transportIn = []() {Transport.move(-128);};
+	auto transportToLadder = []() {Transport.move_relative(1000, 200);};
+
 
 
 
@@ -116,50 +120,58 @@ void blueGoalside() {
 	
 	// Lets go of Mobile Goal
 	GrabPiston.set_value(false);
-	pros::delay(62);
+	pros::delay(200);
 
 	//Turns to pick up Mobile Goal 
-	PIDTurner(162, 2);
+	PIDTurner(120, 2);
+	PIDTurner(164, 2);
 
 	//Moves to the Mobile Goal to pick it up
 	PIDMover(-23);
 	PIDMover(-9, gripMoGoM, -6);
 	pros::delay(250);
 
-	// Puts the Rings on the Mobile Goal
-	Transport.move(-128);
 
 	
 	// Turns toward opposite Ring, moves to it, and intakes it to ensure alignment with the Corner
-	PIDTurner(225, 2);
-	PIDMover(21); // needs to be checked
+	PIDTurner(200, 2);
+	// Puts the Rings on the Mobile Goal
+	Transport.move(-128);
+	PIDMover(31); // needs to be checked
 
-	// Turns toward Corner Rings, moves to them, and intakes them
-	PIDTurner(247, 2);
-	pros::delay(500);
-	PIDMover(6.5);
-	pros::delay(500);
-	// moves the robot back and forth some to guarantee that the third Ring will get in
-	pros::delay(200);
-	PIDMover(-4);
-	// moves the third Ring into the end of the intake
+	// Ensures that all Rings are on the MoGo
 	Transport.brake();
-	Transport.move_relative(-3000, 200);
+	PIDMover(-4);
+	PIDMover(4, transportIn, 2);
 
+	// Turns toward Corner Rings, moves to them, and sweeps them 
+	// (turning off the transport while doing so to prevent interference with the input)
+	PIDTurner(240, 2);
+	Transport.brake();
+	GrabPiston.set_value(true);
+	InputPiston.set_value(true);
+	pros::delay(500);
+	PIDMover(9); // aligns for the sweep
+	pros::delay(500);
+	PIDTurner(120, 1); // the sweep
 
-	// maneuvers the robot to the other Mobile Goal, droppng off the first one in the process
-	PIDMover(-18);
-	
-	PIDTurner(315, 2);
-	PIDMover(-36, doAFlip, -32);
+	// re-enables the transport after removing the setup for the sweep
+	InputPiston.set_value(false);
+	pros::delay(62);
+	Transport.move(-128);
+	pros::Task blockBlueRing_task(blockBlueRing); // stops the Transport when the third Ring is detected at the end
+
+	// moves the robot away from the wall and ensures that the third Ring is intaked
 	PIDMover(12);
-	PIDTurner(260, 1);
-
-	// Picks up Mobile Goal
-	PIDMover(12, gripMoGoM, 10);
-	PIDTurner(120, 1);
-	Transport.move(128);
+	MobileGoalManipulator.set_value(false);
 	
+	// moves to the second Mobile Goal and grips it
+	PIDTurner(220, 2);
+	PIDMover(24);
+	PIDMover(-7, gripMoGoM, -5);
+	Transport.move_relative(1000, 200);
+	pros::delay(125);
+	PIDMover(-7, transportToLadder, -2);
 }
 
 
