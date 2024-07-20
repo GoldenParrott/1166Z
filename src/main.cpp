@@ -32,8 +32,8 @@ void initialize() {
 
 
 
-	autonnumber = 2;
-
+	autonnumber = 1;
+	IntakePTOPiston.set_value(false);
 	if (abs(autonnumber) == 2) {
 		IntakePTOPiston.set_value(true);
 	}
@@ -105,6 +105,8 @@ switch (autonnumber) {
 	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	colorSensorOn_task.remove();
+	GrabPiston.set_value(false);
+	Eject.set_value(false);
 
 }
 

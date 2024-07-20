@@ -99,41 +99,46 @@ void blueGoalside() {
 
 
 	//drops the input
-	Transport.move_relative(300, 200);
+	Transport.move_relative(600, 200);
 
 
 	//Starts spinning the Intake
 	InputMotor.move(-128);
 
 	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
-	PIDMover(35, activateGrabber, 33);
+	PIDMover(43, activateGrabber, 41);
+	pros::delay(250);
 	Transport.move_relative(-1000,200);
-	pros::delay(125);
 
 
 	//Moves away from the middle line
-	PIDMover(-28);
+	PIDMover(-34);
 	
 	// Lets go of Mobile Goal
 	GrabPiston.set_value(false);
 	pros::delay(62);
 
 	//Turns to pick up Mobile Goal 
-	PIDTurner(170, 2);
+	PIDTurner(162, 2);
 
 	//Moves to the Mobile Goal to pick it up
-	PIDMover(-25, gripMoGoM, -20);
+	PIDMover(-23);
+	PIDMover(-9, gripMoGoM, -6);
+	pros::delay(250);
 
 	// Puts the Rings on the Mobile Goal
 	Transport.move(-128);
 
+	
+	// Turns toward opposite Ring, moves to it, and intakes it to ensure alignment with the Corner
+	PIDTurner(225, 2);
+	PIDMover(21); // needs to be checked
 
 	// Turns toward Corner Rings, moves to them, and intakes them
-	PIDTurner(215, 2);
-	InputMotor.move(-128);
-	// slows down the robot more as it reaches the Corner by splitting the movement into two
-	PIDMover(37);
-	PIDMover(5.5);
+	PIDTurner(247, 2);
+	pros::delay(500);
+	PIDMover(6.5);
+	pros::delay(500);
 	// moves the robot back and forth some to guarantee that the third Ring will get in
 	pros::delay(200);
 	PIDMover(-4);
@@ -141,8 +146,10 @@ void blueGoalside() {
 	Transport.brake();
 	Transport.move_relative(-3000, 200);
 
+
 	// maneuvers the robot to the other Mobile Goal, droppng off the first one in the process
 	PIDMover(-18);
+	
 	PIDTurner(315, 2);
 	PIDMover(-36, doAFlip, -32);
 	PIDMover(12);
@@ -152,6 +159,7 @@ void blueGoalside() {
 	PIDMover(12, gripMoGoM, 10);
 	PIDTurner(120, 1);
 	Transport.move(128);
+	
 }
 
 
