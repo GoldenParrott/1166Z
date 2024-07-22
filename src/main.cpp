@@ -1,11 +1,5 @@
 #include "init.h"
 
-/*
- * Runs the arm up or down to a defined location. There are 15 degrees of buffer around
- * 
- * goal is the degree of rotation of the motors from 0-1900
-*/
-
 
 /**
  * A callback function for LLEMU's center button.
@@ -35,6 +29,14 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+
+
+
+	autonnumber = 1;
+	IntakePTOPiston.set_value(false);
+	if (abs(autonnumber) == 2) {
+		IntakePTOPiston.set_value(true);
+	}
 }
 
 /**
@@ -42,7 +44,10 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {}
+void disabled() {
+	MobileGoalManipulator.set_value(false);
+	InputPiston.set_value(false);
+}
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
@@ -68,61 +73,40 @@ void competition_initialize() {}
  */
 void autonomous() {
 
-	// PIDMover(50);
+	// MoGo Auton
+	// autonomous setup
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	Transport.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	Transport.tare_position();
+	UpLeft.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	UpLeft.tare_position();
+	pros::Task colorSensorOn_task(colorSensorOn, "Color Eject On");
 
-	/*
-	while (true) {
-		if (Master.get_digital(DIGITAL_A)) {PIDTurner(90, 2); Master.print(0, 0, "done90");}
-		if (Master.get_digital(DIGITAL_B)) {PIDTurner(180, 2); Master.print(0, 0, "done18");}
-		if (Master.get_digital(DIGITAL_Y)) {PIDTurner(270, 2); Master.print(0, 0, "done27");}
-	} */
-	/*
-	PIDTurner(270, 2);
-	Master.print(0, 0, "done");
-	pros::delay(1250);
-	*/
-	
-	
 
-	//drops the input
-	Transport.move_relative(1700,200);
+switch (autonnumber) {
+	case 1: 
+		blueGoalside(); 
+		break;
+	case 2:
+		blueRingside();
+		break;
+	case -1:
+		redGoalside();
+		break;
+	case -2:
+		redRingside();
+		break;
 
-	//Starts spinning the Intake
-	InputMotor.move_velocity(-200);
+}
 
-	//Moves tword the Ring
-	PIDMover(34);
+	// ending commands
+	//Master.print(0, 0, "Done");
 
-	//Intakes the second Ring
-	Transport.move_relative(-1700,200);
-
-	//Grabs the Mobile Goal
-	GrabPiston.set_value(true);
-	pros::delay(500);
-
-	//Stop intake
-	InputMotor.move_velocity(0);
-
-	//Moves away from the alliance line
-	//PIDMover(-38);
-	AllAllWheels.move_relative(-600,100);
-	pros::delay(2000);
-	
-	//Lets go of Mobile goal.
-	GrabPiston.set_value(false);
-	pros::delay(500);
-
-	//Turns to pick up Mobile Goal 
-	PIDTurner(180, 1);
-
-	//Moves away from the alliance line
-	PIDMover(-36);
-
-	//grabs Mobile Goal
-	MobileGoalManipulator.set_value(true);
-
+	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	colorSensorOn_task.remove();
+	GrabPiston.set_value(false);
+	Eject.set_value(false);
 
 }
 
@@ -204,11 +188,33 @@ void opcontrol() {
 			Transport.move(128);
 		}
 	// Input Only
-		if (Master.get_digital(DIGITAL_L1)) {
-			InputMotor.move(-128);
-		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
-			InputMotor.brake();
+
+		if (intakePTOvalue == false)
+		{
+			if (Master.get_digital(DIGITAL_L1)) 
+			{
+				InputMotor.move(-128);
+			}
+			else if(Master.get_digital(DIGITAL_DOWN))
+			{
+				InputMotor.move(128);
+			} 
+			else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
+				InputMotor.brake();
+			}
+			if (intakePTOvalue == false && Master.get_digital(DIGITAL_DOWN) == true){
+				InputMotor.move(128);
+			}
 		}
+		else 
+		{
+			if (Master.get_digital(DIGITAL_L1)) {
+				InputMotor.move(-128);
+			} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
+				InputMotor.brake();
+			}
+		}
+		
 	// Transport Only
 		if (Master.get_digital(DIGITAL_B)) {
 			Transport.move(128);
@@ -264,12 +270,12 @@ void opcontrol() {
 			}
 
 		// These stop the preset movements in their own separate check to prevent the code from blocking other code
-			if (presettingX && armPosition >= 880) {
+			if (presettingX && armPosition >= 2630) {
 				IntakePTO.brake();
 				presettingX = false;
 			}
 
-			if (presettingA && armPosition >= 550) {
+			if (presettingA && armPosition >= 1700) {
 				IntakePTO.brake();
 				presettingA = false;
 			}
@@ -369,7 +375,8 @@ void opcontrol() {
 
 	// color sensor
 
-		if ((colorSense.get_hue() < 20) && (toggleColorSensor == true)) {
+		//                        < 020
+		if ((colorSense.get_hue() > 150) && (toggleColorSensor == true)) {
 			Eject.set_value(true);
 			colorDelay = 1;
 		} else if (colorDelay >= 1000) {

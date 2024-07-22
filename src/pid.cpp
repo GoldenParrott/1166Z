@@ -1,4 +1,4 @@
-#include "main.h"
+#include "init.h"
 
 void PIDMover(
 		int setPoint, // how far you want to move in inches
@@ -7,33 +7,14 @@ void PIDMover(
 		int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
-	
-// Controller and Motor Declarations
-	pros::Controller Master(pros::E_CONTROLLER_MASTER);
 
-	pros::ADIDigitalOut IntakePTOPiston(1);
-
+// checks if the PTO is on or not to ensure that the correct sets of motors are used later
 	bool PTOon;
 	if (IntakePTOPiston.get_value() == true) {PTOon = true;}
 	else {PTOon = false;}
-	
-	std::vector<pros::Motor> wheels;
 
-	pros::Motor backLeft(5, pros::E_MOTOR_GEAR_600, 1); wheels.push_back(backLeft);
-	pros::Motor frontLeft(11, pros::E_MOTOR_GEAR_600, 1); wheels.push_back(frontLeft);
-	pros::Motor_Group leftWheels({backLeft, frontLeft});
 
-	pros::Motor backRight(2, pros::E_MOTOR_GEAR_600, 0); wheels.push_back(backRight);
-	pros::Motor frontRight(1, pros::E_MOTOR_GEAR_600, 0); wheels.push_back(frontRight);
-	pros::Motor_Group rightWheels({backRight, frontRight});
-
-	if (PTOon) {
-		pros::Motor upLeft(13, pros::E_MOTOR_GEAR_600, 1); wheels.push_back(upLeft);
-		pros::Motor upRight(19, pros::E_MOTOR_GEAR_600, 0); wheels.push_back(upRight);
-	}
-
-	pros::Motor_Group allWheels(wheels);
-	allWheels.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+	AllAllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
 
 // PID Calculation Variables
 	// General Variables
@@ -48,7 +29,7 @@ void PIDMover(
 	int proportionalOut;
 
 	// Integral Variables
-	int integral;
+	int integral = 0;
 	int integralLimiter = 512; // customizable
 	int integralOut;
 
@@ -73,6 +54,8 @@ void PIDMover(
 	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
 	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
 
+	executeAt = executeAt * 2.54;
+
 	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
 	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
 						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
@@ -82,16 +65,16 @@ void PIDMover(
 
 // Odometry Pre-Measurement
 	// resets the rotation of all motors before the movement so the movement can be calculated from zero to the destination
-	backRight.tare_position();
-	backLeft.tare_position();
-	frontRight.tare_position();
-	frontLeft.tare_position();
+	BackRight.tare_position();
+	BackLeft.tare_position();
+	FrontRight.tare_position();
+	FrontLeft.tare_position();
 
 	// used to measure the rotational sensor values of all the motors (this comes in degrees)
-	double br = backRight.get_position();
-	double bl = backLeft.get_position();
-	double fr = frontRight.get_position();
-	double fl = frontLeft.get_position();
+	double br = BackRight.get_position();
+	double bl = BackLeft.get_position();
+	double fr = FrontRight.get_position();
+	double fl = FrontLeft.get_position();
 
 	double currentMotorReading = ((br + bl + fr + fl) / 4); // measures the average rotation of all motors to determine the movement of the entire robot
 	double currentWheelReading = currentMotorReading * gearRatio; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
@@ -159,8 +142,11 @@ void PIDMover(
 		power = proportionalOut + integralOut + derivativeOut;
 
 	// moves the wheels at the desired power, ending the cycle
-		allWheels.move(power);
-
+	if (PTOon) {
+		AllWheels.move(power);
+	} else if (!PTOon) {
+		AllAllWheels.move(power);
+	}
 
 
 
@@ -175,19 +161,16 @@ void PIDMover(
 		}
 
 
-
-
-
 // PID Looping Odometry Measurement
 
 		// fifteen millisecond delay between cycles
 		pros::delay(15);
 
 		// finds the degrees of measurement of the motors
-		br = backRight.get_position();
-		bl = backLeft.get_position();
-		fr = frontRight.get_position();
-		fl = frontLeft.get_position();
+		br = BackRight.get_position();
+		bl = BackLeft.get_position();
+		fr = FrontRight.get_position();
+		fl = FrontLeft.get_position();
 
 		// reassigns the "distance moved" variables for the next cycle after the delay
 		currentMotorReading = ((br + bl + fr + fl) / 4); // degrees
@@ -198,12 +181,8 @@ void PIDMover(
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
 			// if (cyclesAtGoal >= 20) {
 				actionCompleted = true;
-				allWheels.brake();
-			/* else {
-				cyclesAtGoal += 1;
-			} */
-		} else {
-			cyclesAtGoal = 0;
+				if (PTOon) {AllWheels.brake();}
+				else if (!PTOon) {AllAllWheels.brake();}
 		}
 	}
 }
@@ -216,41 +195,13 @@ void PIDTurner(
 		int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
-// controller, motor, and sensor declarations
-	pros::Controller Master(pros::E_CONTROLLER_MASTER);
 
-	pros::ADIDigitalOut IntakePTOPiston(1);
-
+// checks if the PTO is on or not to ensure that the correct sets of motors are used later
 	bool PTOon;
 	if (IntakePTOPiston.get_value() == true) {PTOon = true;}
 	else {PTOon = false;}
-	
-	std::vector<pros::Motor> rWheels;
-	std::vector<pros::Motor> lWheels;
 
-	pros::Motor backLeft(5, pros::E_MOTOR_GEAR_600, 1); lWheels.push_back(backLeft);
-	pros::Motor frontLeft(11, pros::E_MOTOR_GEAR_600, 1); lWheels.push_back(frontLeft);
-
-	pros::Motor backRight(2, pros::E_MOTOR_GEAR_600, 0); rWheels.push_back(backRight);
-	pros::Motor frontRight(1, pros::E_MOTOR_GEAR_600, 0); rWheels.push_back(frontRight);
-
-	std::vector<pros::Motor> wheels;
-
-	if (PTOon) {
-		pros::Motor upLeft(13, pros::E_MOTOR_GEAR_600, 1); lWheels.push_back(upLeft);
-		pros::Motor upRight(19, pros::E_MOTOR_GEAR_600, 0); rWheels.push_back(upRight);
-	}
-
-	pros::Motor_Group leftWheels(lWheels);
-	pros::Motor_Group rightWheels(rWheels);
-
-
-	leftWheels.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
-	rightWheels.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
-
-	pros::IMU Inertial(6);
-
-
+	AllAllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
 
 // PID CALCULATION VARIABLES
 // General Variables
@@ -327,7 +278,7 @@ void PIDTurner(
 	distanceToMove -= 2;
 
 	if (distanceToMove <= 90) {
-		kP = 1.25;
+		kP = 1.35;
 		kI = 0.19;
 		kD = 0.1;
 	} else {
@@ -406,13 +357,24 @@ void PIDTurner(
 		negativePower = power * -1;
 
 		// the power will never be negative and invert the turns because distanceToMove is always positive
-		if (direction == 1) {
-			leftWheels.move(negativePower);
-			rightWheels.move(power);
-		}
-		else if (direction == 2) {
-			leftWheels.move(power);
-			rightWheels.move(negativePower);
+		if (PTOon) {
+			if (direction == 1) {
+				LeftWheels.move(negativePower);
+				RightWheels.move(power);
+			}
+			else if (direction == 2) {
+				LeftWheels.move(power);
+				RightWheels.move(negativePower);
+			}
+		} else if (!PTOon) {
+			if (direction == 1) {
+				AllLeftWheels.move(negativePower);
+				AllRightWheels.move(power);
+			}
+			else if (direction == 2) {
+				AllLeftWheels.move(power);
+				AllRightWheels.move(negativePower);
+			}
 		}
 
 		pros::delay(15);
@@ -428,8 +390,8 @@ void PIDTurner(
 
 		if (((changeInReading <= (distanceToMove + tolerance)) && (changeInReading >= (distanceToMove - tolerance)))) {
 				actionCompleted = true;
-				leftWheels.brake();
-				rightWheels.brake();
+				if (PTOon) {AllWheels.brake();}
+				else if (!PTOon) {AllAllWheels.brake();}
 		}
 	}
 }
@@ -446,49 +408,14 @@ void PIDArc(
 // Checks if the movement is positive or negative
 	bool isPositive = chordLength > 0;
 
-// controller and motor declarations
-	pros::Controller Master(pros::E_CONTROLLER_MASTER);
 
-	pros::ADIDigitalOut IntakePTOPiston(1);
-
-	pros::Motor backRight(2, pros::E_MOTOR_GEAR_600, 0);
-	pros::Motor frontRight(1, pros::E_MOTOR_GEAR_600, 0);
-	pros::Motor backLeft(5, pros::E_MOTOR_GEAR_600, 1);
-	pros::Motor frontLeft(11, pros::E_MOTOR_GEAR_600, 1); 
-
+// checks if the PTO is on or not to ensure that the correct sets of motors are used later
 	bool PTOon;
 	if (IntakePTOPiston.get_value() == true) {PTOon = true;}
 	else {PTOon = false;}
 
-	pros::IMU Inertial(20);
 
-// sets the inner and outer wheel groups depending on direction - the first two lines are forward declarations to prevent errors, as an actual else produces errors
-	std::vector<pros::Motor> outers;
-	std::vector<pros::Motor> inners;
-	if ((direction == 1 && isPositive) || (direction == 2 && !isPositive)) {
-		direction = 1;
-		outers.push_back(backRight); 
-		outers.push_back(frontRight);
-		inners.push_back(backLeft); 
-		inners.push_back(frontLeft);
-		if (PTOon) {
-			pros::Motor upRight(19, pros::E_MOTOR_GEAR_600, 0); outers.push_back(upRight);
-			pros::Motor upLeft(13, pros::E_MOTOR_GEAR_600, 1); inners.push_back(upLeft);
-		}
-	} else {
-		direction = 2;
-		outers.push_back(backLeft);
-		outers.push_back(frontLeft);
-		inners.push_back(backRight); 
-		inners.push_back(frontRight);
-		if (PTOon) {
-			pros::Motor upLeft(13, 1); inners.push_back(upLeft);
-			pros::Motor upRight(19, 0); outers.push_back(upRight);
-		}
-	}
-
-	pros::Motor_Group outerWheels(outers);
-	pros::Motor_Group innerWheels(inners);
+	AllAllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
 
 
 // PID CALCULATION VARIABLES
@@ -503,7 +430,7 @@ void PIDArc(
 	int proportionalOut;
 
 // Integral Variables
-	int integral;
+	int integral = 0;
 	int integralLimiter = 512; // customizable
 	int integralOut;
 
@@ -530,10 +457,10 @@ void PIDArc(
 	double wheelRevolution = wheelCircumference * 2.54; // in cm
 	long double singleDegree = wheelRevolution / 360;
 
-	backRight.tare_position();
-	backLeft.tare_position();
-	frontRight.tare_position();
-	frontLeft.tare_position();
+	BackRight.tare_position();
+	BackLeft.tare_position();
+	FrontRight.tare_position();
+	FrontLeft.tare_position();
 
 	double bo;
 	double fo;
@@ -559,7 +486,7 @@ void PIDArc(
 
 // Arc Odometry
 	double oRadius = (((halfSetPoint * halfSetPoint) / maxDist) + maxDist) / 2;
-	double distBetweenWheels = 10 * 2.54;
+	double distBetweenWheels = 13 * 2.54;
 	double mult = ((oRadius - distBetweenWheels) / oRadius);
 
 // Arc Turning - turns the robot so that it starts the movement perpendicular to the center of the circle so it can move along the arc accurately
@@ -645,6 +572,7 @@ void PIDArc(
 
 		power = proportionalOut + integralOut + derivativeOut;
 
+	// caps motor power at 128 if it goes beyond it to ensure that the multiplier makes one side spin slower
 		if (power > 128) {
 			power = 128;
 		}
@@ -652,23 +580,34 @@ void PIDArc(
 			power = -128;
 		}
 
-
-		outerWheels.move(power);
-		innerWheels.move(power * mult);
-		
-
-
-
+		// causes the wheels to move in the proper direction, with the outer wheels being normal and the inner wheels being multiplied by mult
+		if (PTOon) {
+			if (direction == 1) {
+				RightWheels.move(power);
+				LeftWheels.move(power * mult);
+			} else if (direction == 2) {
+				RightWheels.move(power * mult);
+				LeftWheels.move(power);
+			}
+		} else if (!PTOon) {
+			if (direction == 1) {
+				AllRightWheels.move(power);
+				AllLeftWheels.move(power * mult);
+			} else if (direction == 2) {
+				AllRightWheels.move(power * mult);
+				AllLeftWheels.move(power);
+			}
+		}
 
 
 		pros::delay(15);
 
 		if (direction == 1) {
-			bo = backRight.get_position();
-			fo = frontRight.get_position();
+			bo = BackRight.get_position();
+			fo = FrontRight.get_position();
 		} else {
-			bo = backLeft.get_position();
-			fo = frontLeft.get_position();
+			bo = BackLeft.get_position();
+			fo = FrontLeft.get_position();
 		}
 
 		currentMotorReading = ((bo + fo) / 2); // degrees
@@ -677,8 +616,8 @@ void PIDArc(
 
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
 				actionCompleted = true;
-				outerWheels.brake();
-				innerWheels.brake();
+				if (PTOon) {AllWheels.brake();}
+				else if (!PTOon) {AllAllWheels.brake();}
 		}
 	}
 }
