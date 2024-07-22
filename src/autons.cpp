@@ -30,11 +30,11 @@ void blueRingside() {
 	PIDTurner(346.5, 1);
 	PIDMover(24);
 	PIDMover(-2);
-	PIDTurner(279, 1);
+	PIDTurner(278, 1);
 
 	// Moves to the Alliance Stake
 	AllWheels.move(128);
-	pros::delay(275);
+	pros::delay(300);
 	AllWheels.brake();
 
 	InputMotor.brake();
@@ -42,13 +42,27 @@ void blueRingside() {
 	// Scores on the Alliance Stake
 	Transport.tare_position();
 	Transport.move(128);
-	waitUntil(Transport.get_position() >= 2400);
+	InputMotor.move(128);
+	// First Ring
+	int overRide = 0;
+	waitUntil(Transport.get_position() >= 1250);
+	Transport.brake();
+	// Push back in
+	AllWheels.move(128);
+	pros::delay(50);
+	AllWheels.brake();
+	// Second Ring
+	Transport.move(128);
+	while (!(Transport.get_position() >= 2500)) {
+		overRide += 50; 
+		if (overRide >= 1250) {Transport.move_relative(-350, 200); break;}
+		pros::delay(50);
+	}
 	Transport.brake();
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
 	PIDTurner(143, 1);
-
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
 	PIDMover(52);
@@ -57,32 +71,30 @@ void blueRingside() {
 
 	// Intakes the Ring across from the Mobile Goal
 	PIDTurner(190, 2);
-	pros::delay(100);
+	pros::delay(150);
 	PIDTurner(165, 1);
 	Transport.move(-128);
 	PIDMover(3);
-	PIDMover(-35, gripMoGoM, -33);
 
-	// Moves to the Ladder to contact it for AWP
-	PIDTurner(90, 1);
-	PIDMover(6.5);
-	PIDMover(3);
+	// Moves to the Mobile Goal and grips it
+	PIDMover(-31, gripMoGoM, -29);
+	Transport.brake();
 
+	// Maneuvers to the Ladder to contact it for AWP
+	PIDTurner(105, 1);
+	Transport.move(-128);
+	PIDMover(9.5);
 
-	/*
-	// Intakes the two Rings in the center of the field\
-
-	// first Ring
-	PIDTurner(100, 1);
-	PIDMover(7.5);
+	// Sets up the Input to contact the Ladder
+	Transport.brake();
+	InputPiston.set_value(true);
 	pros::delay(250);
-	PIDMover(-7.5);
-	// second Ring
-	PIDTurner(65, 1);
-	PIDMover(7.5);
-	pros::delay(250);
-	PIDMover(-7.5);
-	*/
+	InputPiston.set_value(false);
+
+	// Moves into the Ladder and contacts it
+	AllAllWheels.move(100); 
+	pros::delay(300); 
+	AllAllWheels.brake();
 }
 
 

@@ -87,6 +87,7 @@ void raiseArm(void);
 void lowerArm(void);
 void transportThenGripTASK(void);
 void blockBlueRing(void);
+int convertToRed(int inertialHeadingBlue);
 
 #ifdef __cplusplus
 }

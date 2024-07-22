@@ -32,7 +32,7 @@ void initialize() {
 
 
 
-	autonnumber = 1;
+	autonnumber = 2;
 	IntakePTOPiston.set_value(false);
 	if (abs(autonnumber) == 2) {
 		IntakePTOPiston.set_value(true);
@@ -275,7 +275,7 @@ void opcontrol() {
 				presettingX = false;
 			}
 
-			if (presettingA && armPosition >= 1700) {
+			if (presettingA && armPosition >= 1600) {
 				IntakePTO.brake();
 				presettingA = false;
 			}
