@@ -101,6 +101,7 @@ int convertToRed(int inertialHeadingBlue);
 #include <list>
 #include <math.h>
 #include <functional>
+#include <vector>
 #endif
 
 #endif  // _PROS_MAIN_H_
