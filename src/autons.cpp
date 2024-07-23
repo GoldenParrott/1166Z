@@ -77,7 +77,7 @@ void blueRingside() {
 	PIDMover(3);
 
 	// Moves to the Mobile Goal and grips it
-	PIDMover(-31, gripMoGoM, -29);
+	PIDMover(-31, {gripMoGoM}, {-29});
 	Transport.brake();
 
 	// Maneuvers to the Ladder to contact it for AWP
@@ -123,7 +123,7 @@ void blueGoalside() {
 	InputMotor.move(-128);
 
 	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
-	PIDMover(43, activateGrabber, 41);
+	PIDMover(43, {activateGrabber}, {41});
 	pros::delay(250);
 	Transport.move_relative(-900,200);
 
@@ -141,7 +141,7 @@ void blueGoalside() {
 	PIDTurner(170, 2);
 
 	//Moves to the Mobile Goal to pick it up
-	PIDMover(-25, gripMoGoM, -20);
+	PIDMover(-25, {gripMoGoM}, {-20});
 	pros::delay(250);
 
 
@@ -169,14 +169,14 @@ void blueGoalside() {
 	// Moves to the other Mobile Goal and drops the first
 	PIDMover(-3);
 	PIDTurner(290, 2);
-	PIDMover(-32, reverseInput, -10);
+	PIDMover(-32, {reverseInput}, {-10});
 	MobileGoalManipulator.set_value(false);
 
 	// Goes to pick up the other Mobile Goal
 	PIDMover(6);
 	pros::delay(100);
 	PIDTurner(235, 1);
-	PIDMover(-31, gripMoGoM, -29);
+	PIDMover(-31, {gripMoGoM}, {-29});
 
 	// Maneuvers to the Ladder and scores the final Ring
 	PIDTurner(150, 1);

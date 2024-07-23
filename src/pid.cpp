@@ -3,8 +3,8 @@
 void PIDMover(
 		int setPoint, // how far you want to move in inches
 
-		std::function<void(void)> custom, // a lambda function that will execute during the PID (optional)
-		int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
+		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
+		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
 
@@ -22,7 +22,7 @@ void PIDMover(
 	int power;
 	int tolerance = 2;
 	int cyclesAtGoal;
-	bool customCompleted = false;
+	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
 	// Proportional Variables
@@ -54,7 +54,9 @@ void PIDMover(
 	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
 	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
 
-	executeAt = executeAt * 2.54;
+	for (int i = 0; i < executeAts.size(); i++) {
+		executeAts[i] *= 2.54;
+	}
 
 	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
 	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
@@ -152,13 +154,15 @@ void PIDMover(
 
 	// Custom lambda function that will execute if given and the robot has reached the point given by executeAt
 		
+	for (int i = 0; i < customs.size(); i++) {
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
-		if (custom != 0 && ((currentDistanceMovedByWheel >= executeAt && isPositive) || (currentDistanceMovedByWheel <= executeAt && !isPositive)) && !customCompleted) {
+		if (customs[i] != 0 && ((currentDistanceMovedByWheel >= executeAts[i] && isPositive) || (currentDistanceMovedByWheel <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
 			// runs the function
-			custom();
+			customs[i]();
 			// prevents the function from running again
-			customCompleted = true;
+			customsCompleted[i] = true;
 		}
+	}
 
 
 // PID Looping Odometry Measurement
@@ -190,8 +194,8 @@ void PIDTurner(
 		int setPoint, // the goal inertial heading in degrees
 		int direction, // 1 for left and 2 for right
 
-		std::function<void(void)> custom, // a lambda function that will execute during the PID (optional)
-		int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
+		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
+		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
 
@@ -207,7 +211,7 @@ void PIDTurner(
 	int error;
 	int power;
 	int tolerance = 1;
-	bool customCompleted = true;
+	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
 // Proportional Variables
@@ -341,13 +345,15 @@ void PIDTurner(
 
 
 
+	for (int i = 0; i < customs.size(); i++) {
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
-		if (custom != 0 && changeInReading >= executeAt && !customCompleted) {
+		if (customs[i] != 0 && ((changeInReading >= executeAts[i] && isPositive) || (changeInReading <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
 			// runs the function
-			custom();
+			customs[i]();
 			// prevents the function from running again
-			customCompleted = true;
+			customsCompleted[i] = true;
 		}
+	}
 
 
 
@@ -400,8 +406,8 @@ void PIDArc(
 	int maxDist, // the maximum distance of the straight line from your current position and the setPoint to the arc (should be measured at half-point)
 	int direction, // 1 for left, 2 for right
 
-	std::function<void(void)> custom, // a lambda function that will execute during the PID (optional)
-	int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
+	std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
+	std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 	)
 {
 // Checks if the movement is positive or negative
@@ -422,7 +428,7 @@ void PIDArc(
 	int error;
 	int power;
 	int tolerance = 1;
-	bool customCompleted = false;
+	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
 // Proportional Variables
@@ -448,6 +454,10 @@ void PIDArc(
 // PID LOOPING VARIABLES
 	chordLength = chordLength * 2.54; // converts from inches to cm
 	maxDist = maxDist * 2.54;
+	
+	for (int i = 0; i < executeAts.size(); i++) {
+		executeAts[i] *= 2.54;
+	}
 
 
 // Odometry
@@ -556,16 +566,17 @@ void PIDArc(
 
 
 
+	// Custom lambda function that will execute if given and the robot has reached the point given by executeAt
+		
+	for (int i = 0; i < customs.size(); i++) {
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
-		if (custom != 0 && currentDistanceMovedByWheel >= executeAt && !customCompleted) {
+		if (customs[i] != 0 && ((currentDistanceMovedByWheel >= executeAts[i] && isPositive) || (currentDistanceMovedByWheel <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
 			// runs the function
-			custom();
+			customs[i]();
 			// prevents the function from running again
-			customCompleted = true;
-
+			customsCompleted[i] = true;
 		}
-
-
+	}
 
 
 

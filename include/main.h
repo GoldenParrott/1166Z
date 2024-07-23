@@ -71,9 +71,9 @@ void armraiser(void);
 void opcontrol(void);
 
 // pid.cpp
-void PIDMover(int setPoint,                 std::function<void(void)> custom = 0, int executeAt = 0);
-void PIDTurner(int setPoint, int direction,                 std::function<void(void)> custom = 0, int executeAt = 0);
-void PIDArc(int chordLength, int maxDist, int direction,                std::function<void(void)> custom = 0, int executeAt = 0);
+void PIDMover(int setPoint,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
+void PIDTurner(int setPoint, int direction,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
+void PIDArc(int chordLength, int maxDist, int direction,                std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 
 // autons.cpp
 void blueGoalside(void);
