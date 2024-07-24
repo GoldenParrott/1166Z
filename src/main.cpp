@@ -16,6 +16,7 @@ void on_center_button() {
 		pros::lcd::clear_line(2);
 		pros::lcd::read_buttons();
 	}
+	
 }
 
 /**
@@ -32,10 +33,10 @@ void initialize() {
 
 
 
-	autonnumber = 1;
+	autonnumber = -2;
 	IntakePTOPiston.set_value(false);
 	if (abs(autonnumber) == 2) {
-		IntakePTOPiston.set_value(true);
+		// IntakePTOPiston.set_value(true);
 	}
 }
 

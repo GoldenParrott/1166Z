@@ -50,3 +50,12 @@ void blockBlueRing() {
 	waitUntil(colorSense.get_hue() > 150);
 	Transport.brake();
 }
+
+
+void unblockTransport() {
+	Transport.brake();
+	Transport.tare_position();
+	Transport.move_relative(300, 200);
+	waitUntil(Transport.get_position() > 300);
+	Transport.move(-128);
+}

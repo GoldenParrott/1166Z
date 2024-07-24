@@ -135,10 +135,8 @@ void blueGoalside() {
 	GrabPiston.set_value(false);
 	pros::delay(200);
 
-	//Turns to pick up Mobile Goal 
-	PIDTurner(120, 2);
-	pros::delay(100);
-	PIDTurner(170, 2);
+	//Turns to pick up Mobile Goal
+	PIDTurner(160, 2);
 
 	//Moves to the Mobile Goal to pick it up
 	PIDMover(-25, gripMoGoM, -20);
@@ -155,11 +153,12 @@ void blueGoalside() {
 	PIDMover(-3);
 
 	// Turns toward Corner Rings, moves to them, and intakes them
-	PIDTurner(240, 2);
+	PIDTurner(238, 2);
+	pros::Task unblockTransport_task(unblockTransport);
 	InputMotor.move(-128);
 	// Moves back and forth to intake the Ring well
-	AllAllWheels.move(51);
-	pros::delay(1400);
+	AllAllWheels.move(45);
+	pros::delay(1750);
 	AllAllWheels.brake();
 	PIDMover(-8);
 	PIDMover(3);
@@ -168,7 +167,7 @@ void blueGoalside() {
 	
 	// Moves to the other Mobile Goal and drops the first
 	PIDMover(-3);
-	PIDTurner(290, 2);
+	PIDTurner(285, 2);
 	PIDMover(-32, reverseInput, -10);
 	MobileGoalManipulator.set_value(false);
 
@@ -176,48 +175,22 @@ void blueGoalside() {
 	PIDMover(6);
 	pros::delay(100);
 	PIDTurner(235, 1);
-	PIDMover(-31, gripMoGoM, -29);
+	PIDMover(-33, gripMoGoM, -31);
 
 	// Maneuvers to the Ladder and scores the final Ring
 	PIDTurner(150, 1);
 	Transport.move(-128);
+	pros::delay(333);
 	AllAllWheels.move(51);
 	pros::delay(2000);
 	AllAllWheels.brake();
-
-
-	/*
-	Transport.brake();
-	GrabPiston.set_value(true);
-	InputPiston.set_value(true);
-	pros::delay(500);
-	PIDMover(9); // aligns for the sweep
-	pros::delay(500);
-	PIDTurner(120, 1); // the sweep
-
-	// re-enables the transport after removing the setup for the sweep
-	InputPiston.set_value(false);
-	pros::delay(62);
-	Transport.move(-128);
-	
-
-	// moves the robot away from the wall and ensures that the third Ring is intaked
-	PIDMover(12);
-	MobileGoalManipulator.set_value(false);
-	
-	// moves to the second Mobile Goal and grips it
-	PIDTurner(220, 2);
-	PIDMover(24);
-	PIDMover(-7, gripMoGoM, -5);
-	Transport.move_relative(1000, 200);
-	pros::delay(125);
-	PIDMover(-7, transportToLadder, -2);
-
-	*/
 }
 
 
 void redGoalside() {}
 
 
-void redRingside() {}
+void redRingside() {
+	PIDTurner(180, 1);
+	Master.print(0, 0, "Done");
+}
