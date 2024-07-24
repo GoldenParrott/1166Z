@@ -88,6 +88,10 @@ void lowerArm(void);
 void transportThenGripTASK(void);
 void blockBlueRing(void);
 
+// draw.cpp
+void drawGUN(void);
+void drawLogo(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,22 +1,6 @@
 #include "init.h"
 
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-		pros::lcd::read_buttons();
-	}
-}
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -26,17 +10,14 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-
-	pros::lcd::register_btn1_cb(on_center_button);
-
-
 
 	autonnumber = 1;
 	IntakePTOPiston.set_value(false);
 	if (abs(autonnumber) == 2) {
 		IntakePTOPiston.set_value(true);
 	}
+	
+	
 }
 
 /**
@@ -58,7 +39,61 @@ void disabled() {
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+	
+	while (1){
+
+		waitUntil(pros::lcd::read_buttons() != 0);
+		
+		if(autonnumber == 0){ autonnumber = 1; }
+
+		if(pros::lcd::read_buttons() == 4){
+			
+			autonnumber *= -1;
+
+		}else if(pros::lcd::read_buttons() == 2){
+
+			switch (autonnumber){
+			case 1:
+				autonnumber = 2;
+				break;
+			case 2:
+				autonnumber = 1;
+				break;
+			case -1:
+				autonnumber = -2;
+				break;
+			case -2:
+				autonnumber = -1;
+				break;
+			}
+		}else if(pros::lcd::read_buttons() == 1){
+
+			
+			autonnumber = 0;
+		}
+
+		switch (autonnumber){
+			case 1:
+				pros::lcd::print(1,"Blue alliance on the Mogo side");
+				break;
+			case 2:
+				pros::lcd::print(1,"Blue alliance on the Ring side");
+				break;
+			case -1:
+				pros::lcd::print(1,"Red alliance on the Mogo side");
+				break;
+			case -2:
+				pros::lcd::print(1,"Red alliance on the Ring side");
+				break;
+			default:
+				pros::lcd::clear();
+			}
+
+		waitUntil(pros::lcd::read_buttons() == 0);
+
+	}
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -80,8 +115,8 @@ void autonomous() {
 	Transport.tare_position();
 	UpLeft.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	UpLeft.tare_position();
-	pros::Task colorSensorOn_task(colorSensorOn, "Color Eject On");
-
+	pros::Task colorSensorOn_task(colorSensorOn, 'Color Eject On');
+	drawLogo();
 
 switch (autonnumber) {
 	case 1: 
@@ -100,14 +135,14 @@ switch (autonnumber) {
 }
 
 	// ending commands
-	//Master.print(0, 0, "Done");
+	//Master.print(0, 0, 'Done');
 
 	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	colorSensorOn_task.remove();
 	GrabPiston.set_value(false);
 	Eject.set_value(false);
-
+	
 }
 
 
@@ -133,19 +168,16 @@ void opcontrol() {
 	intakePTOvalue = false;
 	Eject.set_value(false);
 	GrabPiston.set_value(false);
-
-	/*
-	Key:
-		Right & Left : Intake
-	
-	
-	*/
 	
 	AllAllWheels.move_velocity(1000);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
-
+	
 	while (true) {
-
+	//Makes the brain screen look good 
+	if (logoCount<50){
+		drawLogo();
+		logoCount++;
+	}
 	//Drivetrain
     	drvtrFB = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     	drvtrLR = Master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
@@ -331,7 +363,7 @@ void opcontrol() {
 		}
 
 		if (!intakePTOvalue) {
-			//Master.print(0, 0, "PTO in arm mode");
+			//Master.print(0, 0, 'PTO in arm mode');
 		}
 
 	//Mobile Goal Manipulator
@@ -413,6 +445,5 @@ void opcontrol() {
 		}
 
 	pros::delay(20);
-
 	}
 }

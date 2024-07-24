@@ -51,6 +51,7 @@ Pnuematics
 
 //Variables
 int autonnumber;
+int logoCount = 0;
 
 int drvtrDZ = 10;
 int drvtrFB;

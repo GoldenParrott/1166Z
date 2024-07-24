@@ -1,0 +1,1 @@
+Mainly just a place to mass replace text (Needed for image generation)
