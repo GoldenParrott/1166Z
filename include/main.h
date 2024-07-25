@@ -83,6 +83,7 @@ void redRingside(void);
 
 // functions.cpp
 void colorSensorOn(void);
+void colorSensorBlock(void);
 void raiseArm(void);
 void lowerArm(void);
 void transportThenGripTASK(void);

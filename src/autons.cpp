@@ -62,7 +62,7 @@ void blueRingside() {
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
-	PIDTurner(143, 1);
+	PIDTurner(135, 1);
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
 	PIDMover(52);
@@ -113,7 +113,7 @@ void blueGoalside() {
 	auto reverseInput = []() {InputMotor.move(128);};
 
 
-
+	pros::Task colorSensorBlock_task(colorSensorBlock);
 
 	//drops the input
 	Transport.move_relative(600, 200);
@@ -136,7 +136,7 @@ void blueGoalside() {
 	pros::delay(200);
 
 	//Turns to pick up Mobile Goal
-	PIDTurner(160, 2);
+	PIDTurner(165, 2);
 
 	//Moves to the Mobile Goal to pick it up
 	PIDMover(-25, gripMoGoM, -20);
@@ -145,20 +145,30 @@ void blueGoalside() {
 
 	
 	// Turns toward opposite Ring, moves to it, and intakes it to ensure alignment with the Corner
-	PIDTurner(185, 2);
+	int dir = 0;
+	switch (Inertial.get_heading() < 180) {
+		case true:
+			dir = 1;
+			break;
+		case false:
+			dir = 2;
+			break;
+	}
+	if (Inertial.get_heading() == 180) {
+		PIDTurner(180, 2);
+	}
 	// Puts the Rings on the Mobile Goal
 	Transport.move(-128);
 	InputMotor.move(128);
-	PIDMover(33); // needs to be checked
-	PIDMover(-3);
+	PIDMover(33);
+	PIDMover(-4);
 
 	// Turns toward Corner Rings, moves to them, and intakes them
-	PIDTurner(238, 2);
-	pros::Task unblockTransport_task(unblockTransport);
+	PIDTurner(230, 2);
 	InputMotor.move(-128);
 	// Moves back and forth to intake the Ring well
-	AllAllWheels.move(45);
-	pros::delay(1750);
+	AllAllWheels.move(54);
+	pros::delay(2000);
 	AllAllWheels.brake();
 	PIDMover(-8);
 	PIDMover(3);
@@ -175,10 +185,11 @@ void blueGoalside() {
 	PIDMover(6);
 	pros::delay(100);
 	PIDTurner(235, 1);
-	PIDMover(-33, gripMoGoM, -31);
+	PIDMover(-32);
+	PIDMover(-4, gripMoGoM, -2);
 
 	// Maneuvers to the Ladder and scores the final Ring
-	PIDTurner(150, 1);
+	PIDTurner(132, 1);
 	Transport.move(-128);
 	pros::delay(333);
 	AllAllWheels.move(51);

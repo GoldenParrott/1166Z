@@ -19,6 +19,15 @@ void colorSensorOn() {
 	}
 }
 
+void colorSensorBlock() {
+	while (true) {
+		//                       < 020
+		if (colorSense.get_hue() < 20) {
+			Transport.brake();
+		}
+	}
+}
+
 void raiseArm() {
 	UpLeft.tare_position();
 	IntakePTO.move(-128);

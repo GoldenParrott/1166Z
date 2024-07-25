@@ -279,8 +279,8 @@ void PIDTurner(
 		kI = 0.19;
 		kD = 0.1;
 	} else {
-		kP = 0.9;
-		kI = 0.15;
+		kP = 0.7;
+		kI = 0.1;
 		kD = 0.3;
 	}
 
