@@ -30,11 +30,11 @@ void blueRingside() {
 	PIDTurner(346.5, 1);
 	PIDMover(24);
 	PIDMover(-2);
-	PIDTurner(279, 1);
+	PIDTurner(278, 1);
 
 	// Moves to the Alliance Stake
 	AllWheels.move(128);
-	pros::delay(275);
+	pros::delay(300);
 	AllWheels.brake();
 
 	InputMotor.brake();
@@ -42,13 +42,27 @@ void blueRingside() {
 	// Scores on the Alliance Stake
 	Transport.tare_position();
 	Transport.move(128);
-	waitUntil(Transport.get_position() >= 2400);
+	InputMotor.move(128);
+	// First Ring
+	int overRide = 0;
+	waitUntil(Transport.get_position() >= 1250);
+	Transport.brake();
+	// Push back in
+	AllWheels.move(128);
+	pros::delay(50);
+	AllWheels.brake();
+	// Second Ring
+	Transport.move(128);
+	while (!(Transport.get_position() >= 2500)) {
+		overRide += 50; 
+		if (overRide >= 1250) {Transport.move_relative(-350, 200); break;}
+		pros::delay(50);
+	}
 	Transport.brake();
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
 	PIDTurner(143, 1);
-
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
 	PIDMover(52);
@@ -57,32 +71,30 @@ void blueRingside() {
 
 	// Intakes the Ring across from the Mobile Goal
 	PIDTurner(190, 2);
-	pros::delay(100);
+	pros::delay(150);
 	PIDTurner(165, 1);
 	Transport.move(-128);
 	PIDMover(3);
-	PIDMover(-35, gripMoGoM, -33);
 
-	// Moves to the Ladder to contact it for AWP
-	PIDTurner(90, 1);
-	PIDMover(6.5);
-	PIDMover(3);
+	// Moves to the Mobile Goal and grips it
+	PIDMover(-31, gripMoGoM, -29);
+	Transport.brake();
 
+	// Maneuvers to the Ladder to contact it for AWP
+	PIDTurner(105, 1);
+	Transport.move(-128);
+	PIDMover(9.5);
 
-	/*
-	// Intakes the two Rings in the center of the field\
-
-	// first Ring
-	PIDTurner(100, 1);
-	PIDMover(7.5);
+	// Sets up the Input to contact the Ladder
+	Transport.brake();
+	InputPiston.set_value(true);
 	pros::delay(250);
-	PIDMover(-7.5);
-	// second Ring
-	PIDTurner(65, 1);
-	PIDMover(7.5);
-	pros::delay(250);
-	PIDMover(-7.5);
-	*/
+	InputPiston.set_value(false);
+
+	// Moves into the Ladder and contacts it
+	AllAllWheels.move(100); 
+	pros::delay(300); 
+	AllAllWheels.brake();
 }
 
 
@@ -98,6 +110,7 @@ void blueGoalside() {
 	auto stopTransport = []() {Transport.brake();};
 	auto transportIn = []() {Transport.move(-128);};
 	auto transportToLadder = []() {Transport.move_relative(1000, 200);};
+	auto reverseInput = []() {InputMotor.move(128);};
 
 
 
@@ -112,7 +125,7 @@ void blueGoalside() {
 	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
 	PIDMover(43, activateGrabber, 41);
 	pros::delay(250);
-	Transport.move_relative(-1000,200);
+	Transport.move_relative(-900,200);
 
 
 	//Moves away from the middle line
@@ -122,60 +135,62 @@ void blueGoalside() {
 	GrabPiston.set_value(false);
 	pros::delay(200);
 
-	//Turns to pick up Mobile Goal 
-	PIDTurner(120, 2);
-	PIDTurner(164, 2);
+	//Turns to pick up Mobile Goal
+	PIDTurner(160, 2);
 
 	//Moves to the Mobile Goal to pick it up
-	PIDMover(-23);
-	PIDMover(-9, gripMoGoM, -6);
+	PIDMover(-25, gripMoGoM, -20);
 	pros::delay(250);
 
 
 	
 	// Turns toward opposite Ring, moves to it, and intakes it to ensure alignment with the Corner
-	PIDTurner(200, 2);
+	PIDTurner(185, 2);
 	// Puts the Rings on the Mobile Goal
 	Transport.move(-128);
-	PIDMover(31); // needs to be checked
+	InputMotor.move(128);
+	PIDMover(33); // needs to be checked
+	PIDMover(-3);
 
-	// Ensures that all Rings are on the MoGo
-	Transport.brake();
-	PIDMover(-4);
-	PIDMover(4, transportIn, 2);
-
-	// Turns toward Corner Rings, moves to them, and sweeps them 
-	// (turning off the transport while doing so to prevent interference with the input)
-	PIDTurner(240, 2);
-	Transport.brake();
-	GrabPiston.set_value(true);
-	InputPiston.set_value(true);
-	pros::delay(500);
-	PIDMover(9); // aligns for the sweep
-	pros::delay(500);
-	PIDTurner(120, 1); // the sweep
-
-	// re-enables the transport after removing the setup for the sweep
-	InputPiston.set_value(false);
-	pros::delay(62);
-	Transport.move(-128);
+	// Turns toward Corner Rings, moves to them, and intakes them
+	PIDTurner(238, 2);
+	pros::Task unblockTransport_task(unblockTransport);
+	InputMotor.move(-128);
+	// Moves back and forth to intake the Ring well
+	AllAllWheels.move(45);
+	pros::delay(1750);
+	AllAllWheels.brake();
+	PIDMover(-8);
+	PIDMover(3);
 	pros::Task blockBlueRing_task(blockBlueRing); // stops the Transport when the third Ring is detected at the end
-
-	// moves the robot away from the wall and ensures that the third Ring is intaked
-	PIDMover(12);
-	MobileGoalManipulator.set_value(false);
+	pros::delay(500);
 	
-	// moves to the second Mobile Goal and grips it
-	PIDTurner(220, 2);
-	PIDMover(24);
-	PIDMover(-7, gripMoGoM, -5);
-	Transport.move_relative(1000, 200);
-	pros::delay(125);
-	PIDMover(-7, transportToLadder, -2);
+	// Moves to the other Mobile Goal and drops the first
+	PIDMover(-3);
+	PIDTurner(285, 2);
+	PIDMover(-32, reverseInput, -10);
+	MobileGoalManipulator.set_value(false);
+
+	// Goes to pick up the other Mobile Goal
+	PIDMover(6);
+	pros::delay(100);
+	PIDTurner(235, 1);
+	PIDMover(-33, gripMoGoM, -31);
+
+	// Maneuvers to the Ladder and scores the final Ring
+	PIDTurner(150, 1);
+	Transport.move(-128);
+	pros::delay(333);
+	AllAllWheels.move(51);
+	pros::delay(2000);
+	AllAllWheels.brake();
 }
 
 
 void redGoalside() {}
 
 
-void redRingside() {}
+void redRingside() {
+	PIDTurner(180, 1);
+	Master.print(0, 0, "Done");
+}

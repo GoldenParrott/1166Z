@@ -22,7 +22,7 @@ void colorSensorOn() {
 void raiseArm() {
 	UpLeft.tare_position();
 	IntakePTO.move(-128);
-	waitUntil(abs(UpLeft.get_position()) >= 1650);
+	waitUntil(abs(UpLeft.get_position()) >= 1589);
 	IntakePTO.brake();
 }
 
@@ -30,7 +30,7 @@ void raiseArm() {
 void lowerArm() {
 	UpLeft.tare_position();
 	IntakePTO.move(128);
-	waitUntil(UpLeft.get_position() <= -1650);
+	waitUntil(UpLeft.get_position() <= -1589);
 	IntakePTO.brake();
 }
 
@@ -49,4 +49,13 @@ void transportThenGripTASK() {
 void blockBlueRing() {
 	waitUntil(colorSense.get_hue() > 150);
 	Transport.brake();
+}
+
+
+void unblockTransport() {
+	Transport.brake();
+	Transport.tare_position();
+	Transport.move_relative(300, 200);
+	waitUntil(Transport.get_position() > 300);
+	Transport.move(-128);
 }

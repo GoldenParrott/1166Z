@@ -87,6 +87,8 @@ void raiseArm(void);
 void lowerArm(void);
 void transportThenGripTASK(void);
 void blockBlueRing(void);
+int convertToRed(int inertialHeadingBlue);
+void unblockTransport(void);
 
 // draw.cpp
 void drawGUN(void);
@@ -104,6 +106,7 @@ void drawLogo(void);
 #include <list>
 #include <math.h>
 #include <functional>
+#include <vector>
 #endif
 
 #endif  // _PROS_MAIN_H_
