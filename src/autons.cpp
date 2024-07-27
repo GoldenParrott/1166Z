@@ -1,6 +1,7 @@
 #include "init.h"
 
 void blueRingside() {
+	Inertial.tare_heading();
 
 	// lambda functions for use during PID movements
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
@@ -93,7 +94,7 @@ void blueRingside() {
 
 	// Moves into the Ladder and contacts it
 	AllAllWheels.move(100); 
-	pros::delay(300); 
+	pros::delay(500); 
 	AllAllWheels.brake();
 }
 
@@ -102,6 +103,8 @@ void blueRingside() {
 
 
 void blueGoalside() {
+	Inertial.tare_heading();
+
     // lambda functions for use during PID movements
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
 	auto activateGrabber = []() {GrabPiston.set_value(true);};
@@ -198,10 +201,72 @@ void blueGoalside() {
 }
 
 
-void redGoalside() {}
+
+
+
+void redGoalside() {
+	Inertial.tare_heading();
+
+	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+
+	auto activateGrabber = []() {GrabPiston.set_value(true);};
+	auto deactivateGrabber = []() {GrabPiston.set_value(false);};
+	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
+	auto gripMoGoMThenTransport = []() {MobileGoalManipulator.set_value(true); Transport.move_relative(-1700, 200);};
+	
+
+	//drops the input
+	Transport.move_relative(600, 200);
+
+
+	//Starts spinning the Intake out to push off the top Ring
+	InputMotor.move(128);
+
+	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
+	PIDMover(34, activateGrabber, 32);
+	InputMotor.move(-128);
+	Transport.move_relative(-800, 200);
+	pros::delay(250);
+
+	// turns to bring the MoGo back to the wall
+	AllLeftWheels.move(-75);
+	AllRightWheels.move(75);
+	waitUntil(Inertial.get_heading() > 190 && Inertial.get_heading() < 210);
+	AllAllWheels.brake();
+	pros::delay(200);
+
+	// releases the MoGo and turns around to grab it
+	GrabPiston.set_value(false);
+	PIDTurner((Inertial.get_heading() + 10), 2);
+	PIDTurner(50, 1);
+
+	// drops the first MoGo off at the back
+	PIDMover(3);
+	PIDMover(-35, gripMoGoM, -22);
+	Transport.move_relative(-1700, 200);
+	pros::delay(2000);
+	MobileGoalManipulator.set_value(false);
+	
+	// picks up the other MoGo
+	PIDMover(12);
+	pros::delay(100);
+	PIDTurner(115, 2);
+	PIDMover(-26, gripMoGoM, -24);
+
+	// Scores the other Ring and touches the Ladder
+	PIDMover(6);
+	Transport.move(-128);
+	pros::delay(500);
+	PIDTurner(20, 1);
+	InputPiston.set_value(true);
+	PIDMover(6);
+	InputPiston.set_value(false);
+
+
+}
 
 
 void redRingside() {
-	PIDTurner(180, 1);
+	PIDTurner((Inertial.get_heading() + 20), 2);
 	Master.print(0, 0, "Done");
 }

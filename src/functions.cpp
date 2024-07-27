@@ -5,7 +5,10 @@ void colorSensorOn() {
 	int colorDelayTask;
 	while (true) {
 		//                       < 020
-		if (colorSense.get_hue() < 20) {
+		if (colorSense.get_hue() < 20 && autonnumber > 0) {
+			Eject.set_value(true);
+			colorDelayTask = 1;
+		} else if (colorSense.get_hue() > 150 && autonnumber < 0) {
 			Eject.set_value(true);
 			colorDelayTask = 1;
 		} else if (colorDelayTask >= 500) {

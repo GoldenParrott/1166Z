@@ -33,7 +33,7 @@ void initialize() {
 
 
 
-	autonnumber = 1;
+	autonnumber = -1;
 	IntakePTOPiston.set_value(false);
 	if (abs(autonnumber) == 2) {
 		IntakePTOPiston.set_value(true);
@@ -48,6 +48,7 @@ void initialize() {
 void disabled() {
 	MobileGoalManipulator.set_value(false);
 	InputPiston.set_value(false);
+	GrabPiston.set_value(false);
 }
 
 /**
@@ -377,7 +378,10 @@ void opcontrol() {
 	// color sensor
 
 		//                        < 020
-		if ((colorSense.get_hue() > 150) && (toggleColorSensor == true)) {
+		if ((colorSense.get_hue() > 150) && (toggleColorSensor == true) && (autonnumber < 0)) {
+			Eject.set_value(true);
+			colorDelay = 1;
+		} if ((colorSense.get_hue() < 20) && (toggleColorSensor == true) && (autonnumber > 0)) {
 			Eject.set_value(true);
 			colorDelay = 1;
 		} else if (colorDelay >= 500) {
