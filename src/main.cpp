@@ -33,7 +33,7 @@ void initialize() {
 
 
 
-	autonnumber = -1;
+	autonnumber = -2;
 	IntakePTOPiston.set_value(false);
 	if (abs(autonnumber) == 2) {
 		IntakePTOPiston.set_value(true);

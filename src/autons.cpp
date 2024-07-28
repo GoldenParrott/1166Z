@@ -41,11 +41,10 @@ void blueRingside() {
 	InputMotor.brake();
 
 	// Scores on the Alliance Stake
-	Transport.tare_position();
-	Transport.move(128);
 	InputMotor.move(128);
 	// First Ring
-	int overRide = 0;
+	Transport.tare_position();
+	Transport.move(128);
 	waitUntil(Transport.get_position() >= 1250);
 	Transport.brake();
 	// Push back in
@@ -54,11 +53,16 @@ void blueRingside() {
 	AllWheels.brake();
 	// Second Ring
 	Transport.move(128);
+	int overRide = 0;
 	while (!(Transport.get_position() >= 2500)) {
-		overRide += 50; 
-		if (overRide >= 1250) {Transport.move_relative(-350, 200); break;}
+		overRide += 50;
+		if (overRide >= 1250) { 
+			break;
+		}
 		pros::delay(50);
 	}
+	Transport.move_relative(-500, 200); 
+	pros::delay(500);
 	Transport.brake();
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
@@ -78,16 +82,16 @@ void blueRingside() {
 	PIDMover(3);
 
 	// Moves to the Mobile Goal and grips it
-	PIDMover(-31, gripMoGoM, -29);
+	PIDMover(-33, gripMoGoM, -29);
 	Transport.brake();
 
 	// Maneuvers to the Ladder to contact it for AWP
-	PIDTurner(105, 1);
+	PIDTurner(90, 1);
 	Transport.move(-128);
+	pros::delay(500);
 	PIDMover(9.5);
 
 	// Sets up the Input to contact the Ladder
-	Transport.brake();
 	InputPiston.set_value(true);
 	pros::delay(250);
 	InputPiston.set_value(false);
@@ -213,6 +217,7 @@ void redGoalside() {
 	auto deactivateGrabber = []() {GrabPiston.set_value(false);};
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
 	auto gripMoGoMThenTransport = []() {MobileGoalManipulator.set_value(true); Transport.move_relative(-1700, 200);};
+	auto transportIn = []() {Transport.move_relative(-900, 200);};
 	
 
 	//drops the input
@@ -225,41 +230,43 @@ void redGoalside() {
 	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
 	PIDMover(34, activateGrabber, 32);
 	InputMotor.move(-128);
-	Transport.move_relative(-800, 200);
-	pros::delay(250);
+	pros::delay(350);
 
 	// turns to bring the MoGo back to the wall
-	AllLeftWheels.move(-75);
-	AllRightWheels.move(75);
+	AllLeftWheels.move(75);
+	AllRightWheels.move(-75);
 	waitUntil(Inertial.get_heading() > 190 && Inertial.get_heading() < 210);
 	AllAllWheels.brake();
 	pros::delay(200);
 
 	// releases the MoGo and turns around to grab it
 	GrabPiston.set_value(false);
-	PIDTurner((Inertial.get_heading() + 10), 2);
-	PIDTurner(50, 1);
+	PIDTurner((Inertial.get_heading() - 10), 1);
+	pros::delay(200);
+	PIDTurner(56, 1, transportIn, 300);
 
 	// drops the first MoGo off at the back
 	PIDMover(3);
-	PIDMover(-35, gripMoGoM, -22);
-	Transport.move_relative(-1700, 200);
-	pros::delay(2000);
+	PIDMover(-37, gripMoGoM, -28);
+	Transport.move_relative(-1600, 200);
+	pros::delay(1750);
 	MobileGoalManipulator.set_value(false);
 	
 	// picks up the other MoGo
-	PIDMover(12);
+	PIDMover(17);
 	pros::delay(100);
-	PIDTurner(115, 2);
-	PIDMover(-26, gripMoGoM, -24);
+	PIDTurner(99, 2);
+	PIDMover(-24, gripMoGoM, -20);
 
 	// Scores the other Ring and touches the Ladder
-	PIDMover(6);
-	Transport.move(-128);
+	PIDMover(10);
 	pros::delay(500);
 	PIDTurner(20, 1);
+	Transport.move_relative(-1700, 200);
+	pros::delay(500);
+	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	InputPiston.set_value(true);
-	PIDMover(6);
+	PIDMover(10);
 	InputPiston.set_value(false);
 
 
@@ -267,6 +274,103 @@ void redGoalside() {
 
 
 void redRingside() {
-	PIDTurner((Inertial.get_heading() + 20), 2);
-	Master.print(0, 0, "Done");
+	Inertial.tare_heading();
+
+	// lambda functions for use during PID movements
+	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
+	auto transportIn = []() {Transport.move(-128);};
+
+    // turns on the intake to push the intake down
+	Transport.tare_position();
+	Transport.move_relative(660, 200);
+	waitUntil(Transport.get_position() >= 660);
+	InputMotor.move(-128);
+	
+
+	// intakes the second Ring from the top of the stack and outtakes the bottom Ring
+	PIDMover(3);
+	Transport.tare_position();
+	Transport.move_relative(-720, 200);
+	waitUntil(Transport.get_position() <= -720);
+
+	InputMotor.move(128);
+
+	// Backs up and raises the arm
+	PIDMover(-8);
+	pros::Task raiseArm_task(raiseArm);
+
+
+	// Maneuvers to the Alliance Stake
+	PIDTurner(13.5, 2);
+	PIDMover(24);
+	PIDMover(-2);
+	PIDTurner(82, 2);
+
+	// Moves to the Alliance Stake
+	AllWheels.move(128);
+	pros::delay(300);
+	AllWheels.brake();
+
+	InputMotor.brake();
+
+	// Scores on the Alliance Stake
+	InputMotor.move(128);
+	// First Ring
+	Transport.tare_position();
+	Transport.move(128);
+	waitUntil(Transport.get_position() >= 1250);
+	Transport.brake();
+	// Push back in
+	AllWheels.move(128);
+	pros::delay(50);
+	AllWheels.brake();
+	// Second Ring
+	Transport.move(128);
+	int overRide = 0;
+	while (!(Transport.get_position() >= 2500)) {
+		overRide += 50;
+		if (overRide >= 1250) { 
+			break;
+		}
+		pros::delay(50);
+	}
+	Transport.move_relative(-500, 200); 
+	pros::delay(500);
+	Transport.brake();
+
+	// Maneuvers to grab the next Ring and drops the arm along the way
+	PIDMover(-3);
+	PIDTurner(225, 2);
+	InputMotor.move(-128);
+	pros::Task lowerArm_task(lowerArm);
+	PIDMover(52);
+	pros::delay(250);
+	
+
+	// Intakes the Ring across from the Mobile Goal
+	PIDTurner(170, 1);
+	pros::delay(150);
+	PIDTurner(195, 2);
+	Transport.move(-128);
+	PIDMover(3);
+
+	// Moves to the Mobile Goal and grips it
+	PIDMover(-33, gripMoGoM, -29);
+	Transport.brake();
+
+	// Maneuvers to the Ladder to contact it for AWP
+	PIDTurner(270, 2);
+	Transport.move(-128);
+	pros::delay(500);
+	PIDMover(9.5);
+
+	// Sets up the Input to contact the Ladder
+	InputPiston.set_value(true);
+	pros::delay(250);
+	InputPiston.set_value(false);
+
+	// Moves into the Ladder and contacts it
+	AllAllWheels.move(100); 
+	pros::delay(500); 
+	AllAllWheels.brake();
 }
