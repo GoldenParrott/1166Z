@@ -120,8 +120,6 @@ void blueGoalside() {
 	auto reverseInput = []() {InputMotor.move(128);};
 
 
-	pros::Task colorSensorBlock_task(colorSensorBlock);
-
 	//drops the input
 	Transport.move_relative(600, 200);
 
@@ -166,7 +164,7 @@ void blueGoalside() {
 	}
 	// Puts the Rings on the Mobile Goal
 	Transport.move(-128);
-	InputMotor.move(128);
+	// InputMotor.move(128);
 	PIDMover(33);
 	PIDMover(-4);
 
@@ -175,7 +173,7 @@ void blueGoalside() {
 	InputMotor.move(-128);
 	// Moves back and forth to intake the Ring well
 	AllAllWheels.move(54);
-	pros::delay(2000);
+	pros::delay(1500);
 	AllAllWheels.brake();
 	PIDMover(-8);
 	PIDMover(3);
@@ -185,21 +183,22 @@ void blueGoalside() {
 	// Moves to the other Mobile Goal and drops the first
 	PIDMover(-3);
 	PIDTurner(285, 2);
-	PIDMover(-32, reverseInput, -10);
+	PIDMover(-32); //, reverseInput, -10);
 	MobileGoalManipulator.set_value(false);
 
 	// Goes to pick up the other Mobile Goal
-	PIDMover(6);
+	PIDMover(8);
 	pros::delay(100);
-	PIDTurner(235, 1);
-	PIDMover(-32);
-	PIDMover(-4, gripMoGoM, -2);
+	PIDTurner(240, 1);
+	PIDMover(-36, gripMoGoM, -32);
+	Transport.move(-128);
+	//PIDMover(-5, gripMoGoM, -3);
 
 	// Maneuvers to the Ladder and scores the final Ring
 	PIDTurner(132, 1);
-	Transport.move(-128);
 	pros::delay(333);
-	AllAllWheels.move(51);
+	AllAllWheels.move(54);
+	AllAllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 	pros::delay(2000);
 	AllAllWheels.brake();
 }

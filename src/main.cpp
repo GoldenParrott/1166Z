@@ -131,6 +131,7 @@ switch (autonnumber) {
 
 void opcontrol() {
 
+	// resets all pistons
 	IntakePTOPiston.set_value(false);
 	intakePTOvalue = false;
 	Eject.set_value(false);
