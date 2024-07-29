@@ -315,18 +315,30 @@ void redRingside() {
 
 	// Scores on the Alliance Stake
 	InputMotor.move(128);
+	int overRide;
 	// First Ring
 	Transport.tare_position();
 	Transport.move(128);
-	waitUntil(Transport.get_position() >= 1250);
+	overRide = 0;
+	while (!(Transport.get_position() >= 1250)) {
+		overRide += 50;
+		if (overRide >= 1250) {
+			// backs robot up to unblock Ring
+			AllWheels.move(-128);
+			pros::delay(75);
+			AllWheels.brake();
+			break;
+		}
+		pros::delay(50);
+	}
 	Transport.brake();
 	// Push back in
 	AllWheels.move(128);
-	pros::delay(50);
+	pros::delay(125);
 	AllWheels.brake();
 	// Second Ring
 	Transport.move(128);
-	int overRide = 0;
+	overRide = 0;
 	while (!(Transport.get_position() >= 2500)) {
 		overRide += 50;
 		if (overRide >= 1250) { 
@@ -359,9 +371,9 @@ void redRingside() {
 	Transport.brake();
 
 	// Maneuvers to the Ladder to contact it for AWP
+	PIDMover(5);
 	PIDTurner(270, 2);
 	Transport.move(-128);
-	pros::delay(500);
 	PIDMover(9.5);
 
 	// Sets up the Input to contact the Ladder
