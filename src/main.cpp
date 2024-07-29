@@ -9,14 +9,12 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
 
 	autonnumber = 1;
 	IntakePTOPiston.set_value(false);
 	if (abs(autonnumber) == 2) {
 		// IntakePTOPiston.set_value(true);
 	}
-	
 	
 }
 
@@ -26,6 +24,7 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
+
 	MobileGoalManipulator.set_value(false);
 	InputPiston.set_value(false);
 }
@@ -41,58 +40,8 @@ void disabled() {
  */
 void competition_initialize() {
 	
-	while (1){
+	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
 
-		waitUntil(pros::lcd::read_buttons() != 0);
-		
-		if(autonnumber == 0){ autonnumber = 1; }
-
-		if(pros::lcd::read_buttons() == 4){
-			
-			autonnumber *= -1;
-
-		}else if(pros::lcd::read_buttons() == 2){
-
-			switch (autonnumber){
-			case 1:
-				autonnumber = 2;
-				break;
-			case 2:
-				autonnumber = 1;
-				break;
-			case -1:
-				autonnumber = -2;
-				break;
-			case -2:
-				autonnumber = -1;
-				break;
-			}
-		}else if(pros::lcd::read_buttons() == 1){
-
-			
-			autonnumber = 0;
-		}
-
-		switch (autonnumber){
-			case 1:
-				pros::lcd::print(1,"Blue alliance on the Mogo side");
-				break;
-			case 2:
-				pros::lcd::print(1,"Blue alliance on the Ring side");
-				break;
-			case -1:
-				pros::lcd::print(1,"Red alliance on the Mogo side");
-				break;
-			case -2:
-				pros::lcd::print(1,"Red alliance on the Ring side");
-				break;
-			default:
-				pros::lcd::clear();
-			}
-
-		waitUntil(pros::lcd::read_buttons() == 0);
-
-	}
 }
 
 /**
@@ -164,6 +113,8 @@ switch (autonnumber) {
 
 void opcontrol() {
 
+	
+
 	IntakePTOPiston.set_value(false);
 	intakePTOvalue = false;
 	Eject.set_value(false);
@@ -171,13 +122,9 @@ void opcontrol() {
 	
 	AllAllWheels.move_velocity(1000);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
-	
+
 	while (true) {
-	//Makes the brain screen look good 
-	if (logoCount<50){
-		drawLogo();
-		logoCount++;
-	}
+
 	//Drivetrain
     	drvtrFB = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     	drvtrLR = Master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
@@ -363,7 +310,7 @@ void opcontrol() {
 		}
 
 		if (!intakePTOvalue) {
-			//Master.print(0, 0, 'PTO in arm mode');
+			//Master.print(0, 0, "PTO in arm mode");
 		}
 
 	//Mobile Goal Manipulator
@@ -408,10 +355,13 @@ void opcontrol() {
 	// color sensor
 
 		//                        < 020
-		if ((colorSense.get_hue() > 150) && (toggleColorSensor == true)) {
+		if ((colorSense.get_hue() > 150) && (toggleColorSensor == true) && (autonnumber < 0)) {
 			Eject.set_value(true);
 			colorDelay = 1;
-		} else if (colorDelay >= 1000) {
+		} if ((colorSense.get_hue() < 20) && (toggleColorSensor == true) && (autonnumber > 0)) {
+			Eject.set_value(true);
+			colorDelay = 1;
+		} else if (colorDelay >= 500) {
 			Eject.set_value(false);
 			colorDelay = 0;
 		}
@@ -445,5 +395,9 @@ void opcontrol() {
 		}
 
 	pros::delay(20);
+
 	}
+
+
+
 }
