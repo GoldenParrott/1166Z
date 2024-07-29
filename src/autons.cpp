@@ -225,7 +225,7 @@ void redGoalside() {
 
 
 	//Starts spinning the Intake out to push off the top Ring
-	InputMotor.move(128);
+	InputMotor.move_relative(1300, 600);
 
 	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
 	PIDMover(34, activateGrabber, 32);
@@ -243,26 +243,27 @@ void redGoalside() {
 	GrabPiston.set_value(false);
 	PIDTurner((Inertial.get_heading() - 10), 1);
 	pros::delay(200);
-	PIDTurner(56, 1, transportIn, 300);
+	Transport.move_relative(-900, 200);
+	PIDTurner(56, 1);
 
 	// drops the first MoGo off at the back
 	PIDMover(3);
-	PIDMover(-37, gripMoGoM, -28);
-	Transport.move_relative(-1600, 200);
-	pros::delay(1750);
+	PIDMover(-40, gripMoGoM, -33);
+	Transport.move_relative(-700, 200);
+	pros::delay(1000);
 	MobileGoalManipulator.set_value(false);
 	
 	// picks up the other MoGo
 	PIDMover(17);
 	pros::delay(100);
-	PIDTurner(99, 2);
+	PIDTurner(110, 2);
 	PIDMover(-24, gripMoGoM, -20);
 
 	// Scores the other Ring and touches the Ladder
 	PIDMover(10);
 	pros::delay(500);
 	PIDTurner(20, 1);
-	Transport.move_relative(-1700, 200);
+	Transport.move(-128);
 	pros::delay(500);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	InputPiston.set_value(true);
