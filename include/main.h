@@ -80,6 +80,7 @@ void blueGoalside(void);
 void blueRingside(void);
 void redGoalside(void);
 void redRingside(void);
+void autonSwitcher(void);
 
 // functions.cpp
 void colorSensorOn(void);
@@ -90,6 +91,13 @@ void transportThenGripTASK(void);
 void blockBlueRing(void);
 int convertToRed(int inertialHeadingBlue);
 void unblockTransport(void);
+
+// draw.cpp
+void drawBlueMogo(void);
+void drawRedMogo(void);
+void drawBlueRing(void);
+void drawRedRing(void);
+void drawLogo(void);
 
 #ifdef __cplusplus
 }
