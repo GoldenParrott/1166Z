@@ -395,7 +395,7 @@ void redRingside() {
 	pros::delay(500); 
 	AllAllWheels.brake();
 }
-
+/*
 void autonSwitcher(){
 
 	if (autonnumber == -1){
@@ -427,4 +427,4 @@ void autonSwitcher(){
 		break;
 	}
 	pros::delay(50);
-}
+} */

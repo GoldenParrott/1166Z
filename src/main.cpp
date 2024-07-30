@@ -10,7 +10,7 @@
  */
 void initialize() {
 
-	autonnumber = 1;
+	autonnumber = -1;
 	IntakePTOPiston.set_value(false);
 	if (abs(autonnumber) == 2) {
 		IntakePTOPiston.set_value(true);
@@ -41,7 +41,7 @@ void disabled() {
  */
 void competition_initialize() {
 	
-	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
+	// pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
 
 }
 
@@ -66,7 +66,7 @@ void autonomous() {
 	UpLeft.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	UpLeft.tare_position();
 	pros::Task colorSensorOn_task(colorSensorOn, 'Color Eject On');
-	drawLogo();
+	// drawLogo();
 
 switch (autonnumber) {
 	case 1: 

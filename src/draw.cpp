@@ -1,4 +1,4 @@
-#include "init.h"
+/* #include "init.h"
 
 void drawBlueMogo() {
     static const uint32_t imageColors[] = {
@@ -150,4 +150,4 @@ void drawLogo() {
             while(x >= 480) { x -= 480; y++; }
         }
     }
-}
+} */
