@@ -139,24 +139,24 @@ void blueGoalside() {
 	InputMotor.move(-128);
 
 	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
-	PIDMover(43, activateGrabber, 41);
+	PIDMover(42, activateGrabber, 40);
 	pros::delay(250);
-	Transport.move_relative(-900,200);
 
 
 	//Moves away from the middle line
 	PIDMover(-34);
+	Transport.move_relative(-900,200);
 	
 	// Lets go of Mobile Goal
 	GrabPiston.set_value(false);
 	pros::delay(200);
 
 	//Turns to pick up Mobile Goal
-	PIDTurner(165, 2);
+	PIDTurner(180, 2);
 
 	//Moves to the Mobile Goal to pick it up
 	PIDMover(-25, gripMoGoM, -20);
-	pros::delay(250);
+	pros::delay(200);
 
 
 	
@@ -184,7 +184,7 @@ void blueGoalside() {
 	InputMotor.move(-128);
 	// Moves back and forth to intake the Ring well
 	AllAllWheels.move(54);
-	pros::delay(1500);
+	pros::delay(1300);
 	AllAllWheels.brake();
 	PIDMover(-8);
 	PIDMover(3);
@@ -198,16 +198,16 @@ void blueGoalside() {
 	MobileGoalManipulator.set_value(false);
 
 	// Goes to pick up the other Mobile Goal
-	PIDMover(8);
+	PIDMover(20);
 	pros::delay(100);
-	PIDTurner(240, 1);
-	PIDMover(-35, gripMoGoM, -31);
+	PIDTurner(248, 1);
+	PIDMover(-40, gripMoGoM, -36);
+	pros::delay(300);
 
 	// Maneuvers to the Ladder and scores the final Ring
-	PIDTurner(132, 1);
+	PIDTurner(120, 1);
 	Transport.move(-128);
-	pros::delay(833);
-	AllAllWheels.move(54);
+	AllAllWheels.move(100);
 	AllAllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 	pros::delay(2000);
 	AllAllWheels.brake();
