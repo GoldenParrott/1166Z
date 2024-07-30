@@ -1,23 +1,6 @@
 #include "init.h"
 
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-		pros::lcd::read_buttons();
-	}
-	
-}
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -26,18 +9,13 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-
-	pros::lcd::register_btn1_cb(on_center_button);
-
-
 
 	autonnumber = -1;
 	IntakePTOPiston.set_value(false);
 	if (abs(autonnumber) == 2) {
 		IntakePTOPiston.set_value(true);
 	}
+	
 }
 
 /**
@@ -46,6 +24,7 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
+
 	MobileGoalManipulator.set_value(false);
 	InputPiston.set_value(false);
 	GrabPiston.set_value(false);
@@ -60,7 +39,11 @@ void disabled() {
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+	
+	// pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
+
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -82,8 +65,8 @@ void autonomous() {
 	Transport.tare_position();
 	UpLeft.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	UpLeft.tare_position();
-	pros::Task colorSensorOn_task(colorSensorOn, "Color Eject On");
-
+	pros::Task colorSensorOn_task(colorSensorOn, 'Color Eject On');
+	// drawLogo();
 
 switch (autonnumber) {
 	case 1: 
@@ -102,14 +85,14 @@ switch (autonnumber) {
 }
 
 	// ending commands
-	//Master.print(0, 0, "Done");
+	//Master.print(0, 0, 'Done');
 
 	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	colorSensorOn_task.remove();
 	GrabPiston.set_value(false);
 	Eject.set_value(false);
-
+	
 }
 
 
@@ -136,13 +119,6 @@ void opcontrol() {
 	intakePTOvalue = false;
 	Eject.set_value(false);
 	GrabPiston.set_value(false);
-
-	/*
-	Key:
-		Right & Left : Intake
-	
-	
-	*/
 	
 	AllAllWheels.move_velocity(1000);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
@@ -421,4 +397,7 @@ void opcontrol() {
 	pros::delay(20);
 
 	}
+
+
+
 }

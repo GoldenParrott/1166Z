@@ -50,7 +50,8 @@ Pnuematics
     pros::IMU Inertial(6);
 
 //Variables
-int autonnumber;
+int autonnumber = 1;
+int logoCount = 0;
 
 int drvtrDZ = 10;
 int drvtrFB;
