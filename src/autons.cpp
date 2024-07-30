@@ -42,18 +42,30 @@ void blueRingside() {
 
 	// Scores on the Alliance Stake
 	InputMotor.move(128);
+	int overRide;
 	// First Ring
 	Transport.tare_position();
 	Transport.move(128);
-	waitUntil(Transport.get_position() >= 1250);
+	overRide = 0;
+	while (!(Transport.get_position() >= 1250)) {
+		overRide += 50;
+		if (overRide >= 1250) {
+			// backs robot up to unblock Ring
+			AllWheels.move(-128);
+			pros::delay(75);
+			AllWheels.brake();
+			break;
+		}
+		pros::delay(50);
+	}
 	Transport.brake();
 	// Push back in
 	AllWheels.move(128);
-	pros::delay(50);
+	pros::delay(125);
 	AllWheels.brake();
 	// Second Ring
 	Transport.move(128);
-	int overRide = 0;
+	overRide = 0;
 	while (!(Transport.get_position() >= 2500)) {
 		overRide += 50;
 		if (overRide >= 1250) { 
@@ -77,7 +89,7 @@ void blueRingside() {
 	// Intakes the Ring across from the Mobile Goal
 	PIDTurner(190, 2);
 	pros::delay(150);
-	PIDTurner(165, 1);
+	PIDTurner(165, 2);
 	Transport.move(-128);
 	PIDMover(3);
 
@@ -98,6 +110,7 @@ void blueRingside() {
 
 	// Moves into the Ladder and contacts it
 	AllAllWheels.move(100); 
+	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	pros::delay(500); 
 	AllAllWheels.brake();
 }
@@ -190,13 +203,12 @@ void blueGoalside() {
 	PIDMover(8);
 	pros::delay(100);
 	PIDTurner(240, 1);
-	PIDMover(-36, gripMoGoM, -32);
-	Transport.move(-128);
-	//PIDMover(-5, gripMoGoM, -3);
+	PIDMover(-35, gripMoGoM, -31);
 
 	// Maneuvers to the Ladder and scores the final Ring
 	PIDTurner(132, 1);
-	pros::delay(333);
+	Transport.move(-128);
+	pros::delay(833);
 	AllAllWheels.move(54);
 	AllAllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 	pros::delay(2000);
