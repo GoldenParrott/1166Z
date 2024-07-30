@@ -9,16 +9,16 @@ void blueRingside() {
 
     // turns on the intake to push the intake down
 	Transport.tare_position();
-	Transport.move_relative(660, 200);
-	waitUntil(Transport.get_position() >= 660);
+	Transport.move_relative(500, 200);
+	waitUntil(Transport.get_position() >= 500);
 	InputMotor.move(-128);
 	
 
 	// intakes the second Ring from the top of the stack and outtakes the bottom Ring
 	PIDMover(3);
 	Transport.tare_position();
-	Transport.move_relative(-720, 200);
-	waitUntil(Transport.get_position() <= -720);
+	Transport.move_relative(-400, 200);
+	waitUntil(Transport.get_position() <= -400);
 
 	InputMotor.move(128);
 
@@ -74,33 +74,31 @@ void blueRingside() {
 		pros::delay(50);
 	}
 	Transport.move_relative(-500, 200); 
-	pros::delay(500);
+	pros::delay(250);
 	Transport.brake();
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
-	PIDTurner(135, 1);
+	PIDTurner(130, 1);
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
+	Transport.move(-128);
 	PIDMover(52);
 	pros::delay(250);
 	
 
 	// Intakes the Ring across from the Mobile Goal
-	PIDTurner(190, 2);
-	pros::delay(150);
+	// (transport is already moving)
 	PIDTurner(165, 2);
-	Transport.move(-128);
-	PIDMover(3);
 
 	// Moves to the Mobile Goal and grips it
-	PIDMover(-33, gripMoGoM, -29);
-	Transport.brake();
+	PIDMover(-30, gripMoGoM, -26);
+	// Transport.brake();
 
 	// Maneuvers to the Ladder to contact it for AWP
 	PIDTurner(90, 1);
 	Transport.move(-128);
-	pros::delay(500);
+	pros::delay(1000);
 	PIDMover(9.5);
 
 	// Sets up the Input to contact the Ladder
@@ -109,7 +107,7 @@ void blueRingside() {
 	InputPiston.set_value(false);
 
 	// Moves into the Ladder and contacts it
-	AllAllWheels.move(100); 
+	AllAllWheels.move(100);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	pros::delay(500); 
 	AllAllWheels.brake();
@@ -294,16 +292,16 @@ void redRingside() {
 
     // turns on the intake to push the intake down
 	Transport.tare_position();
-	Transport.move_relative(660, 200);
-	waitUntil(Transport.get_position() >= 660);
+	Transport.move_relative(500, 200);
+	waitUntil(Transport.get_position() >= 500);
 	InputMotor.move(-128);
 	
 
 	// intakes the second Ring from the top of the stack and outtakes the bottom Ring
 	PIDMover(3);
 	Transport.tare_position();
-	Transport.move_relative(-720, 200);
-	waitUntil(Transport.get_position() <= -720);
+	Transport.move_relative(-400, 200);
+	waitUntil(Transport.get_position() <= -400);
 
 	InputMotor.move(128);
 
@@ -359,33 +357,31 @@ void redRingside() {
 		pros::delay(50);
 	}
 	Transport.move_relative(-500, 200); 
-	pros::delay(500);
+	pros::delay(250);
 	Transport.brake();
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
-	PIDTurner(225, 2);
+	PIDTurner(230, 2);
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
+	Transport.move(-128);
 	PIDMover(52);
 	pros::delay(250);
 	
 
 	// Intakes the Ring across from the Mobile Goal
-	PIDTurner(170, 1);
-	pros::delay(150);
-	PIDTurner(195, 2);
-	Transport.move(-128);
-	PIDMover(3);
+	// (transport is already moving)
+	PIDTurner(195, 1);
 
 	// Moves to the Mobile Goal and grips it
-	PIDMover(-33, gripMoGoM, -29);
-	Transport.brake();
+	PIDMover(-30, gripMoGoM, -26);
+	// Transport.brake();
 
 	// Maneuvers to the Ladder to contact it for AWP
-	PIDMover(5);
 	PIDTurner(270, 2);
 	Transport.move(-128);
+	pros::delay(1000);
 	PIDMover(9.5);
 
 	// Sets up the Input to contact the Ladder
@@ -394,7 +390,8 @@ void redRingside() {
 	InputPiston.set_value(false);
 
 	// Moves into the Ladder and contacts it
-	AllAllWheels.move(100); 
+	AllAllWheels.move(100);
+	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	pros::delay(500); 
 	AllAllWheels.brake();
 }
