@@ -415,15 +415,19 @@ void autonSwitcher(){
 	switch (autonnumber) {
 	case -2:
 		drawRedRing();
+		IntakePTOPiston.set_value(true);
 		break;
 	case -1:
 		drawRedMogo();
+		IntakePTOPiston.set_value(false);
 		break;
 	case 1: 
 		drawBlueMogo(); 
+		IntakePTOPiston.set_value(false);
 		break;
 	case 2:
 		drawBlueRing();
+		IntakePTOPiston.set_value(true);
 		break;
 	}
 	pros::delay(50);
