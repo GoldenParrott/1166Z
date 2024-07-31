@@ -121,6 +121,7 @@ void opcontrol() {
 	
 	AllAllWheels.move_velocity(1000);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	AllAllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 
 	while (true) {
 
