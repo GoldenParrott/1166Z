@@ -67,7 +67,6 @@ void autonomous(void);
 void initialize(void);
 void disabled(void);
 void competition_initialize(void);
-void armraiser(void);
 void opcontrol(void);
 
 // pid.cpp
@@ -76,27 +75,9 @@ void PIDTurner(int setPoint, int direction,                 std::function<void(v
 void PIDArc(int chordLength, int maxDist, int direction,                std::function<void(void)> custom = 0, int executeAt = 0);
 
 // autons.cpp
-void blueGoalside(void);
-void blueRingside(void);
-void redGoalside(void);
-void redRingside(void);
-void autonSwitcher(void);
-
-// functions.cpp
-void colorSensorOn(void);
-void colorSensorBlock(void);
-void raiseArm(void);
-void lowerArm(void);
-void transportThenGripTASK(void);
-void blockBlueRing(void);
-int convertToRed(int inertialHeadingBlue);
-void unblockTransport(void);
+void basic(void);
 
 // draw.cpp
-void drawBlueMogo(void);
-void drawRedMogo(void);
-void drawBlueRing(void);
-void drawRedRing(void);
 void drawLogo(void);
 
 #ifdef __cplusplus

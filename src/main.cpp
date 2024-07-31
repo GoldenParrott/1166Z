@@ -9,12 +9,6 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-
-	autonnumber = -1;
-	IntakePTOPiston.set_value(false);
-	if (abs(autonnumber) == 2) {
-		IntakePTOPiston.set_value(true);
-	}
 	
 }
 
@@ -24,10 +18,7 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
-
 	MobileGoalManipulator.set_value(false);
-	InputPiston.set_value(false);
-	GrabPiston.set_value(false);
 }
 
 /**
@@ -40,8 +31,6 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-	
-	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
 
 }
 
@@ -58,39 +47,7 @@ void competition_initialize() {
  */
 void autonomous() {
 
-	// autonomous setup
-	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
-	Transport.set_encoder_units(MOTOR_ENCODER_DEGREES);
-	Transport.tare_position();
-	UpLeft.set_encoder_units(MOTOR_ENCODER_DEGREES);
-	UpLeft.tare_position();
-	pros::Task colorSensorOn_task(colorSensorOn, 'Color Eject On');
-	drawLogo();
-
-switch (autonnumber) {
-	case 1: 
-		blueGoalside(); 
-		break;
-	case 2:
-		blueRingside();
-		break;
-	case -1:
-		redGoalside();
-		break;
-	case -2:
-		redRingside();
-		break;
-
-}
-
-	// ending commands
-	//Master.print(0, 0, 'Done');
-
-	pros::delay(1000);
-	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
-	colorSensorOn_task.remove();
-	GrabPiston.set_value(false);
-	Eject.set_value(false);
+	basic();
 	
 }
 
@@ -122,6 +79,8 @@ void opcontrol() {
 	AllAllWheels.move_velocity(1000);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	AllAllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
+
+	drawLogo();
 
 	while (true) {
 
