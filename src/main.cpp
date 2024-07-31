@@ -9,6 +9,8 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+
+	autonnumber = 1;
 	
 }
 
@@ -18,7 +20,7 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
-	MobileGoalManipulator.set_value(false);
+
 }
 
 /**
@@ -31,7 +33,6 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-
 }
 
 /**
