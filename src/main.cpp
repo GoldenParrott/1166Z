@@ -41,7 +41,7 @@ void disabled() {
  */
 void competition_initialize() {
 	
-	// pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
+	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
 
 }
 
@@ -58,7 +58,6 @@ void competition_initialize() {
  */
 void autonomous() {
 
-	// MoGo Auton
 	// autonomous setup
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Transport.set_encoder_units(MOTOR_ENCODER_DEGREES);
@@ -66,7 +65,7 @@ void autonomous() {
 	UpLeft.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	UpLeft.tare_position();
 	pros::Task colorSensorOn_task(colorSensorOn, 'Color Eject On');
-	// drawLogo();
+	drawLogo();
 
 switch (autonnumber) {
 	case 1: 
