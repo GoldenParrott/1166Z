@@ -315,7 +315,7 @@ void opcontrol() {
 	// color sensor
 
 		//                        < 020
-		if ((colorSense.get_hue() > 150) && (toggleColorSensor == true) && (autonnumber < 0)) {
+		if ((colorSense.get_hue() > 200) && (toggleColorSensor == true) && (autonnumber < 0)) {
 			Eject.set_value(true);
 			colorDelay = 1;
 		} if ((colorSense.get_hue() < 20) && (toggleColorSensor == true) && (autonnumber > 0)) {

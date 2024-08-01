@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Basic (Blue)",
+    "project_name": "Basic (Red)",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -310,7 +310,7 @@
     },
     "upload_options": {
       "after": "screen",
-      "slot": 2,
+      "slot": 3,
       "icon": "pros"
     },
     "use_early_access": true
