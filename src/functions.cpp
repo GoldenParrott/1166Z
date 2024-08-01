@@ -8,7 +8,7 @@ void colorSensorOn() {
 		if (colorSense.get_hue() < 20 && autonnumber > 0) {
 			Eject.set_value(true);
 			colorDelayTask = 1;
-		} else if (colorSense.get_hue() > 150 && autonnumber < 0) {
+		} else if (colorSense.get_hue() > 200 && autonnumber < 0) {
 			Eject.set_value(true);
 			colorDelayTask = 1;
 		} else if (colorDelayTask >= 500) {
@@ -59,7 +59,7 @@ void transportThenGripTASK() {
 
 
 void blockBlueRing() {
-	waitUntil(colorSense.get_hue() > 150);
+	waitUntil(colorSense.get_hue() > 200);
 	Transport.brake();
 }
 
