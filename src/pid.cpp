@@ -21,27 +21,14 @@ void PIDMover(
 	int error;
 	int power;
 	int tolerance = 2;
-	int cyclesAtGoal;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
-	// Proportional Variables
-	int proportionalOut;
-
-	// Integral Variables
-	int integral = 0;
-	int integralLimiter = 512; // customizable
-	int integralOut;
-
-	// Derivative Variables
-    int derivative;
-    int derivativeOut;
-	int prevError;
-
 	// Constants (need to be tuned individually for every robot)
-	double kP = 1.28; // customizable
-	double kI = 0.4; // customizable
-	double kD = 0.1; // customizable
+	ConstantContainer moverConstants;
+	moverConstants.kP = 1.28; // customizable
+	moverConstants.kI = 0.4; // customizable
+	moverConstants.kD = 0.1; // customizable
 
 	
 	
@@ -50,7 +37,7 @@ void PIDMover(
 
 
 // Odometry Measurement Setup
-	bool isPositive = setPoint > 0; // Checks if the movement is positive or negatives
+	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
 	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
 	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
 
@@ -85,69 +72,24 @@ void PIDMover(
 	// by the number of centimeters moved in a single degree of movement
 	double currentDistanceMovedByWheel = currentWheelReading * singleDegree; 
 
-	// these initialize variables that are used to measure values from previous cycles
-	error = (int) (setPoint - currentDistanceMovedByWheel);
-	prevError = error;
+	// this initializes variables that are used to measure values from previous cycles
+	PIDReturn cycle;
+	cycle.prevError = setPoint - currentDistanceMovedByWheel;
+	cycle.power = 0;
+	cycle.prevIntegral = 0;
 
 	 
 
 	while (actionCompleted != true) {
-// PID Looping Calculations
-		
-	// P: Proportional -- slows down as we reach our target for more accuracy
 
-		// error = goal reading - current reading
-		error = int (setPoint - currentDistanceMovedByWheel);
-		// kP (proportional constant) determines how fast we want to go overall while still keeping accuracy
-		proportionalOut = error * kP;
-
-
-
-
-	// I: Integral -- starts slow and speeds up as time goes on to prevent undershooting
-
-		// starts the integral at the error, then compounds it with the new current error every loop
-		integral = int (integral + error);
-		// prevents the integral variable from causing the robot to overshoot
-		if ((isPositive && (error <= 0)) || (!isPositive && (error >= 0))) {
-			integral = 0;
-		}
-		// prevents the integral from winding up too much, causing the number to be beyond the control of
-        // even kI
-		// if we want to make this better, see Solution #3 for 3.3.2 in the packet
-		if (((isPositive) && (error >= 100)) || ((!isPositive) && (error <= -100))) {
-			integral = 0;
-			}
-		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
-			integral = isPositive
-				? 100
-				: -100;
-			}
-		// kI (integral constant) brings integral down to a reasonable/useful output number
-		integralOut = integral * kI;
-
-
-
-	// D: Derivative -- slows the robot more and more as it goes faster
-
-        // starts the derivative by making it the rate of change from the previous cycle to this one
-        derivative = int (error - prevError);
-		// sets the previous error to the current error for use in the next cycle
-		prevError = error;
-
-        // kD (derivative constant) prevents derivative from over- or under-scaling
-        derivativeOut = derivative * kD;
-
-
-
-	// Adds the results of each of the calculations together to get the desired power
-		power = proportionalOut + integralOut + derivativeOut;
+	// gets the power for the current cycle
+	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
 
 	// moves the wheels at the desired power, ending the cycle
 	if (PTOon) {
-		AllWheels.move(power);
+		AllWheels.move(cycle.power);
 	} else if (!PTOon) {
-		AllAllWheels.move(power);
+		AllAllWheels.move(cycle.power);
 	}
 
 
@@ -630,4 +572,74 @@ void PIDArc(
 				else if (!PTOon) {AllAllWheels.brake();}
 		}
 	}
+}
+
+
+
+PIDReturn PIDCalc(
+	int distanceMoved, // current distance moved (in odometry units)
+	int setPoint, // goal distance to move (in odometry units)
+	bool isPositive, // direction of movement
+	ConstantContainer constants, // all constants
+	PIDReturn lastCycle // data from previous cycle
+	)
+{
+	PIDReturn thisCycle;
+	// P: Proportional -- slows down as we reach our target for more accuracy
+
+		// error = goal reading - current reading
+		int error = int (setPoint - distanceMoved);
+		// kP (proportional constant) determines how fast we want to go overall while still keeping accuracy
+		int proportionalOut = error * constants.kP;
+
+
+
+
+	// I: Integral -- starts slow and speeds up as time goes on to prevent undershooting
+
+		// starts the integral at the error, then compounds it with the new current error every loop
+		int integral = int (lastCycle.prevIntegral + error);
+		// prevents the integral variable from causing the robot to overshoot
+		if ((isPositive && (error <= 0)) || (!isPositive && (error >= 0))) {
+			integral = 0;
+		}
+		// prevents the integral from winding up too much, causing the number to be beyond the control of
+        // even kI
+		// if we want to make this better, see Solution #3 for 3.3.2 in the packet
+		if (((isPositive) && (error >= 100)) || ((!isPositive) && (error <= -100))) {
+			integral = 0;
+			}
+		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
+			integral = isPositive
+				? 100
+				: -100;
+			}
+		// kI (integral constant) brings integral down to a reasonable/useful output number
+		int integralOut = integral * constants.kI;
+
+		// adds integral to return structure for compounding
+		thisCycle.prevIntegral = integral;
+
+
+
+	// D: Derivative -- slows the robot more and more as it goes faster
+
+        // starts the derivative by making it the rate of change from the previous cycle to this one
+        int derivative = int (error - lastCycle.prevError);
+
+        // kD (derivative constant) prevents derivative from over- or under-scaling
+        int derivativeOut = derivative * constants.kD;
+
+		// sets the previous error to the current error for use in the next derivative
+		thisCycle.prevError = error;
+
+
+
+	// Adds the results of each of the calculations together to get the desired power
+		int power = proportionalOut + integralOut + derivativeOut;
+
+		thisCycle.power = power;
+
+	// returns a PIDReturn structure
+		return thisCycle;
 }

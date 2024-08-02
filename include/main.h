@@ -71,9 +71,24 @@ void armraiser(void);
 void opcontrol(void);
 
 // pid.cpp
+
+// pid.cpp structures
+struct PIDReturn {
+    int prevError; 
+    int prevIntegral; 
+    int power;
+};
+struct ConstantContainer {
+    double kP; 
+    double kI; 
+    double kD;
+};
+// pid.cpp functions
 void PIDMover(int setPoint,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 void PIDTurner(int setPoint, int direction,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 void PIDArc(int chordLength, int maxDist, int direction,                std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
+
+void PIDCalc(int distanceMoved, int setPoint, bool isPositive, ConstantContainer constants, PIDReturn lastCycle);
 
 // autons.cpp
 void blueGoalside(void);
