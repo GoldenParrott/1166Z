@@ -31,11 +31,16 @@ void blueRingside() {
 	PIDTurner(346.5, 1);
 	PIDMover(24);
 	PIDMover(-2);
-	PIDTurner(278, 1);
+	PIDTurner(280, 1);
 
 	// Moves to the Alliance Stake
 	AllWheels.move(128);
 	pros::delay(300);
+	AllWheels.brake();
+
+	// Backs up from the Alliance Stake to run properly
+	AllWheels.move(-128);
+	pros::delay(50);
 	AllWheels.brake();
 
 	InputMotor.brake();
@@ -45,7 +50,7 @@ void blueRingside() {
 	int overRide;
 	// First Ring
 	Transport.tare_position();
-	Transport.move(128);
+	Transport.move(95);
 	overRide = 0;
 	while (!(Transport.get_position() >= 1250)) {
 		overRide += 50;
@@ -61,10 +66,10 @@ void blueRingside() {
 	Transport.brake();
 	// Push back in
 	AllWheels.move(128);
-	pros::delay(125);
+	pros::delay(100);
 	AllWheels.brake();
 	// Second Ring
-	Transport.move(128);
+	Transport.move(95);
 	overRide = 0;
 	while (!(Transport.get_position() >= 2500)) {
 		overRide += 50;
@@ -79,7 +84,7 @@ void blueRingside() {
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
-	PIDTurner(130, 1);
+	PIDTurner(139, 1);
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
 	Transport.move(-128);
@@ -177,15 +182,15 @@ void blueGoalside() {
 	Transport.move(-128);
 	// InputMotor.move(128);
 	PIDMover(33);
-	PIDMover(-4);
+	PIDMover(-6);
 
 	// Turns toward Corner Rings, moves to them, and intakes them
 	PIDTurner(230, 2);
 	InputMotor.move(-128);
 	// Moves back and forth to intake the Ring well
 	AllAllWheels.move(54);
-	pros::delay(1300);
-	AllAllWheels.brake();
+	pros::delay(1450)
+	e();
 	PIDMover(-8);
 	PIDMover(3);
 	pros::Task blockBlueRing_task(blockBlueRing); // stops the Transport when the third Ring is detected at the end
@@ -205,11 +210,11 @@ void blueGoalside() {
 	pros::delay(300);
 
 	// Maneuvers to the Ladder and scores the final Ring
-	PIDTurner(120, 1);
+	PIDTurner(145, 1);
 	Transport.move(-128);
 	AllAllWheels.move(100);
 	AllAllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
-	pros::delay(2000);
+	pros::delay(350);
 	AllAllWheels.brake();
 }
 
@@ -314,11 +319,16 @@ void redRingside() {
 	PIDTurner(13.5, 2);
 	PIDMover(24);
 	PIDMover(-2);
-	PIDTurner(82, 2);
+	PIDTurner(80, 2);
 
 	// Moves to the Alliance Stake
 	AllWheels.move(128);
 	pros::delay(300);
+	AllWheels.brake();
+
+	// Backs up from the Alliance Stake to run properly
+	AllWheels.move(-128);
+	pros::delay(50);
 	AllWheels.brake();
 
 	InputMotor.brake();
@@ -328,7 +338,7 @@ void redRingside() {
 	int overRide;
 	// First Ring
 	Transport.tare_position();
-	Transport.move(128);
+	Transport.move(95);
 	overRide = 0;
 	while (!(Transport.get_position() >= 1250)) {
 		overRide += 50;
@@ -344,10 +354,10 @@ void redRingside() {
 	Transport.brake();
 	// Push back in
 	AllWheels.move(128);
-	pros::delay(125);
+	pros::delay(100);
 	AllWheels.brake();
 	// Second Ring
-	Transport.move(128);
+	Transport.move(95);
 	overRide = 0;
 	while (!(Transport.get_position() >= 2500)) {
 		overRide += 50;
@@ -362,7 +372,7 @@ void redRingside() {
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
-	PIDTurner(230, 2);
+	PIDTurner(221, 2);
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
 	Transport.move(-128);
