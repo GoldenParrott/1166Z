@@ -59,6 +59,7 @@ void competition_initialize() {
 void autonomous() {
 
 	// autonomous setup
+	colorSense.set_led_pwm(100);
 	AllAllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Transport.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Transport.tare_position();

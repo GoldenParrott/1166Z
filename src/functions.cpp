@@ -8,7 +8,7 @@ void colorSensorOn() {
 		if (colorSense.get_hue() < 20 && autonnumber > 0) {
 			Eject.set_value(true);
 			colorDelayTask = 1;
-		} else if (colorSense.get_hue() > 200 && autonnumber < 0) {
+		} else if (colorSense.get_hue() > 210 && autonnumber < 0) {
 			Eject.set_value(true);
 			colorDelayTask = 1;
 		} else if (colorDelayTask >= 500) {

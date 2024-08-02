@@ -145,7 +145,7 @@ void blueGoalside() {
 
 	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
 	PIDMover(42, activateGrabber, 40);
-	pros::delay(250);
+	pros::delay(265);
 
 
 	//Moves away from the middle line
@@ -157,7 +157,7 @@ void blueGoalside() {
 	pros::delay(200);
 
 	//Turns to pick up Mobile Goal
-	PIDTurner(180, 2);
+	PIDTurner(176, 2);
 
 	//Moves to the Mobile Goal to pick it up
 	PIDMover(-25, gripMoGoM, -20);
@@ -189,8 +189,7 @@ void blueGoalside() {
 	InputMotor.move(-128);
 	// Moves back and forth to intake the Ring well
 	AllAllWheels.move(54);
-	pros::delay(1450)
-	e();
+	pros::delay(1450);
 	PIDMover(-8);
 	PIDMover(3);
 	pros::Task blockBlueRing_task(blockBlueRing); // stops the Transport when the third Ring is detected at the end
