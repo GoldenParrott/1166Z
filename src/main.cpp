@@ -65,12 +65,17 @@ void autonomous() {
 	Transport.tare_position();
 	UpLeft.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	UpLeft.tare_position();
-	pros::Task colorSensorOn_task(colorSensorOn, 'Color Eject On');
+
+	if (colorSensorOn_task_ptr == NULL) {
+		colorSensorOn_task_ptr = new pros::Task(colorSensorOn, 'Color Eject On');
+	}
+
+	
 	drawLogo();
 
 switch (autonnumber) {
 	case 1: 
-		blueGoalside(); 
+		blueGoalside();
 		break;
 	case 2:
 		blueRingside();
@@ -89,7 +94,6 @@ switch (autonnumber) {
 
 	pros::delay(1000);
 	AllAllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
-	colorSensorOn_task.remove();
 	GrabPiston.set_value(false);
 	Eject.set_value(false);
 	
@@ -113,6 +117,10 @@ switch (autonnumber) {
  */
 
 void opcontrol() {
+
+	if (colorSensorOn_task_ptr != NULL) {
+		colorSensorOn_task_ptr->remove();
+	}
 
 	// resets all pistons
 	IntakePTOPiston.set_value(false);

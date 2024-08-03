@@ -84,7 +84,7 @@ void blueRingside() {
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
-	PIDTurner(139, 1);
+	PIDTurner(137, 1);
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
 	Transport.move(-128);
@@ -371,7 +371,7 @@ void redRingside() {
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
-	PIDTurner(221, 2);
+	PIDTurner(223, 2);
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
 	Transport.move(-128);

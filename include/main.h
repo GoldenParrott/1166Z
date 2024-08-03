@@ -109,7 +109,7 @@ void drawLogo(void);
  */
 //#include <iostream>
 #include <list>
-#include <math.h>
+#include <cmath>
 #include <functional>
 #include <vector>
 #endif

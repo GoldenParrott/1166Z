@@ -40,8 +40,9 @@ Pnuematics
     pros::ADIDigitalOut GrabPiston(4);
 
 
-//Other ADI
+// Tasks
 
+    pros::Task* colorSensorOn_task_ptr = NULL;
 
 
 // Sensors

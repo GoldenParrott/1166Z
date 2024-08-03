@@ -43,8 +43,9 @@ Pnuematics
     extern pros::ADIDigitalOut GrabPiston;
 
 
-//Other ADI
+// Tasks
 
+    extern pros::Task *colorSensorOn_task_ptr;
 
 
 // Sensors

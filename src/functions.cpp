@@ -71,3 +71,7 @@ void unblockTransport() {
 	waitUntil(Transport.get_position() > 300);
 	Transport.move(-128);
 }
+
+void grimReaper() {
+	
+}
