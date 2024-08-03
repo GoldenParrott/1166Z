@@ -66,7 +66,7 @@ void blueRingside() {
 	Transport.brake();
 	// Push back in
 	AllWheels.move(128);
-	pros::delay(100);
+	pros::delay(125);
 	AllWheels.brake();
 	// Second Ring
 	Transport.move(95);
@@ -84,7 +84,7 @@ void blueRingside() {
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
-	PIDTurner(137, 1);
+	PIDTurner(133, 1);
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
 	Transport.move(-128);
@@ -94,14 +94,14 @@ void blueRingside() {
 
 	// Intakes the Ring across from the Mobile Goal
 	// (transport is already moving)
-	PIDTurner(165, 2);
+	PIDTurner(155, 2);
 
 	// Moves to the Mobile Goal and grips it
-	PIDMover(-30, gripMoGoM, -26);
+	PIDMover(-28, gripMoGoM, -26);
 	// Transport.brake();
 
 	// Maneuvers to the Ladder to contact it for AWP
-	PIDTurner(90, 1);
+	PIDTurner(95, 1);
 	Transport.move(-128);
 	pros::delay(1000);
 	PIDMover(9.5);
@@ -353,7 +353,7 @@ void redRingside() {
 	Transport.brake();
 	// Push back in
 	AllWheels.move(128);
-	pros::delay(100);
+	pros::delay(150);
 	AllWheels.brake();
 	// Second Ring
 	Transport.move(95);
@@ -371,7 +371,7 @@ void redRingside() {
 
 	// Maneuvers to grab the next Ring and drops the arm along the way
 	PIDMover(-3);
-	PIDTurner(223, 2);
+	PIDTurner(230, 2);
 	InputMotor.move(-128);
 	pros::Task lowerArm_task(lowerArm);
 	Transport.move(-128);
@@ -381,14 +381,14 @@ void redRingside() {
 
 	// Intakes the Ring across from the Mobile Goal
 	// (transport is already moving)
-	PIDTurner(195, 1);
+	PIDTurner(205, 1);
 
 	// Moves to the Mobile Goal and grips it
-	PIDMover(-30, gripMoGoM, -26);
+	PIDMover(-28, gripMoGoM, -26);
 	// Transport.brake();
 
 	// Maneuvers to the Ladder to contact it for AWP
-	PIDTurner(270, 2);
+	PIDTurner(265, 2);
 	Transport.move(-128);
 	pros::delay(1000);
 	PIDMover(9.5);

@@ -214,7 +214,7 @@ void PIDTurner(
 	int proportionalOut;
 
 // Integral Variables
-	int integral;
+	int integral = 0;
 	int integralLimiter;
 	int integralOut;
 
