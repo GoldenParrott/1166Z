@@ -353,7 +353,7 @@ void redRingside() {
 	Transport.brake();
 	// Push back in
 	AllWheels.move(128);
-	pros::delay(150);
+	pros::delay(125);
 	AllWheels.brake();
 	// Second Ring
 	Transport.move(95);
