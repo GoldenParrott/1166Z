@@ -156,23 +156,8 @@ void PIDTurner(
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
-// Proportional Variables
-	int proportionalOut;
-
-// Integral Variables
-	int integral;
-	int integralLimiter;
-	int integralOut;
-
-// Derivative Variables
-    int derivative;
-    int derivativeOut;
-	int prevError = error;
-
 // Constants -- tuning depends on whether the robot is moving or turning
-	double kP;
-	double kI;
-	double kD;
+	ConstantContainer turnerConstants;
 
 
 // Checks if the movement is positive or negative
@@ -216,77 +201,37 @@ void PIDTurner(
 	// distanceToMove is analogous to setPoint on PIDMover, and changeInReading is analogous to currentDistanceMovedByWheel
 	int changeInReading = 0;
 
-	prevError = (int) (distanceToMove - changeInReading);
-
-
 
 	distanceToMove -= 2;
 
+
+	// constant definitions
 	if (distanceToMove <= 90) {
-		kP = 1.35;
-		kI = 0.19;
-		kD = 0.1;
+		turnerConstants.kP = 1.35;
+		turnerConstants.kI = 0.19;
+		turnerConstants.kD = 0.1;
 	} else {
-		kP = 0.9;
-		kI = 0.13;
-		kD = 0.2;
+		turnerConstants.kP = 0.9;
+		turnerConstants.kI = 0.13;
+		turnerConstants.kD = 0.2;
 	}
+
+	// this initializes variables that are used to measure values from previous cycles
+	PIDReturn cycle;
+	cycle.prevError = distanceToMove - changeInReading;
+	cycle.power = 0;
+	cycle.prevIntegral = 0;
 
 	 
 
 	while (!actionCompleted) {
-	// PID CALCULATION CODE
-		
-	// P: Proportional -- slows down as we reach our target for more accuracy
 	
-		// error = goal reading - current reading
-		error = distanceToMove - changeInReading;
-		// kP (proportional constant) determines how fast we want to go overall while still keeping accuracy
-		proportionalOut = error * kP;
+	// gets the power for the current cycle
+	cycle = PIDCalc(changeInReading, distanceToMove, isPositive, turnerConstants, cycle);
 
 
 
-
-	// I: Integral -- starts slow and speeds up as time goes on to prevent undershooting
-
-		// starts the integral at the error, then compounds it with the new current error every loop
-		integral = int (integral + error);
-		// prevents the integral variable from causing the robot to overshoot
-		if ((isPositive && (error <= 0)) || (!isPositive && (error >= 0))) {
-			integral = 0;
-		}
-		// prevents the integral from winding up too much, causing the number to be beyond the control of
-        // even kI
-		// if we want to make this better, see Solution #3 for 3.3.2 in the packet
-		if (((isPositive) && (error >= 135)) || ((!isPositive) && (error <= -135))) {
-			integral = 0;
-			}
-		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
-			integral = isPositive
-				? 100
-				: -100;
-			}
-		// kI (integral constant) brings integral down to a reasonable/useful output number
-		integralOut = integral * kI;
-
-
-
-	// D: Derivative -- slows the robot more and more as it goes faster
-
-        // starts the derivative by making it the rate of change from the previous cycle to this one
-		// the error from the previous cycle should be taken as a parameter
-        derivative = int (error - prevError);
-		// sets the previous error to the previous error for use in the next cycle
-		prevError = error;
-
-        // kD (derivative constant) prevents derivative from over- or under-scaling
-        derivativeOut = derivative * kD;
-
-		power = proportionalOut + integralOut + derivativeOut;
-
-
-
-
+	// custom lambda functions
 	for (int i = 0; i < customs.size(); i++) {
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
 		if (customs[i] != 0 && ((changeInReading >= executeAts[i] && isPositive) || (changeInReading <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
@@ -388,9 +333,10 @@ void PIDArc(
 	
 
 // Constants -- tuning depends on whether the robot is moving or turning
-	double kP = 3.2; // customizable
-	double kI = 0.3; // customizable
-	double kD = 0.1; // customizable
+	ConstantContainer arcConstants;
+	arcConstants.kP = 3.2; // customizable
+	arcConstants.kI = 0.3; // customizable
+	arcConstants.kD = 0.1; // customizable
 
 
 // PID LOOPING VARIABLES
@@ -458,52 +404,17 @@ void PIDArc(
 	if (!isPositive) {setPoint = -setPoint;}
 
 
+	// this initializes variables that are used to measure values from previous cycles
+	PIDReturn cycle;
+	cycle.prevError = setPoint - currentDistanceMovedByWheel;
+	cycle.power = 0;
+	cycle.prevIntegral = 0;
+
+
 	while (actionCompleted != true) {
-	// PID CALCULATION CODE
-		
-	// P: Proportional -- slows down as we reach our target for more accuracy
 
-		// error = goal reading - current reading
-		error = int (setPoint - currentDistanceMovedByWheel);
-		// kP (proportional constant) determines how fast we want to go overall while still keeping accuracy
-		proportionalOut = error * kP;
-
-
-
-
-	// I: Integral -- starts slow and speeds up as time goes on to prevent undershooting
-
-		// starts the integral at the error, then compounds it with the new current error every loop
-		integral = int (integral + error);
-		// prevents the integral variable from causing the robot to overshoot
-		if ((isPositive && (error == 0)) || (!isPositive && (error == 0))) {
-			integral = 0;
-		}
-		// prevents the integral from winding up too much, causing the number to be beyond the control of
-        // even kI
-		// if we want to make this better, see Solution #3 for 3.3.2 in the packet
-		if (((isPositive) && (error >= 100)) || ((!isPositive) && (error <= -100))) {
-			integral = 0;
-			}
-		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
-			integral = isPositive
-				? 100
-				: -100;
-			}
-		// kI (integral constant) brings integral down to a reasonable/useful output number
-		integralOut = integral * kI;
-
-
-
-	// D: Derivative -- slows the robot more and more as it goes faster
-
-        // starts the derivative by making it the rate of change from the previous cycle to this one
-        derivative = int (error - prevError);
-		// sets the previous error to the previous error for use in the next cycle
-		prevError = error;
-
-        // kD (derivative constant) prevents derivative from over- or under-scaling
-        derivativeOut = derivative * kD;
+	// gets the power for the current cycle
+	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, arcConstants, cycle);
 
 
 
@@ -519,10 +430,6 @@ void PIDArc(
 			customsCompleted[i] = true;
 		}
 	}
-
-
-
-		power = proportionalOut + integralOut + derivativeOut;
 
 	// caps motor power at 128 if it goes beyond it to ensure that the multiplier makes one side spin slower
 		if (power > 128) {

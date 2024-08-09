@@ -88,7 +88,7 @@ void PIDMover(int setPoint,                 std::vector<std::function<void(void)
 void PIDTurner(int setPoint, int direction,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 void PIDArc(int chordLength, int maxDist, int direction,                std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 
-void PIDCalc(int distanceMoved, int setPoint, bool isPositive, ConstantContainer constants, PIDReturn lastCycle);
+PIDReturn PIDCalc(int distanceMoved, int setPoint, bool isPositive, ConstantContainer constants, PIDReturn lastCycle);
 
 // autons.cpp
 void blueGoalside(void);
