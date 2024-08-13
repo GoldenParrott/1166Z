@@ -8,27 +8,20 @@
     extern pros::Controller Partner;
 
 //Motors
-
-    extern pros::Motor UpLeft;
-    extern pros::Motor UpRight;
-    extern pros::Motor_Group IntakePTO;
     
     extern pros::Motor FrontLeft;
+    extern pros::Motor MidLeft;
     extern pros::Motor BackLeft;
     extern pros::Motor_Group LeftWheels;
-    extern pros::Motor_Group AllLeftWheels;
 
     extern pros::Motor FrontRight;
+    extern pros::Motor MidRight;
     extern pros::Motor BackRight;
     extern pros::Motor_Group RightWheels;
-    extern pros::Motor_Group AllRightWheels;
 
     extern pros::Motor_Group AllWheels;
-    extern pros::Motor_Group AllAllWheels;
 
-    extern pros::Motor InputMotor;
-    extern pros::Motor Transport;
-    extern pros::Motor_Group Intake;
+    extern pros::Motor Intake;
 
     extern pros::Motor ArmLeft;
     extern pros::Motor ArmRight;

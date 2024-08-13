@@ -8,13 +8,8 @@ void PIDMover(
 		)
 {
 
-// checks if the PTO is on or not to ensure that the correct sets of motors are used later
-	bool PTOon;
-	if (IntakePTOPiston.get_value() == true) {PTOon = true;}
-	else {PTOon = false;}
 
-
-	AllAllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
+	AllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
 
 // PID Calculation Variables
 	// General Variables
@@ -86,11 +81,7 @@ void PIDMover(
 	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
 
 	// moves the wheels at the desired power, ending the cycle
-	if (PTOon) {
-		AllWheels.move(cycle.power);
-	} else if (!PTOon) {
-		AllAllWheels.move(cycle.power);
-	}
+	AllWheels.move(cycle.power);
 
 
 
@@ -126,8 +117,7 @@ void PIDMover(
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
 				actionCompleted = true;
-				if (PTOon) {AllWheels.brake();}
-				else if (!PTOon) {AllAllWheels.brake();}
+				AllWheels.brake();
 		}
 	}
 }
@@ -141,12 +131,7 @@ void PIDTurner(
 		)
 {
 
-// checks if the PTO is on or not to ensure that the correct sets of motors are used later
-	bool PTOon;
-	if (IntakePTOPiston.get_value() == true) {PTOon = true;}
-	else {PTOon = false;}
-
-	AllAllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
+	AllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
 
 // PID CALCULATION VARIABLES
 // General Variables
@@ -249,7 +234,6 @@ void PIDTurner(
 		negativePower = power * -1;
 
 		// the power will never be negative and invert the turns because distanceToMove is always positive
-		if (PTOon) {
 			if (direction == 1) {
 				LeftWheels.move(negativePower);
 				RightWheels.move(power);
@@ -258,16 +242,6 @@ void PIDTurner(
 				LeftWheels.move(power);
 				RightWheels.move(negativePower);
 			}
-		} else if (!PTOon) {
-			if (direction == 1) {
-				AllLeftWheels.move(negativePower);
-				AllRightWheels.move(power);
-			}
-			else if (direction == 2) {
-				AllLeftWheels.move(power);
-				AllRightWheels.move(negativePower);
-			}
-		}
 
 		pros::delay(15);
 
@@ -282,8 +256,7 @@ void PIDTurner(
 
 		if (((changeInReading <= (distanceToMove + tolerance)) && (changeInReading >= (distanceToMove - tolerance)))) {
 				actionCompleted = true;
-				if (PTOon) {AllWheels.brake();}
-				else if (!PTOon) {AllAllWheels.brake();}
+				AllWheels.brake();
 		}
 	}
 }
@@ -301,13 +274,7 @@ void PIDArc(
 	bool isPositive = chordLength > 0;
 
 
-// checks if the PTO is on or not to ensure that the correct sets of motors are used later
-	bool PTOon;
-	if (IntakePTOPiston.get_value() == true) {PTOon = true;}
-	else {PTOon = false;}
-
-
-	AllAllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
+	AllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
 
 
 // PID CALCULATION VARIABLES
@@ -440,7 +407,6 @@ void PIDArc(
 		}
 
 		// causes the wheels to move in the proper direction, with the outer wheels being normal and the inner wheels being multiplied by mult
-		if (PTOon) {
 			if (direction == 1) {
 				RightWheels.move(power);
 				LeftWheels.move(power * mult);
@@ -448,15 +414,6 @@ void PIDArc(
 				RightWheels.move(power * mult);
 				LeftWheels.move(power);
 			}
-		} else if (!PTOon) {
-			if (direction == 1) {
-				AllRightWheels.move(power);
-				AllLeftWheels.move(power * mult);
-			} else if (direction == 2) {
-				AllRightWheels.move(power * mult);
-				AllLeftWheels.move(power);
-			}
-		}
 
 
 		pros::delay(15);
@@ -475,8 +432,7 @@ void PIDArc(
 
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
 				actionCompleted = true;
-				if (PTOon) {AllWheels.brake();}
-				else if (!PTOon) {AllAllWheels.brake();}
+				AllWheels.brake();
 		}
 	}
 }
