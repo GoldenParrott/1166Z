@@ -105,7 +105,38 @@ void blockBlueRing(void);
 int convertToRed(int inertialHeadingBlue);
 
 // kalman.cpp
+class KalmanFilter {
+    private:
+        // instance variables
+        pros::IMU* sensor; // defined in constructor
+        pros::Task* filterLoop_ptr; // starts when the Kalman filter turns on
 
+        int filteredHeading; // updates as Kalman filter runs
+        int filterUncertainty; // updates as Kalman filter runs
+
+        int delay; // time between cycles
+
+        std::vector<double> measurementVariances; // list of all measurement variances from the estimate
+        std::vector<double> predictionVariances; // list of all prediction variances from the estimate
+
+
+        // internal methods
+        void KalmanFilterLoop(void); // actual filter
+        double calculateStandardDeviation(std::vector<double> listOfDifferences); // standard deviation calculation used in filter
+
+
+    public:
+        // public methods
+        KalmanFilter(pros::IMU* sensor); // constructor
+
+        // return methods for the filter, updated constantly as the filter runs
+        int getFilteredHeading(void);
+        int getFilterUncertainty(void);
+
+        // start and stop methods for the filter
+        void startFilter(void);
+        void endFilter(void);
+};
 
 #ifdef __cplusplus
 }
