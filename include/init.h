@@ -26,9 +26,11 @@
     extern pros::Motor_Group AllWheels;
     extern pros::Motor_Group AllAllWheels;
 
-    extern pros::Motor InputMotor;
-    extern pros::Motor Transport;
-    extern pros::Motor_Group Intake;
+    extern pros::Motor Intake;
+
+    extern pros::Motor ArmLeft;
+    extern pros::Motor ArmRight;
+    extern pros::Motor_Group Arm;
 
 /*
 ABCDEFGH

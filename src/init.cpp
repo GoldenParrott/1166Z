@@ -27,6 +27,10 @@
     pros::Motor Transport(3, pros::E_MOTOR_GEAR_200, 1);
     pros::Motor_Group Intake({Transport, InputMotor});
 
+    pros::Motor ArmLeft(99, pros::E_MOTOR_GEAR_200, 0);
+    pros::Motor ArmRight(99, pros::E_MOTOR_GEAR_200, 1);
+    pros::Motor_Group Arm({ArmLeft, ArmRight});
+
 /*
 ABCDEFGH
 12345678

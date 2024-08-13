@@ -483,6 +483,124 @@ void PIDArc(
 
 
 
+void PIDArm(
+		int setPoint, // how far you want to move in inches
+
+		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
+		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
+		)
+{
+
+
+	Arm.set_brake_modes(MOTOR_BRAKE_HOLD);
+
+// PID Calculation Variables
+	// General Variables
+	int error;
+	int power;
+	int tolerance = 2;
+	std::vector<bool> customsCompleted;
+	bool actionCompleted = false;
+
+	// Constants (need to be tuned individually for every robot)
+	ConstantContainer moverConstants;
+	moverConstants.kP = 1.28; // customizable
+	moverConstants.kI = 0.4; // customizable
+	moverConstants.kD = 0.1; // customizable
+
+	
+	
+
+
+
+
+// Odometry Measurement Setup
+	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
+	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
+	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
+
+	for (int i = 0; i < executeAts.size(); i++) {
+		executeAts[i] *= 2.54;
+	}
+
+	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
+	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
+						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
+	long double singleDegree = wheelRevolution / 360; // the distance that the robot moves in one degree of rotation of its wheels
+
+
+
+// Odometry Pre-Measurement
+	// resets the rotation of all motors before the movement so the movement can be calculated from zero to the destination
+	ArmRight.tare_position();
+	ArmLeft.tare_position();
+
+	// used to measure the rotational sensor values of all the motors (this comes in degrees)
+	double ar = ArmRight.get_position();
+	double al = ArmLeft.get_position();
+
+	double currentMotorReading = ((ar + al) / 2); // measures the average rotation of all motors to determine the movement of the entire robot
+	double currentWheelReading = currentMotorReading * gearRatio; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
+
+	// measures the current distance moved by the robot by multiplying the number of degrees that it has moved 
+	// by the number of centimeters moved in a single degree of movement
+	double currentDistanceMovedByWheel = currentWheelReading * singleDegree; 
+
+	// this initializes variables that are used to measure values from previous cycles
+	PIDReturn cycle;
+	cycle.prevError = setPoint - currentDistanceMovedByWheel;
+	cycle.power = 0;
+	cycle.prevIntegral = 0;
+
+	 
+
+	while (actionCompleted != true) {
+
+	// gets the power for the current cycle
+	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
+
+	// moves the wheels at the desired power, ending the cycle
+	Arm.move(cycle.power);
+
+
+
+	// Custom lambda function that will execute if given and the robot has reached the point given by executeAt
+		
+	for (int i = 0; i < customs.size(); i++) {
+		// ensures that the code will only run if the function has been provided and if executeAt has been reached
+		if (customs[i] != 0 && ((currentDistanceMovedByWheel >= executeAts[i] && isPositive) || (currentDistanceMovedByWheel <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
+			// runs the function
+			customs[i]();
+			// prevents the function from running again
+			customsCompleted[i] = true;
+		}
+	}
+
+
+// PID Looping Odometry Measurement
+
+		// fifteen millisecond delay between cycles
+		pros::delay(15);
+
+		// finds the degrees of measurement of the motors
+		ar = BackRight.get_position();
+		al = BackLeft.get_position();
+
+		// reassigns the "distance moved" variables for the next cycle after the delay
+		currentMotorReading = ((ar + al) / 2); // degrees
+		currentWheelReading = currentMotorReading * gearRatio; // degrees = degrees * gear ratio multiplier
+		currentDistanceMovedByWheel = currentWheelReading * singleDegree; // centimeters
+
+		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
+		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
+				actionCompleted = true;
+				Arm.brake();
+		}
+	}
+}
+
+
+
 PIDReturn PIDCalc(
 	int distanceMoved, // current distance moved (in odometry units)
 	int setPoint, // goal distance to move (in odometry units)
