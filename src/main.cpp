@@ -174,6 +174,7 @@ void opcontrol() {
 					Arm.brake();
 				}
 			}
+		}
 /*
 
 		// Arm Presets
