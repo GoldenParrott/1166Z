@@ -3,8 +3,8 @@
 void PIDMover(
 		int setPoint, // how far you want to move in inches
 
-		std::function<void(void)> custom, // a lambda function that will execute during the PID (optional)
-		int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
+		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
+		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
 
@@ -21,27 +21,14 @@ void PIDMover(
 	int error;
 	int power;
 	int tolerance = 2;
-	int cyclesAtGoal;
-	bool customCompleted = false;
+	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
-	// Proportional Variables
-	int proportionalOut;
-
-	// Integral Variables
-	int integral = 0;
-	int integralLimiter = 512; // customizable
-	int integralOut;
-
-	// Derivative Variables
-    int derivative;
-    int derivativeOut;
-	int prevError;
-
 	// Constants (need to be tuned individually for every robot)
-	double kP = 1.28; // customizable
-	double kI = 0.4; // customizable
-	double kD = 0.1; // customizable
+	ConstantContainer moverConstants;
+	moverConstants.kP = 1.28; // customizable
+	moverConstants.kI = 0.4; // customizable
+	moverConstants.kD = 0.1; // customizable
 
 	
 	
@@ -50,11 +37,13 @@ void PIDMover(
 
 
 // Odometry Measurement Setup
-	bool isPositive = setPoint > 0; // Checks if the movement is positive or negatives
+	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
 	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
 	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
 
-	executeAt = executeAt * 2.54;
+	for (int i = 0; i < executeAts.size(); i++) {
+		executeAts[i] *= 2.54;
+	}
 
 	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
 	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
@@ -83,82 +72,39 @@ void PIDMover(
 	// by the number of centimeters moved in a single degree of movement
 	double currentDistanceMovedByWheel = currentWheelReading * singleDegree; 
 
-	// these initialize variables that are used to measure values from previous cycles
-	error = (int) (setPoint - currentDistanceMovedByWheel);
-	prevError = error;
+	// this initializes variables that are used to measure values from previous cycles
+	PIDReturn cycle;
+	cycle.prevError = setPoint - currentDistanceMovedByWheel;
+	cycle.power = 0;
+	cycle.prevIntegral = 0;
 
 	 
 
 	while (actionCompleted != true) {
-// PID Looping Calculations
-		
-	// P: Proportional -- slows down as we reach our target for more accuracy
 
-		// error = goal reading - current reading
-		error = int (setPoint - currentDistanceMovedByWheel);
-		// kP (proportional constant) determines how fast we want to go overall while still keeping accuracy
-		proportionalOut = error * kP;
-
-
-
-
-	// I: Integral -- starts slow and speeds up as time goes on to prevent undershooting
-
-		// starts the integral at the error, then compounds it with the new current error every loop
-		integral = int (integral + error);
-		// prevents the integral variable from causing the robot to overshoot
-		if ((isPositive && (error <= 0)) || (!isPositive && (error >= 0))) {
-			integral = 0;
-		}
-		// prevents the integral from winding up too much, causing the number to be beyond the control of
-        // even kI
-		// if we want to make this better, see Solution #3 for 3.3.2 in the packet
-		if (((isPositive) && (error >= 100)) || ((!isPositive) && (error <= -100))) {
-			integral = 0;
-			}
-		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
-			integral = isPositive
-				? 100
-				: -100;
-			}
-		// kI (integral constant) brings integral down to a reasonable/useful output number
-		integralOut = integral * kI;
-
-
-
-	// D: Derivative -- slows the robot more and more as it goes faster
-
-        // starts the derivative by making it the rate of change from the previous cycle to this one
-        derivative = int (error - prevError);
-		// sets the previous error to the current error for use in the next cycle
-		prevError = error;
-
-        // kD (derivative constant) prevents derivative from over- or under-scaling
-        derivativeOut = derivative * kD;
-
-
-
-	// Adds the results of each of the calculations together to get the desired power
-		power = proportionalOut + integralOut + derivativeOut;
+	// gets the power for the current cycle
+	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
 
 	// moves the wheels at the desired power, ending the cycle
 	if (PTOon) {
-		AllWheels.move(power);
+		AllWheels.move(cycle.power);
 	} else if (!PTOon) {
-		AllAllWheels.move(power);
+		AllAllWheels.move(cycle.power);
 	}
 
 
 
 	// Custom lambda function that will execute if given and the robot has reached the point given by executeAt
 		
+	for (int i = 0; i < customs.size(); i++) {
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
-		if (custom != 0 && ((currentDistanceMovedByWheel >= executeAt && isPositive) || (currentDistanceMovedByWheel <= executeAt && !isPositive)) && !customCompleted) {
+		if (customs[i] != 0 && ((currentDistanceMovedByWheel >= executeAts[i] && isPositive) || (currentDistanceMovedByWheel <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
 			// runs the function
-			custom();
+			customs[i]();
 			// prevents the function from running again
-			customCompleted = true;
+			customsCompleted[i] = true;
 		}
+	}
 
 
 // PID Looping Odometry Measurement
@@ -190,8 +136,8 @@ void PIDTurner(
 		int setPoint, // the goal inertial heading in degrees
 		int direction, // 1 for left and 2 for right
 
-		std::function<void(void)> custom, // a lambda function that will execute during the PID (optional)
-		int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
+		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
+		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
 
@@ -207,26 +153,11 @@ void PIDTurner(
 	int error;
 	int power;
 	int tolerance = 1;
-	bool customCompleted = true;
+	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
-// Proportional Variables
-	int proportionalOut;
-
-// Integral Variables
-	int integral = 0;
-	int integralLimiter;
-	int integralOut;
-
-// Derivative Variables
-    int derivative;
-    int derivativeOut;
-	int prevError = error;
-
 // Constants -- tuning depends on whether the robot is moving or turning
-	double kP;
-	double kI;
-	double kD;
+	ConstantContainer turnerConstants;
 
 
 // Checks if the movement is positive or negative
@@ -270,82 +201,46 @@ void PIDTurner(
 	// distanceToMove is analogous to setPoint on PIDMover, and changeInReading is analogous to currentDistanceMovedByWheel
 	int changeInReading = 0;
 
-	prevError = (int) (distanceToMove - changeInReading);
+
+	distanceToMove -= 2;
 
 
-
+	// constant definitions
 	if (distanceToMove <= 90) {
-		kP = 1.35;
-		kI = 0.19;
-		kD = 0.1;
+		turnerConstants.kP = 1.35;
+		turnerConstants.kI = 0.19;
+		turnerConstants.kD = 0.1;
 	} else {
-		kP = 0.7;
-		kI = 0.1;
-		kD = 0.3;
+		turnerConstants.kP = 0.9;
+		turnerConstants.kI = 0.13;
+		turnerConstants.kD = 0.2;
 	}
+
+	// this initializes variables that are used to measure values from previous cycles
+	PIDReturn cycle;
+	cycle.prevError = distanceToMove - changeInReading;
+	cycle.power = 0;
+	cycle.prevIntegral = 0;
 
 	 
 
 	while (!actionCompleted) {
-	// PID CALCULATION CODE
-		
-	// P: Proportional -- slows down as we reach our target for more accuracy
 	
-		// error = goal reading - current reading
-		error = distanceToMove - changeInReading;
-		// kP (proportional constant) determines how fast we want to go overall while still keeping accuracy
-		proportionalOut = error * kP;
+	// gets the power for the current cycle
+	cycle = PIDCalc(changeInReading, distanceToMove, isPositive, turnerConstants, cycle);
 
 
 
-
-	// I: Integral -- starts slow and speeds up as time goes on to prevent undershooting
-
-		// starts the integral at the error, then compounds it with the new current error every loop
-		integral = int (integral + error);
-		// prevents the integral variable from causing the robot to overshoot
-		if ((isPositive && (error <= 0)) || (!isPositive && (error >= 0))) {
-			integral = 0;
-		}
-		// prevents the integral from winding up too much, causing the number to be beyond the control of
-        // even kI
-		// if we want to make this better, see Solution #3 for 3.3.2 in the packet
-		if (((isPositive) && (error >= 135)) || ((!isPositive) && (error <= -135))) {
-			integral = 0;
-			}
-		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
-			integral = isPositive
-				? 100
-				: -100;
-			}
-		// kI (integral constant) brings integral down to a reasonable/useful output number
-		integralOut = integral * kI;
-
-
-
-	// D: Derivative -- slows the robot more and more as it goes faster
-
-        // starts the derivative by making it the rate of change from the previous cycle to this one
-		// the error from the previous cycle should be taken as a parameter
-        derivative = int (error - prevError);
-		// sets the previous error to the previous error for use in the next cycle
-		prevError = error;
-
-        // kD (derivative constant) prevents derivative from over- or under-scaling
-        derivativeOut = derivative * kD;
-
-		power = proportionalOut + integralOut + derivativeOut;
-
-
-
-
+	// custom lambda functions
+	for (int i = 0; i < customs.size(); i++) {
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
-		if (custom != 0 && changeInReading >= executeAt && !customCompleted) {
+		if (customs[i] != 0 && ((changeInReading >= executeAts[i] && isPositive) || (changeInReading <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
 			// runs the function
-			custom();
+			customs[i]();
 			// prevents the function from running again
-			customCompleted = true;
+			customsCompleted[i] = true;
 		}
+	}
 
 
 
@@ -398,8 +293,8 @@ void PIDArc(
 	int maxDist, // the maximum distance of the straight line from your current position and the setPoint to the arc (should be measured at half-point)
 	int direction, // 1 for left, 2 for right
 
-	std::function<void(void)> custom, // a lambda function that will execute during the PID (optional)
-	int executeAt // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
+	std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
+	std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 	)
 {
 // Checks if the movement is positive or negative
@@ -420,7 +315,7 @@ void PIDArc(
 	int error;
 	int power;
 	int tolerance = 1;
-	bool customCompleted = false;
+	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
 // Proportional Variables
@@ -438,14 +333,19 @@ void PIDArc(
 	
 
 // Constants -- tuning depends on whether the robot is moving or turning
-	double kP = 3.2; // customizable
-	double kI = 0.3; // customizable
-	double kD = 0.1; // customizable
+	ConstantContainer arcConstants;
+	arcConstants.kP = 3.2; // customizable
+	arcConstants.kI = 0.3; // customizable
+	arcConstants.kD = 0.1; // customizable
 
 
 // PID LOOPING VARIABLES
 	chordLength = chordLength * 2.54; // converts from inches to cm
 	maxDist = maxDist * 2.54;
+	
+	for (int i = 0; i < executeAts.size(); i++) {
+		executeAts[i] *= 2.54;
+	}
 
 
 // Odometry
@@ -504,70 +404,32 @@ void PIDArc(
 	if (!isPositive) {setPoint = -setPoint;}
 
 
+	// this initializes variables that are used to measure values from previous cycles
+	PIDReturn cycle;
+	cycle.prevError = setPoint - currentDistanceMovedByWheel;
+	cycle.power = 0;
+	cycle.prevIntegral = 0;
+
+
 	while (actionCompleted != true) {
-	// PID CALCULATION CODE
+
+	// gets the power for the current cycle
+	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, arcConstants, cycle);
+
+
+
+
+	// Custom lambda function that will execute if given and the robot has reached the point given by executeAt
 		
-	// P: Proportional -- slows down as we reach our target for more accuracy
-
-		// error = goal reading - current reading
-		error = int (setPoint - currentDistanceMovedByWheel);
-		// kP (proportional constant) determines how fast we want to go overall while still keeping accuracy
-		proportionalOut = error * kP;
-
-
-
-
-	// I: Integral -- starts slow and speeds up as time goes on to prevent undershooting
-
-		// starts the integral at the error, then compounds it with the new current error every loop
-		integral = int (integral + error);
-		// prevents the integral variable from causing the robot to overshoot
-		if ((isPositive && (error == 0)) || (!isPositive && (error == 0))) {
-			integral = 0;
-		}
-		// prevents the integral from winding up too much, causing the number to be beyond the control of
-        // even kI
-		// if we want to make this better, see Solution #3 for 3.3.2 in the packet
-		if (((isPositive) && (error >= 100)) || ((!isPositive) && (error <= -100))) {
-			integral = 0;
-			}
-		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
-			integral = isPositive
-				? 100
-				: -100;
-			}
-		// kI (integral constant) brings integral down to a reasonable/useful output number
-		integralOut = integral * kI;
-
-
-
-	// D: Derivative -- slows the robot more and more as it goes faster
-
-        // starts the derivative by making it the rate of change from the previous cycle to this one
-        derivative = int (error - prevError);
-		// sets the previous error to the previous error for use in the next cycle
-		prevError = error;
-
-        // kD (derivative constant) prevents derivative from over- or under-scaling
-        derivativeOut = derivative * kD;
-
-
-
-
+	for (int i = 0; i < customs.size(); i++) {
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
-		if (custom != 0 && currentDistanceMovedByWheel >= executeAt && !customCompleted) {
+		if (customs[i] != 0 && ((currentDistanceMovedByWheel >= executeAts[i] && isPositive) || (currentDistanceMovedByWheel <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
 			// runs the function
-			custom();
+			customs[i]();
 			// prevents the function from running again
-			customCompleted = true;
-
+			customsCompleted[i] = true;
 		}
-
-
-
-
-
-		power = proportionalOut + integralOut + derivativeOut;
+	}
 
 	// caps motor power at 128 if it goes beyond it to ensure that the multiplier makes one side spin slower
 		if (power > 128) {
@@ -617,4 +479,192 @@ void PIDArc(
 				else if (!PTOon) {AllAllWheels.brake();}
 		}
 	}
+}
+
+
+
+void PIDArm(
+		int setPoint, // how far you want to move in inches
+
+		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
+		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
+		)
+{
+
+
+	Arm.set_brake_modes(MOTOR_BRAKE_HOLD);
+
+// PID Calculation Variables
+	// General Variables
+	int error;
+	int power;
+	int tolerance = 2;
+	std::vector<bool> customsCompleted;
+	bool actionCompleted = false;
+
+	// Constants (need to be tuned individually for every robot)
+	ConstantContainer moverConstants;
+	moverConstants.kP = 1.28; // customizable
+	moverConstants.kI = 0.4; // customizable
+	moverConstants.kD = 0.1; // customizable
+
+	
+	
+
+
+
+
+// Odometry Measurement Setup
+	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
+	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
+	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
+
+	for (int i = 0; i < executeAts.size(); i++) {
+		executeAts[i] *= 2.54;
+	}
+
+	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
+	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
+						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
+	long double singleDegree = wheelRevolution / 360; // the distance that the robot moves in one degree of rotation of its wheels
+
+
+
+// Odometry Pre-Measurement
+	// resets the rotation of all motors before the movement so the movement can be calculated from zero to the destination
+	ArmRight.tare_position();
+	ArmLeft.tare_position();
+
+	// used to measure the rotational sensor values of all the motors (this comes in degrees)
+	double ar = ArmRight.get_position();
+	double al = ArmLeft.get_position();
+
+	double currentMotorReading = ((ar + al) / 2); // measures the average rotation of all motors to determine the movement of the entire robot
+	double currentWheelReading = currentMotorReading * gearRatio; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
+
+	// measures the current distance moved by the robot by multiplying the number of degrees that it has moved 
+	// by the number of centimeters moved in a single degree of movement
+	double currentDistanceMovedByWheel = currentWheelReading * singleDegree; 
+
+	// this initializes variables that are used to measure values from previous cycles
+	PIDReturn cycle;
+	cycle.prevError = setPoint - currentDistanceMovedByWheel;
+	cycle.power = 0;
+	cycle.prevIntegral = 0;
+
+	 
+
+	while (actionCompleted != true) {
+
+	// gets the power for the current cycle
+	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
+
+	// moves the wheels at the desired power, ending the cycle
+	Arm.move(cycle.power);
+
+
+
+	// Custom lambda function that will execute if given and the robot has reached the point given by executeAt
+		
+	for (int i = 0; i < customs.size(); i++) {
+		// ensures that the code will only run if the function has been provided and if executeAt has been reached
+		if (customs[i] != 0 && ((currentDistanceMovedByWheel >= executeAts[i] && isPositive) || (currentDistanceMovedByWheel <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
+			// runs the function
+			customs[i]();
+			// prevents the function from running again
+			customsCompleted[i] = true;
+		}
+	}
+
+
+// PID Looping Odometry Measurement
+
+		// fifteen millisecond delay between cycles
+		pros::delay(15);
+
+		// finds the degrees of measurement of the motors
+		ar = BackRight.get_position();
+		al = BackLeft.get_position();
+
+		// reassigns the "distance moved" variables for the next cycle after the delay
+		currentMotorReading = ((ar + al) / 2); // degrees
+		currentWheelReading = currentMotorReading * gearRatio; // degrees = degrees * gear ratio multiplier
+		currentDistanceMovedByWheel = currentWheelReading * singleDegree; // centimeters
+
+		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
+		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
+				actionCompleted = true;
+				Arm.brake();
+		}
+	}
+}
+
+
+
+PIDReturn PIDCalc(
+	int distanceMoved, // current distance moved (in odometry units)
+	int setPoint, // goal distance to move (in odometry units)
+	bool isPositive, // direction of movement
+	ConstantContainer constants, // all constants
+	PIDReturn lastCycle // data from previous cycle
+	)
+{
+	PIDReturn thisCycle;
+	// P: Proportional -- slows down as we reach our target for more accuracy
+
+		// error = goal reading - current reading
+		int error = int (setPoint - distanceMoved);
+		// kP (proportional constant) determines how fast we want to go overall while still keeping accuracy
+		int proportionalOut = error * constants.kP;
+
+
+
+
+	// I: Integral -- starts slow and speeds up as time goes on to prevent undershooting
+
+		// starts the integral at the error, then compounds it with the new current error every loop
+		int integral = int (lastCycle.prevIntegral + error);
+		// prevents the integral variable from causing the robot to overshoot
+		if ((isPositive && (error <= 0)) || (!isPositive && (error >= 0))) {
+			integral = 0;
+		}
+		// prevents the integral from winding up too much, causing the number to be beyond the control of
+        // even kI
+		// if we want to make this better, see Solution #3 for 3.3.2 in the packet
+		if (((isPositive) && (error >= 100)) || ((!isPositive) && (error <= -100))) {
+			integral = 0;
+			}
+		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
+			integral = isPositive
+				? 100
+				: -100;
+			}
+		// kI (integral constant) brings integral down to a reasonable/useful output number
+		int integralOut = integral * constants.kI;
+
+		// adds integral to return structure for compounding
+		thisCycle.prevIntegral = integral;
+
+
+
+	// D: Derivative -- slows the robot more and more as it goes faster
+
+        // starts the derivative by making it the rate of change from the previous cycle to this one
+        int derivative = int (error - lastCycle.prevError);
+
+        // kD (derivative constant) prevents derivative from over- or under-scaling
+        int derivativeOut = derivative * constants.kD;
+
+		// sets the previous error to the current error for use in the next derivative
+		thisCycle.prevError = error;
+
+
+
+	// Adds the results of each of the calculations together to get the desired power
+		int power = proportionalOut + integralOut + derivativeOut;
+
+		thisCycle.power = power;
+
+	// returns a PIDReturn structure
+		return thisCycle;
 }
