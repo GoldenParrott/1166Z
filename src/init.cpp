@@ -5,23 +5,18 @@
     pros::Controller Partner(pros::E_CONTROLLER_PARTNER);
 
 //Motors
-
-    pros::Motor UpLeft(13, pros::E_MOTOR_GEAR_600, 0);
-    pros::Motor UpRight(19, pros::E_MOTOR_GEAR_600, 1);
-    pros::Motor_Group IntakePTO({UpLeft, UpRight});
     
-    pros::Motor FrontLeft(11, pros::E_MOTOR_GEAR_600, 1);
-    pros::Motor BackLeft(5, pros::E_MOTOR_GEAR_600, 1);
-    pros::Motor_Group LeftWheels({FrontLeft, BackLeft});
-    pros::Motor_Group AllLeftWheels({FrontLeft, BackLeft, UpLeft});
+    pros::Motor FrontLeft(99, pros::E_MOTOR_GEAR_600, 1);
+    pros::Motor MidLeft(99, pros::E_MOTOR_GEAR_600, 1);
+    pros::Motor BackLeft(99, pros::E_MOTOR_GEAR_600, 1);
+    pros::Motor_Group LeftWheels({FrontLeft, MidLeft, BackLeft});
 
-    pros::Motor FrontRight(1, pros::E_MOTOR_GEAR_600, 0);
-    pros::Motor BackRight(2, pros::E_MOTOR_GEAR_600, 0);
-    pros::Motor_Group RightWheels({FrontRight, BackRight});
-    pros::Motor_Group AllRightWheels({FrontRight, BackRight, UpRight});
+    pros::Motor FrontRight(99, pros::E_MOTOR_GEAR_600, 0);
+    pros::Motor MidRight(99, pros::E_MOTOR_GEAR_600, 0);
+    pros::Motor BackRight(99, pros::E_MOTOR_GEAR_600, 0);
+    pros::Motor_Group RightWheels({FrontRight, MidRight, BackRight});
 
-    pros::Motor_Group AllWheels({FrontLeft, BackLeft, FrontRight, BackRight});
-    pros::Motor_Group AllAllWheels({FrontLeft, BackLeft, FrontRight, BackRight, UpLeft, UpRight});
+    pros::Motor_Group AllWheels({FrontLeft, MidLeft, BackLeft, FrontRight, MidRight, BackRight});
 
     pros::Motor Intake(3, pros::E_MOTOR_GEAR_200, 0);
 
