@@ -9,7 +9,7 @@ void KalmanFilter::KalmanFilterLoop()
 
     // current actual values
     int currentHeading;
-    int currentCovariance; // initial guess
+    int currentCovariance;
 
     // predicted measurement values for later in the cycle
     int statePrediction = 0;
@@ -123,7 +123,7 @@ int KalmanFilter::getFilterUncertainty()
 // starts the filter loop if it is not already active (public)
 void KalmanFilter::startFilter() {
     if (filterLoop_ptr == NULL) {
-        filterLoop_ptr = new pros::Task(KalmanFilter::KalmanFilterLoop);
+        //filterLoop_ptr = new pros::Task(&KalmanFilter::KalmanFilterLoop);
     }
 }
 

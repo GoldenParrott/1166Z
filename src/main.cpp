@@ -68,7 +68,7 @@ void autonomous() {
 	ArmLeft.tare_position();
 
 	if (colorSensorOn_task_ptr == NULL) {
-		colorSensorOn_task_ptr = new pros::Task(colorSensorOn, 'Color Eject On');
+		// colorSensorOn_task_ptr = new pros::Task(colorSensorOn, 'Color Eject On');
 	}
 
 	
