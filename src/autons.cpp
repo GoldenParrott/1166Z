@@ -97,7 +97,7 @@ void blueRingside() {
 	PIDTurner(155, 2);
 
 	// Moves to the Mobile Goal and grips it
-	PIDMover(-28, gripMoGoM, -26);
+	PIDMover(-28, {gripMoGoM}, {-26});
 	// Transport.brake();
 
 	// Maneuvers to the Ladder to contact it for AWP
@@ -144,7 +144,7 @@ void blueGoalside() {
 	InputMotor.move(-128);
 
 	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
-	PIDMover(42, activateGrabber, 40);
+	PIDMover(42, {activateGrabber}, {40});
 	pros::delay(265);
 
 
@@ -160,7 +160,7 @@ void blueGoalside() {
 	PIDTurner(176, 2);
 
 	//Moves to the Mobile Goal to pick it up
-	PIDMover(-25, gripMoGoM, -20);
+	PIDMover(-25, {gripMoGoM}, {-20});
 	pros::delay(200);
 
 
@@ -205,7 +205,7 @@ void blueGoalside() {
 	PIDMover(20);
 	pros::delay(100);
 	PIDTurner(248, 1);
-	PIDMover(-40, gripMoGoM, -36);
+	PIDMover(-40, {gripMoGoM}, {-36});
 	pros::delay(300);
 
 	// Maneuvers to the Ladder and scores the final Ring
@@ -241,7 +241,7 @@ void redGoalside() {
 	InputMotor.move_relative(1300, 600);
 
 	// moves toward the second Ring and intakes it after, delaying to give the robot time to fully intake the second Ring
-	PIDMover(34, activateGrabber, 32);
+	PIDMover(34, {activateGrabber}, {32});
 	InputMotor.move(-128);
 	pros::delay(350);
 
@@ -261,7 +261,7 @@ void redGoalside() {
 
 	// drops the first MoGo off at the back
 	PIDMover(3);
-	PIDMover(-40, gripMoGoM, -33);
+	PIDMover(-40, {gripMoGoM}, {-33});
 	Transport.move_relative(-700, 200);
 	pros::delay(1000);
 	MobileGoalManipulator.set_value(false);
@@ -270,7 +270,7 @@ void redGoalside() {
 	PIDMover(17);
 	pros::delay(100);
 	PIDTurner(110, 2);
-	PIDMover(-24, gripMoGoM, -20);
+	PIDMover(-24, {gripMoGoM}, {-20});
 
 	// Scores the other Ring and touches the Ladder
 	PIDMover(10);
@@ -384,7 +384,7 @@ void redRingside() {
 	PIDTurner(205, 1);
 
 	// Moves to the Mobile Goal and grips it
-	PIDMover(-28, gripMoGoM, -26);
+	PIDMover(-28, {gripMoGoM}, {-26});
 	// Transport.brake();
 
 	// Maneuvers to the Ladder to contact it for AWP
