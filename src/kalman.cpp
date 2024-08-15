@@ -122,8 +122,10 @@ int KalmanFilter::getFilterUncertainty()
 
 // starts the filter loop if it is not already active (public)
 void KalmanFilter::startFilter() {
+    auto filterLoopFunction = [this]() {return this->KalmanFilterLoop();};
+
     if (filterLoop_ptr == NULL) {
-        //filterLoop_ptr = new pros::Task(&KalmanFilter::KalmanFilterLoop);
+        filterLoop_ptr = new pros::Task(filterLoopFunction);
     }
 }
 
