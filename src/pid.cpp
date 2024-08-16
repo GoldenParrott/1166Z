@@ -34,38 +34,19 @@ void PIDMover(
 // Odometry Measurement Setup
 	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
 	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
-	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
 
 	for (int i = 0; i < executeAts.size(); i++) {
 		executeAts[i] *= 2.54;
 	}
 
-	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
-	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
-						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
-	long double singleDegree = wheelRevolution / 360; // the distance that the robot moves in one degree of rotation of its wheels
-
 
 
 // Odometry Pre-Measurement
 	// resets the rotation of all motors before the movement so the movement can be calculated from zero to the destination
-	BackRight.tare_position();
-	BackLeft.tare_position();
-	FrontRight.tare_position();
-	FrontLeft.tare_position();
+	Rotational.reset();
 
 	// used to measure the rotational sensor values of all the motors (this comes in degrees)
-	double br = BackRight.get_position();
-	double bl = BackLeft.get_position();
-	double fr = FrontRight.get_position();
-	double fl = FrontLeft.get_position();
-
-	double currentMotorReading = ((br + bl + fr + fl) / 4); // measures the average rotation of all motors to determine the movement of the entire robot
-	double currentWheelReading = currentMotorReading * gearRatio; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
-
-	// measures the current distance moved by the robot by multiplying the number of degrees that it has moved 
-	// by the number of centimeters moved in a single degree of movement
-	double currentDistanceMovedByWheel = currentWheelReading * singleDegree; 
+	double currentDistanceMovedByWheel = readOdomPod(Rotational);
 
 	// this initializes variables that are used to measure values from previous cycles
 	PIDReturn cycle;
@@ -103,16 +84,7 @@ void PIDMover(
 		// fifteen millisecond delay between cycles
 		pros::delay(15);
 
-		// finds the degrees of measurement of the motors
-		br = BackRight.get_position();
-		bl = BackLeft.get_position();
-		fr = FrontRight.get_position();
-		fl = FrontLeft.get_position();
-
-		// reassigns the "distance moved" variables for the next cycle after the delay
-		currentMotorReading = ((br + bl + fr + fl) / 4); // degrees
-		currentWheelReading = currentMotorReading * gearRatio; // degrees = degrees * gear ratio multiplier
-		currentDistanceMovedByWheel = currentWheelReading * singleDegree; // centimeters
+		currentDistanceMovedByWheel = readOdomPod(Rotational);
 
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
@@ -316,23 +288,8 @@ void PIDArc(
 
 
 // Odometry
-	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
-	double gearRatio = 3 / 4;
-	double wheelRevolution = wheelCircumference * 2.54; // in cm
-	long double singleDegree = wheelRevolution / 360;
-
-	BackRight.tare_position();
-	BackLeft.tare_position();
-	FrontRight.tare_position();
-	FrontLeft.tare_position();
-
-	double bo;
-	double fo;
-
-	double currentMotorReading = ((bo + fo) / 2);
-	double currentWheelReading = currentMotorReading * gearRatio;
-
-	double currentDistanceMovedByWheel = 0;
+	RotationalTurn.reset();
+	double currentDistanceMovedByWheel = readOdomPod(RotationalTurn);
 
 	error = (int) (chordLength - currentDistanceMovedByWheel);
 	prevError = error;
@@ -418,17 +375,7 @@ void PIDArc(
 
 		pros::delay(15);
 
-		if (direction == 1) {
-			bo = BackRight.get_position();
-			fo = FrontRight.get_position();
-		} else {
-			bo = BackLeft.get_position();
-			fo = FrontLeft.get_position();
-		}
-
-		currentMotorReading = ((bo + fo) / 2); // degrees
-		currentWheelReading = currentMotorReading / gearRatio; // degrees = degrees * multiplier
-		currentDistanceMovedByWheel = currentWheelReading * singleDegree; // centimeters
+		currentDistanceMovedByWheel = readOdomPod(RotationalTurn);
 
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
 				actionCompleted = true;
@@ -473,7 +420,6 @@ void PIDArm(
 // Odometry Measurement Setup
 	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
 	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
-	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
 
 	for (int i = 0; i < executeAts.size(); i++) {
 		executeAts[i] *= 2.54;
@@ -496,7 +442,7 @@ void PIDArm(
 	double al = ArmLeft.get_position();
 
 	double currentMotorReading = ((ar + al) / 2); // measures the average rotation of all motors to determine the movement of the entire robot
-	double currentWheelReading = currentMotorReading * gearRatio; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
+	double currentWheelReading = currentMotorReading; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
 
 	// measures the current distance moved by the robot by multiplying the number of degrees that it has moved 
 	// by the number of centimeters moved in a single degree of movement
@@ -544,7 +490,7 @@ void PIDArm(
 
 		// reassigns the "distance moved" variables for the next cycle after the delay
 		currentMotorReading = ((ar + al) / 2); // degrees
-		currentWheelReading = currentMotorReading * gearRatio; // degrees = degrees * gear ratio multiplier
+		currentWheelReading = currentMotorReading; // degrees = degrees * gear ratio multiplier
 		currentDistanceMovedByWheel = currentWheelReading * singleDegree; // centimeters
 
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed

@@ -147,6 +147,8 @@ class KalmanFilter {
         void startFilter(void);
         void endFilter(void);
 };
+// odom.cpp
+double readOdomPod(pros::Rotation odomRotational);
 
 #ifdef __cplusplus
 }
