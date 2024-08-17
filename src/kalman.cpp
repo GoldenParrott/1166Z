@@ -123,7 +123,7 @@ double KalmanFilter::calculateStandardDeviation(
 
 
 // constructor (public)
-KalmanFilter::KalmanFilter(pros::IMU* inertial) {
+KalmanFilter::KalmanFilter(pros::IMU* inertial, pros::Rotation* turnRotational) {
 
     // instance variable initializations
     filterLoop_ptr = NULL; // sets the filter loop pointer to null so it can be defined later
@@ -133,6 +133,7 @@ KalmanFilter::KalmanFilter(pros::IMU* inertial) {
     delay = 5; // delay (in ms) between cycles
 
     this->inertial = inertial; // takes the IMU for its heading
+    this->turnRotational = turnRotational; // takes the turning rotation
 }
 
 /* 

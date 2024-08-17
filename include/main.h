@@ -119,7 +119,8 @@ class KalmanFilter {
     private:
         // instance variables
         pros::IMU* inertial; // defined in constructor
-        pros::Task* filterLoop_ptr; // starts when the Kalman filter turns on
+        pros::Rotation* turnRotational; // defined in constructor
+        pros::Task* filterLoop_ptr; // is initialized when the Kalman filter turns on
 
         int filteredHeading; // updates as Kalman filter runs
         int filterUncertainty; // updates as Kalman filter runs
@@ -137,7 +138,7 @@ class KalmanFilter {
 
     public:
         // public methods
-        KalmanFilter(pros::IMU* inertial); // constructor
+        KalmanFilter(pros::IMU* inertial, pros::Rotation* turnRotational); // constructor
 
         // return methods for the filter, updated constantly as the filter runs
         int getFilteredHeading(void);
@@ -149,6 +150,7 @@ class KalmanFilter {
 };
 // odom.cpp
 double readOdomPod(pros::Rotation odomRotational);
+double readOdomVelocity(pros::Rotation odomRotational);
 
 #ifdef __cplusplus
 }
