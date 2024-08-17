@@ -118,7 +118,7 @@ void drawLogo(void);
 class KalmanFilter {
     private:
         // instance variables
-        pros::IMU* sensor; // defined in constructor
+        pros::IMU* inertial; // defined in constructor
         pros::Task* filterLoop_ptr; // starts when the Kalman filter turns on
 
         int filteredHeading; // updates as Kalman filter runs
@@ -137,7 +137,7 @@ class KalmanFilter {
 
     public:
         // public methods
-        KalmanFilter(pros::IMU* sensor); // constructor
+        KalmanFilter(pros::IMU* inertial); // constructor
 
         // return methods for the filter, updated constantly as the filter runs
         int getFilteredHeading(void);

@@ -4,12 +4,13 @@
 // (private)
 void KalmanFilter::KalmanFilterLoop()
 {
+
     // current measurement value
     int currentMeasurement = 0;
 
     // current actual values
     int currentHeading;
-    int currentCovariance;
+    int currentCovariance; // initial guess
 
     // predicted measurement values for later in the cycle
     int statePrediction = 0;
@@ -25,13 +26,15 @@ void KalmanFilter::KalmanFilterLoop()
     // velocity values
     double velocity = 0;
     pros::c::imu_accel_s_t rawAcceleration;
-    double gAcceleration = 0;
     double msAcceleration = 0;
+    // direction of accelerometer values for velocity
+    bool isPositive = true;
+    bool wasPositive = true;
             
     // initial loop
 
     // measurement guess phase
-    currentHeading = sensor->get_heading(); // initial measurement, treated as "filtered" for starting cycle
+    currentHeading = inertial->get_heading(); // initial measurement, treated as "filtered" for starting cycle
     currentCovariance = 0; // initial guess
 
     // prediction phase
@@ -40,21 +43,45 @@ void KalmanFilter::KalmanFilterLoop()
 
     // looping filter
     while (true) {
-                // measurement phase
-                currentMeasurement = sensor->get_heading();
+                // MEASUREMENT PHASE
+                currentMeasurement = inertial->get_heading();
 
-                // KALMAN
+                // KALMAN GAIN CALCULATION
                 kalmanGain = estimateVariancePrediction / (estimateVariancePrediction + measurementDeviation); // Kalman Gain Equation
 
-                // update phase
+                // UPDATE PHASE
                 currentHeading = statePrediction + (kalmanGain * (currentMeasurement - statePrediction)); // State Update Equation
                 currentCovariance = (1 - kalmanGain) * estimateVariancePrediction; // Covariance Update Equation
 
                 // VELOCITY UPDATE
-                pros::c::imu_accel_s_t acceleration = sensor->get_accel(); // gets the raw accelerometer values
-                gAcceleration = (abs(rawAcceleration.x) + abs(rawAcceleration.y)) / 2; // sets the acceleration value to the mean of the x and y accelerometer values
-                msAcceleration += (gAcceleration * 9.807); // changes the units of acceleration from G's to m/s
+                pros::c::imu_accel_s_t rawAcceleration = inertial->get_accel(); // gets the raw accelerometer values
+
+                rawAcceleration.x *= 9.807; // changes the units of x from G's to m/s
+                rawAcceleration.z *= 9.807; // changes the units of x from G's to m/s
+                
+                msAcceleration = (abs(rawAcceleration.x) + abs(rawAcceleration.z)) / 2; // sets the acceleration value to the mean 
+                                                                                        // of the x and y accelerometer values (always positive)
+
+                isPositive = msAcceleration > 0; // gives a boolean value that is equal to the sign of the acceleration 
+                                                 // for the current cycle (positive = true, negative = false)
+
+                // checks if the direction of acceleration has switched and switches the direction of the msAcceleration value if it has
+                if (isPositive = !wasPositive) {
+                    msAcceleration *= -1; // switches the direction of acceleration 
+                                // (multiplying by -1 switches a positive to a negative and a negative to a positive)
+                }
+
+                wasPositive = msAcceleration > 0; // gives a boolean value that is equal to the sign of the acceleration 
+                                                 // for the next cycle (positive = true, negative = false)
+    
                 velocity += msAcceleration * (this->delay / 1000); // updates the velocity of the robot
+
+
+
+
+
+                pros::Controller Master(pros::E_CONTROLLER_MASTER);
+                Master.print(0, 0, "X = %f", msAcceleration);
 
                 // VARIANCE/DEVIATION CALCULATION
 
@@ -65,11 +92,11 @@ void KalmanFilter::KalmanFilterLoop()
                 predictionVariances.push_back(statePrediction - currentHeading);
                 predictionDeviation = calculateStandardDeviation(predictionVariances);
 
-                // prediction phase
+                // PREDICTION PHASE
                 statePrediction = currentHeading + (velocity * (this->delay / 1000));; // State Extrapolation Equation
                 estimateVariancePrediction = measurementDeviation + (std::pow((this->delay / 1000), 2) * predictionDeviation); // Covariance Extrapolation Equation
 
-                // ending delay
+                // ENDING DELAY AND OUTPUT UPDATE
                 this->filteredHeading = currentHeading;
                 this->filterUncertainty = currentCovariance;
                 pros::delay(this->delay);
@@ -81,7 +108,7 @@ void KalmanFilter::KalmanFilterLoop()
 // calculates the standard deviation of a set of values, used for the filter (private)
 double KalmanFilter::calculateStandardDeviation(
     std::vector<double> listOfDifferences // list of differences from the estimates
-) 
+)
 {
     double standardDeviation = 0;
 
@@ -96,7 +123,7 @@ double KalmanFilter::calculateStandardDeviation(
 
 
 // constructor (public)
-KalmanFilter::KalmanFilter(pros::IMU* sensor) {
+KalmanFilter::KalmanFilter(pros::IMU* inertial) {
 
     // instance variable initializations
     filterLoop_ptr = NULL; // sets the filter loop pointer to null so it can be defined later
@@ -105,7 +132,7 @@ KalmanFilter::KalmanFilter(pros::IMU* sensor) {
 
     delay = 5; // delay (in ms) between cycles
 
-    this->sensor = sensor;
+    this->inertial = inertial; // takes the IMU for its heading
 }
 
 /* 
@@ -114,14 +141,15 @@ KalmanFilter::KalmanFilter(pros::IMU* sensor) {
 * (public)
 */
 int KalmanFilter::getFilteredHeading()
-    {return filteredHeading;}
+    {return this->filteredHeading;}
 
 // (public)
 int KalmanFilter::getFilterUncertainty()
-    {return filterUncertainty;}
+    {return this->filterUncertainty;}
 
 // starts the filter loop if it is not already active (public)
 void KalmanFilter::startFilter() {
+
     auto filterLoopFunction = [this]() {return this->KalmanFilterLoop();};
 
     if (filterLoop_ptr == NULL) {
