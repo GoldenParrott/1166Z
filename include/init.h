@@ -49,6 +49,8 @@ Pnuematics
 
     extern pros::Optical colorSense;
     extern pros::IMU Inertial;
+    extern pros::Rotation Rotational;
+    extern pros::Rotation RotationalTurn;
 
 // Variables
 extern int autonnumber;

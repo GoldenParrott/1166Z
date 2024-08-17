@@ -46,6 +46,8 @@ Pnuematics
 
     pros::Optical colorSense(16);
     pros::IMU Inertial(6);
+    pros::Rotation Rotational(99);
+    pros::Rotation RotationalTurn(99);
 
 //Variables
 int autonnumber = 1;
