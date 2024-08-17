@@ -159,21 +159,47 @@ void opcontrol() {
 			Intake.brake();
 		}
 
-	// Claw Arm
+	// Intake Conveyor (Transport) and Input
+		if (Master.get_digital(DIGITAL_RIGHT)){
+			InputMotor.move(-128);
+			Transport.move(-128);
+		} else if(Master.get_digital(DIGITAL_LEFT)){
+			InputMotor.move(128);
+			Transport.move(128);
+		}
+	// Input Only
 
-
-		armPosition = abs(ArmLeft.get_position());
-
-		if (intakePTOvalue == true) {
-			if (!presettingX && !presettingA) {
-				if (Master.get_digital(DIGITAL_DOWN)) {
-					Arm.move(-128);
-				} else if (Master.get_digital(DIGITAL_UP)) {
-					Arm.move(128);
-				} else {
-					Arm.brake();
-				}
+		if (intakePTOvalue == false)
+		{
+			if (Master.get_digital(DIGITAL_L1)) 
+			{
+				InputMotor.move(-128);
 			}
+			else if(Master.get_digital(DIGITAL_DOWN))
+			{
+				InputMotor.move(128);
+			} 
+			else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
+				InputMotor.brake();
+			}
+			if (intakePTOvalue == false && Master.get_digital(DIGITAL_DOWN) == true){
+				InputMotor.move(128);
+			}
+		}
+		else 
+		{
+			if (Master.get_digital(DIGITAL_L1)) {
+				InputMotor.move(-128);
+			} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
+				InputMotor.brake();
+			}
+		}
+		
+	// Transport Only
+		if (Master.get_digital(DIGITAL_B)) {
+			Transport.move(128);
+		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
+			Transport.brake();
 		}
 /*
 
