@@ -34,5 +34,5 @@ double readOdomVelocity(pros::Rotation odomRotational) {
     // converts the reading to centimeters
     double readingCM = readingDeg * singleDegree;
 
-    return readingCM;
+    return rawReading;
 }

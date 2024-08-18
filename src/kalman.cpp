@@ -54,34 +54,7 @@ void KalmanFilter::KalmanFilterLoop()
                 currentCovariance = (1 - kalmanGain) * estimateVariancePrediction; // Covariance Update Equation
 
                 // VELOCITY UPDATE
-                pros::c::imu_accel_s_t rawAcceleration = inertial->get_accel(); // gets the raw accelerometer values
-
-                rawAcceleration.x *= 9.807; // changes the units of x from G's to m/s
-                rawAcceleration.z *= 9.807; // changes the units of x from G's to m/s
-                
-                msAcceleration = (abs(rawAcceleration.x) + abs(rawAcceleration.z)) / 2; // sets the acceleration value to the mean 
-                                                                                        // of the x and y accelerometer values (always positive)
-
-                isPositive = msAcceleration > 0; // gives a boolean value that is equal to the sign of the acceleration 
-                                                 // for the current cycle (positive = true, negative = false)
-
-                // checks if the direction of acceleration has switched and switches the direction of the msAcceleration value if it has
-                if (isPositive = !wasPositive) {
-                    msAcceleration *= -1; // switches the direction of acceleration 
-                                // (multiplying by -1 switches a positive to a negative and a negative to a positive)
-                }
-
-                wasPositive = msAcceleration > 0; // gives a boolean value that is equal to the sign of the acceleration 
-                                                 // for the next cycle (positive = true, negative = false)
-    
-                velocity += msAcceleration * (this->delay / 1000); // updates the velocity of the robot
-
-
-
-
-
-                pros::Controller Master(pros::E_CONTROLLER_MASTER);
-                Master.print(0, 0, "X = %f", msAcceleration);
+                velocity = readOdomVelocity(*turnRotational);
 
                 // VARIANCE/DEVIATION CALCULATION
 

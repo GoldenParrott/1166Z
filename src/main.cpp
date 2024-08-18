@@ -229,7 +229,7 @@ void opcontrol() {
 			}
 		}
 
-
+*/
 
 	//Mobile Goal Manipulator
 
@@ -254,7 +254,7 @@ void opcontrol() {
 			// us from looping through the code repeatedly ↓↓
 			waitUntil(Master.get_digital(DIGITAL_R1) == false);
 		}
-
+/*
 	// input
 
 		if (Master.get_digital(DIGITAL_L2) == true) {

@@ -32,7 +32,7 @@ ABCDEFGH
 Pnuematics
 */
 
-    pros::ADIDigitalOut MobileGoalManipulator(5);
+    pros::ADIDigitalOut MobileGoalManipulator(1);
     pros::ADIDigitalOut IntakePTOPiston(1);
     pros::ADIDigitalOut InputPiston(2);
     pros::ADIDigitalOut Eject(8);
