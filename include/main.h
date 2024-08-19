@@ -63,58 +63,24 @@
 extern "C" {
 #endif
 // main.cpp
+void on_center_button(void);
 void autonomous(void);
 void initialize(void);
 void disabled(void);
 void competition_initialize(void);
-void armraiser(void);
 void opcontrol(void);
 
-// pid.cpp
-
-// pid.cpp structures
-struct PIDReturn {
-    int prevError; 
-    int prevIntegral; 
-    int power;
-};
-struct ConstantContainer {
-    double kP; 
-    double kI; 
-    double kD;
-};
-// pid.cpp functions
-void PIDMover(int setPoint,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
-void PIDTurner(int setPoint, int direction,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
-void PIDArc(int chordLength, int maxDist, int direction,                std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
-
-PIDReturn PIDCalc(int distanceMoved, int setPoint, bool isPositive, ConstantContainer constants, PIDReturn lastCycle);
-
-// autons.cpp
-void blueGoalside(void);
-void blueRingside(void);
-void redGoalside(void);
-void redRingside(void);
-void autonSwitcher(void);
-
-// functions.cpp
-void colorSensorOn(void);
-void colorSensorBlock(void);
-void raiseArm(void);
-void lowerArm(void);
-void transportThenGripTASK(void);
-void blockBlueRing(void);
-int convertToRed(int inertialHeadingBlue);
-void unblockTransport(void);
-
-// draw.cpp
-void drawBlueMogo(void);
-void drawRedMogo(void);
-void drawBlueRing(void);
-void drawRedRing(void);
-void drawLogo(void);
-
 // kalman.cpp
+#ifdef __cplusplus
+}
+#endif
+
+#include <deque>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 class KalmanFilter {
     private:
         // instance variables
@@ -127,13 +93,13 @@ class KalmanFilter {
 
         int delay; // time between cycles
 
-        std::vector<double> measurementVariances; // list of all measurement variances from the estimate
-        std::vector<double> predictionVariances; // list of all prediction variances from the estimate
+        std::deque<double> measurementVariances; // list of all measurement variances from the estimate
+        std::deque<double> predictionVariances; // list of all prediction variances from the estimate
 
 
         // internal methods
         void KalmanFilterLoop(void); // actual filter
-        double calculateStandardDeviation(std::vector<double> listOfDifferences); // standard deviation calculation used in filter
+        double calculateStandardDeviation(std::deque<double> listOfDifferences); // standard deviation calculation used in filter
 
 
     public:
@@ -162,7 +128,7 @@ double readOdomVelocity(pros::Rotation odomRotational);
  */
 //#include <iostream>
 #include <list>
-#include <cmath>
+#include <math.h>
 #include <functional>
 #include <vector>
 #endif

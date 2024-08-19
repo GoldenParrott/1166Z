@@ -44,13 +44,13 @@ void KalmanFilter::KalmanFilterLoop()
     // looping filter
     while (true) {
                 // MEASUREMENT PHASE
-                currentMeasurement = inertial->get_heading();
+                currentMeasurement = inertial->get_heading(); // unit is degrees
 
                 // KALMAN GAIN CALCULATION
-                kalmanGain = estimateVariancePrediction / (estimateVariancePrediction + measurementDeviation); // Kalman Gain Equation
+                kalmanGain = estimateVariancePrediction / (estimateVariancePrediction + measurementDeviation); // Kalman Gain Equation (value = deg / (deg + deg))
 
                 // UPDATE PHASE
-                currentHeading = statePrediction + (kalmanGain * (currentMeasurement - statePrediction)); // State Update Equation
+                currentHeading = statePrediction + (kalmanGain * (currentMeasurement - statePrediction)); // State Update Equation (deg = deg + (value * (deg - deg)))
                 currentCovariance = (1 - kalmanGain) * estimateVariancePrediction; // Covariance Update Equation
 
                 // VELOCITY UPDATE
@@ -59,18 +59,20 @@ void KalmanFilter::KalmanFilterLoop()
                 // VARIANCE/DEVIATION CALCULATION
 
                 // measurement variance
-                measurementVariances.push_back(currentMeasurement - currentHeading);
-                measurementDeviation = calculateStandardDeviation(measurementVariances);
+                measurementVariances.push_back(currentMeasurement);
+                if (measurementVariances.size() > 50) {measurementVariances.pop_front();}
+                measurementDeviation = calculateStandardDeviation(measurementVariances); // unit is degrees
                 // prediction variance
-                predictionVariances.push_back(statePrediction - currentHeading);
-                predictionDeviation = calculateStandardDeviation(predictionVariances);
+                predictionVariances.push_back(statePrediction);
+                if (measurementVariances.size() > 50) {measurementVariances.pop_front();}
+                predictionDeviation = calculateStandardDeviation(predictionVariances); // unit is degrees
 
                 // PREDICTION PHASE
-                statePrediction = currentHeading + (velocity * (this->delay / 1000));; // State Extrapolation Equation
-                estimateVariancePrediction = measurementDeviation + (std::pow((this->delay / 1000), 2) * predictionDeviation); // Covariance Extrapolation Equation
+                statePrediction = currentHeading + (velocity * (this->delay / 1000));; // State Extrapolation Equation (deg = deg + (dps * s))
+                estimateVariancePrediction = currentCovariance + (std::pow((this->delay / 1000), 2) * predictionDeviation); // Covariance Extrapolation Equation (deg = deg + (sec^2 * deg))
 
                 // ENDING DELAY AND OUTPUT UPDATE
-                this->filteredHeading = currentHeading;
+                this->filteredHeading = measurementDeviation;
                 this->filterUncertainty = currentCovariance;
                 pros::delay(this->delay);
     }
@@ -80,16 +82,26 @@ void KalmanFilter::KalmanFilterLoop()
 
 // calculates the standard deviation of a set of values, used for the filter (private)
 double KalmanFilter::calculateStandardDeviation(
-    std::vector<double> listOfDifferences // list of differences from the estimates
+    std::deque<double> listOfValues // list of differences from the estimates
 )
 {
-    double standardDeviation = 0;
-
-    for (int i = 0; i < listOfDifferences.size(); i++) {
-        standardDeviation += std::pow(listOfDifferences[i], 2); // squares each value's distance from its estimate to find the standard deviation
+    // calculates the mean of the values
+    double meanOfValues = 0;
+    for (int i = 0; i < listOfValues.size(); i++) {
+        meanOfValues += listOfValues[i]; // adds each value together to calculate their mean
     }
+    meanOfValues = meanOfValues / listOfValues.size();
 
-    standardDeviation = standardDeviation / listOfDifferences.size();
+    // calculates the variance of the values
+    std::vector<double> listOfDifferences;
+    double variance = 0;
+    for (int i = 0; i < listOfValues.size(); i++) {
+        variance += std::pow((listOfValues[i] - meanOfValues), 2); // variance is calculated by adding the squares of each value's difference from the mean together
+    }
+    variance = variance / listOfValues.size();
+
+    double standardDeviation = std::sqrt(variance); // standard deviation = square root of variance
+
     return standardDeviation;
 }
 
