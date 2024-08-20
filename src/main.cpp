@@ -152,20 +152,11 @@ void opcontrol() {
 
 	// Intake Conveyor (Transport) and Input
 		if (Master.get_digital(DIGITAL_RIGHT)){
-			Intake.move(128);
-		} else if(Master.get_digital(DIGITAL_LEFT)){
 			Intake.move(-128);
+		} else if(Master.get_digital(DIGITAL_LEFT)){
+			Intake.move(128);
 		} else {
 			Intake.brake();
-		}
-
-	// Intake Conveyor (Transport) and Input
-		if (Master.get_digital(DIGITAL_RIGHT)){
-			InputMotor.move(-128);
-			Transport.move(-128);
-		} else if(Master.get_digital(DIGITAL_LEFT)){
-			InputMotor.move(128);
-			Transport.move(128);
 		}
 	// Input Only
 

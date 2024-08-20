@@ -19,7 +19,7 @@
     pros::Motor_Group AllWheels({FrontLeft, MidLeft, BackLeft, FrontRight, MidRight, BackRight});
 
     pros::Motor InputMotor(16, pros::E_MOTOR_GEAR_200, 0);
-    pros::Motor Transport(6, pros::E_MOTOR_GEAR_200, 1);
+    pros::Motor Transport(7, pros::E_MOTOR_GEAR_200, 1);
     pros::Motor_Group Intake({InputMotor, Transport});
 
     pros::Motor ArmLeft(99, pros::E_MOTOR_GEAR_200, 0);

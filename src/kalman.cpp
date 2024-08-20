@@ -1,4 +1,4 @@
-#include "init.h"
+#include "main.h"
 // Kalman Filter class methods
 
 // (private)
@@ -6,27 +6,27 @@ void KalmanFilter::KalmanFilterLoop()
 {
 
     // current measurement value
-    int currentMeasurement = 0;
+    double currentMeasurement = 1;
 
     // current actual values
-    int currentHeading;
-    int currentCovariance; // initial guess
+    double currentHeading = 1;
+    double currentCovariance = 1;
 
     // predicted measurement values for later in the cycle
-    int statePrediction = 0;
-    int estimateVariancePrediction = 0;
+    double statePrediction = 1;
+    double estimateVariancePrediction = 1;
 
     // variable for the Kalman gain
-    int kalmanGain = 0;
+    double kalmanGain = 1;
 
     // standard deviation of the variances
-    int measurementDeviation = 0;
-    int predictionDeviation = 0;
+    double measurementDeviation = 1;
+    double predictionDeviation = 1;
 
     // velocity values
-    double velocity = 0;
+    double velocity = 1;
     pros::c::imu_accel_s_t rawAcceleration;
-    double msAcceleration = 0;
+    double msAcceleration = 1;
     // direction of accelerometer values for velocity
     bool isPositive = true;
     bool wasPositive = true;
@@ -39,7 +39,7 @@ void KalmanFilter::KalmanFilterLoop()
 
     // prediction phase
     statePrediction = currentHeading + (velocity * (this->delay / 1000));; // State Extrapolation Equation
-    estimateVariancePrediction = currentCovariance + (std::pow((this->delay / 1000), 2) * predictionDeviation); // Covariance Extrapolation Equation
+    estimateVariancePrediction = currentCovariance + ((std::pow(this->delay, 2) / 1000) * predictionDeviation); // Covariance Extrapolation Equation
 
     // looping filter
     while (true) {
@@ -62,17 +62,21 @@ void KalmanFilter::KalmanFilterLoop()
                 measurementVariances.push_back(currentMeasurement);
                 if (measurementVariances.size() > 50) {measurementVariances.pop_front();}
                 measurementDeviation = calculateStandardDeviation(measurementVariances); // unit is degrees
+                if (measurementDeviation == 0) {measurementDeviation = 0.00001;}
                 // prediction variance
                 predictionVariances.push_back(statePrediction);
-                if (measurementVariances.size() > 50) {measurementVariances.pop_front();}
+                if (predictionVariances.size() > 50) {predictionVariances.pop_front();}
                 predictionDeviation = calculateStandardDeviation(predictionVariances); // unit is degrees
+                if (predictionDeviation == 0) {predictionDeviation = 0.00001;}
 
                 // PREDICTION PHASE
-                statePrediction = currentHeading + (velocity * (this->delay / 1000));; // State Extrapolation Equation (deg = deg + (dps * s))
-                estimateVariancePrediction = currentCovariance + (std::pow((this->delay / 1000), 2) * predictionDeviation); // Covariance Extrapolation Equation (deg = deg + (sec^2 * deg))
+                statePrediction = currentHeading + (velocity * (this->delay / 1000));; // State Extrapolation Equation (deg = deg + (dps * (ms / 1000)))
+                estimateVariancePrediction = currentCovariance + ((std::pow(this->delay, 2) / 1000) * predictionDeviation); // Covariance Extrapolation Equation (deg = deg + (sec^2 * deg))
+
+
 
                 // ENDING DELAY AND OUTPUT UPDATE
-                this->filteredHeading = measurementDeviation;
+                this->filteredHeading = currentHeading;
                 this->filterUncertainty = currentCovariance;
                 pros::delay(this->delay);
     }
