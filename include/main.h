@@ -132,8 +132,8 @@ class KalmanFilter {
         pros::Rotation* turnRotational; // defined in constructor
         pros::Task* filterLoop_ptr; // is initialized when the Kalman filter turns on
 
-        int filteredHeading; // updates as Kalman filter runs
-        int filterUncertainty; // updates as Kalman filter runs
+        double filteredHeading; // updates as Kalman filter runs
+        double filterUncertainty; // updates as Kalman filter runs
 
         int delay; // time between cycles
 
@@ -151,8 +151,8 @@ class KalmanFilter {
         KalmanFilter(pros::IMU* inertial, pros::Rotation* turnRotational); // constructor
 
         // return methods for the filter, updated constantly as the filter runs
-        int getFilteredHeading(void);
-        int getFilterUncertainty(void);
+        double getFilteredHeading(void);
+        double getFilterUncertainty(void);
 
         // start and stop methods for the filter
         void startFilter(void);
@@ -160,8 +160,10 @@ class KalmanFilter {
 };
 
 // odom.cpp
-double readOdomPod(pros::Rotation odomRotational);
-double readOdomVelocity(pros::Rotation odomRotational);
+double readOdomPod(pros::Rotation odom);
+double readOdomVelocity(pros::Rotation odom);
+double readOdomAngle(pros::Rotation turnOdom);
+double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2, pros::Rotation turnOdom);
 
 #ifdef __cplusplus
 }

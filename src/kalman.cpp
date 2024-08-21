@@ -130,11 +130,11 @@ KalmanFilter::KalmanFilter(pros::IMU* inertial, pros::Rotation* turnRotational) 
 * but will return -1 if the filter is not active
 * (public)
 */
-int KalmanFilter::getFilteredHeading()
+double KalmanFilter::getFilteredHeading()
     {return this->filteredHeading;}
 
 // (public)
-int KalmanFilter::getFilterUncertainty()
+double KalmanFilter::getFilterUncertainty()
     {return this->filterUncertainty;}
 
 // starts the filter loop if it is not already active (public)
