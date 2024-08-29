@@ -395,7 +395,7 @@ void PIDArm(
 {
 
 
-	Arm.set_brake_modes(MOTOR_BRAKE_HOLD);
+	Arm.set_brake_mode(MOTOR_BRAKE_HOLD);
 
 // PID Calculation Variables
 	// General Variables
@@ -434,14 +434,12 @@ void PIDArm(
 
 // Odometry Pre-Measurement
 	// resets the rotation of all motors before the movement so the movement can be calculated from zero to the destination
-	ArmRight.tare_position();
-	ArmLeft.tare_position();
+	Arm.tare_position();
 
 	// used to measure the rotational sensor values of all the motors (this comes in degrees)
-	double ar = ArmRight.get_position();
-	double al = ArmLeft.get_position();
+	double armMeasurement = Arm.get_position();
 
-	double currentMotorReading = ((ar + al) / 2); // measures the average rotation of all motors to determine the movement of the entire robot
+	double currentMotorReading = (armMeasurement / 2); // measures the average rotation of all motors to determine the movement of the entire robot
 	double currentWheelReading = currentMotorReading; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
 
 	// measures the current distance moved by the robot by multiplying the number of degrees that it has moved 
@@ -485,11 +483,10 @@ void PIDArm(
 		pros::delay(15);
 
 		// finds the degrees of measurement of the motors
-		ar = BackRight.get_position();
-		al = BackLeft.get_position();
+		armMeasurement = Arm.get_position();
 
 		// reassigns the "distance moved" variables for the next cycle after the delay
-		currentMotorReading = ((ar + al) / 2); // degrees
+		currentMotorReading = (armMeasurement / 2); // degrees
 		currentWheelReading = currentMotorReading; // degrees = degrees * gear ratio multiplier
 		currentDistanceMovedByWheel = currentWheelReading * singleDegree; // centimeters
 

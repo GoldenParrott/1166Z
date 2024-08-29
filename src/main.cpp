@@ -11,10 +11,6 @@
 void initialize() {
 
 	autonnumber = -1;
-	IntakePTOPiston.set_value(false);
-	if (abs(autonnumber) == 2) {
-		IntakePTOPiston.set_value(true);
-	}
 	
 }
 
@@ -24,11 +20,11 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
-/*
+
 	MobileGoalManipulator.set_value(false);
 	InputPiston.set_value(false);
-	GrabPiston.set_value(false);
-*/
+	Grabber.set_value(false);
+
 }
 
 /**
@@ -64,8 +60,8 @@ void autonomous() {
 	AllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Intake.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Intake.tare_position();
-	ArmLeft.set_encoder_units(MOTOR_ENCODER_DEGREES);
-	ArmLeft.tare_position();
+	Arm.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	Arm.tare_position();
 
 	if (colorSensorOn_task_ptr == NULL) {
 		// colorSensorOn_task_ptr = new pros::Task(colorSensorOn, 'Color Eject On');
@@ -95,10 +91,9 @@ switch (autonnumber) {
 
 	pros::delay(1000);
 	AllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
-/*
-	GrabPiston.set_value(false);
-	Eject.set_value(false);
-*/
+
+	Grabber.set_value(false);
+
 }
 
 
@@ -120,21 +115,20 @@ switch (autonnumber) {
 
 void opcontrol() {
 
-/*
+
 	if (colorSensorOn_task_ptr != NULL) {
 		colorSensorOn_task_ptr->remove();
 	}
 
 	// resets all pistons
-	IntakePTOPiston.set_value(false);
-	intakePTOvalue = false;
-	Eject.set_value(false);
-	GrabPiston.set_value(false);
+	Grabber.set_value(false);
 	
 	AllWheels.move_velocity(1000);
 	AllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
-*/
+
+	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
 	while (true) {
 
 	//Drivetrain
@@ -158,72 +152,46 @@ void opcontrol() {
 		} else {
 			Intake.brake();
 		}
-	// Input Only
 
-		if (intakePTOvalue == false)
+	// Input only
+		if (Master.get_digital(DIGITAL_L1)) 
 		{
-			if (Master.get_digital(DIGITAL_L1)) 
-			{
-				InputMotor.move(-128);
-			}
-			else if(Master.get_digital(DIGITAL_DOWN))
-			{
-				InputMotor.move(128);
-			} 
-			else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
-				InputMotor.brake();
-			}
-			if (intakePTOvalue == false && Master.get_digital(DIGITAL_DOWN) == true){
-				InputMotor.move(128);
-			}
+			InputMotor.move(-128);
 		}
-		else 
+		else if(Master.get_digital(DIGITAL_DOWN))
 		{
-			if (Master.get_digital(DIGITAL_L1)) {
-				InputMotor.move(-128);
-			} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
-				InputMotor.brake();
-			}
+			InputMotor.move(128);
+		} 
+		else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
+			InputMotor.brake();
 		}
 		
-	// Transport Only
+	// Transport only
 		if (Master.get_digital(DIGITAL_B)) {
 			Transport.move(128);
 		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
 			Transport.brake();
 		}
-/*
 
-		// Arm Presets
-
-
-		// Neutral Stake Preset
-			if (Master.get_digital(DIGITAL_X) && !presettingA) {
-				Arm.move(-128);
-				presettingX = true;
-			} 
-		// Alliance Stake Preset
-			else if (Master.get_digital(DIGITAL_A) && !presettingX) {
-				Arm.move(-128);
-				presettingA = true;
-			}
-
-		// These stop the preset movements in their own separate check to prevent the code from blocking other code
-			if (presettingX && armPosition >= 2630) {
-				Arm.brake();
-				presettingX = false;
-			}
-
-			if (presettingA && armPosition >= 1600) {
-				Arm.brake();
-				presettingA = false;
-			}
+	// SLow Transport
+		if (Master.get_digital(DIGITAL_R2)) {
+			Transport.move(-48);
 		}
 
-*/
+	// Arm (Motor)
+		if (Master.get_digital(DIGITAL_UP)) {
+			Arm.move(128);
+			waitUntil(Master.get_digital(DIGITAL_UP) == false);
+		} else if (Master.get_digital(DIGITAL_DOWN)) {
+			Arm.move(-128);
+			waitUntil(Master.get_digital(DIGITAL_DOWN) == false);
+		}
+		else {
+			Arm.brake();
+		}
 
+// hi :)
 	//Mobile Goal Manipulator
-
 		// ↓↓ Pressing the R1 Button toggles between modes
 		if(Master.get_digital(DIGITAL_R1)){
 
@@ -245,8 +213,8 @@ void opcontrol() {
 			// us from looping through the code repeatedly ↓↓
 			waitUntil(Master.get_digital(DIGITAL_R1) == false);
 		}
-/*
-	// input
+
+	// Input Piston
 
 		if (Master.get_digital(DIGITAL_L2) == true) {
 			if (InputPiston.get_value() == false) {
@@ -263,13 +231,13 @@ void opcontrol() {
 
 		//                        < 020
 		if ((colorSense.get_hue() > 200) && (toggleColorSensor == true) && (autonnumber < 0)) {
-			Eject.set_value(true);
+			// eject
 			colorDelay = 1;
 		} if ((colorSense.get_hue() < 20) && (toggleColorSensor == true) && (autonnumber > 0)) {
-			Eject.set_value(true);
+			// eject
 			colorDelay = 1;
 		} else if (colorDelay >= 500) {
-			Eject.set_value(false);
+			// eject
 			colorDelay = 0;
 		}
 		if (colorDelay != 0) {
@@ -281,30 +249,34 @@ void opcontrol() {
 		} else if (Master.get_digital(DIGITAL_R2) && toggleColorSensor == true) {
 			toggleColorSensor = false;
 			colorDelay = 0;
-			Eject.set_value(false);
+			// un-eject
 		} waitUntil(!Master.get_digital(DIGITAL_R2));
 
-		Master.print(0, 0, "toggle = %d", toggleColorSensor);
+		// Master.print(0, 0, "toggle = %d", toggleColorSensor);
 
-
-
-
-	// grab arm
-
-		if (intakePTOvalue == false && Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
-			if (GrabPiston.get_value() == false) {
-				GrabPiston.set_value(true);
+	// Arm Piston
+		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+			if (Grabber.get_value() == false) {
+				Grabber.set_value(true);
 			}
 			else {
-				GrabPiston.set_value(false);
+				Grabber.set_value(false);
+			}
+			waitUntil(Master.get_digital(DIGITAL_Y) == false);
+		}
+
+	// Grabber
+		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+			if (Grabber.get_value() == false) {
+				Grabber.set_value(true);
+			}
+			else {
+				Grabber.set_value(false);
 			}
 			waitUntil(Master.get_digital(DIGITAL_X) == false);
 		}
-*/
+
+	// end-of-cycle delay
 	pros::delay(20);
-
 	}
-
-
-
 }
