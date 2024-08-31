@@ -123,7 +123,7 @@ void PIDTurner(
 // PID LOOPING VARIABLES
 	int negativePower;
 
-	int inertialReadingInit = Inertial.get_heading();
+	int inertialReadingInit = Inertial1.get_heading();
 	int distanceToMove;
 
 	if (direction == 1) {
@@ -219,8 +219,8 @@ void PIDTurner(
 
 		// the change in reading is set to the absolute value of the change in reading due to everything being positive
 		int changeInDistance = direction == 1 
-			? inertialReadingInit - Inertial.get_heading() 
-			: Inertial.get_heading() - inertialReadingInit;
+			? inertialReadingInit - Inertial1.get_heading() 
+			: Inertial1.get_heading() - inertialReadingInit;
 		changeInReading = changeInDistance < 0
 		    ? changeInDistance + 360
 			: changeInDistance;
@@ -318,8 +318,8 @@ void PIDArc(
 		? 2
 		: 1;
 	int newHeading = directionForTurn == 1
-		? Inertial.get_heading() - angleToTurn // negative left turn
-		: Inertial.get_heading() + angleToTurn; // positive right turn
+		? Inertial1.get_heading() - angleToTurn // negative left turn
+		: Inertial1.get_heading() + angleToTurn; // positive right turn
 
 	// if (newHeading < 0) {newHeading = newHeading + 360;} // makes the new heading the actual new heading if it is a negative
 

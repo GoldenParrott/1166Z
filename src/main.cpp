@@ -22,7 +22,6 @@ void initialize() {
 void disabled() {
 
 	MobileGoalManipulator.set_value(false);
-	InputPiston.set_value(false);
 	Grabber.set_value(false);
 
 }
@@ -115,7 +114,7 @@ switch (autonnumber) {
 
 void opcontrol() {
 
-
+pros::lcd::initialize();
 	if (colorSensorOn_task_ptr != NULL) {
 		colorSensorOn_task_ptr->remove();
 	}
@@ -128,6 +127,8 @@ void opcontrol() {
 	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 
 	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+	RotationalTurn.reset_position();
 
 	while (true) {
 
@@ -158,7 +159,7 @@ void opcontrol() {
 		{
 			InputMotor.move(-128);
 		}
-		else if(Master.get_digital(DIGITAL_DOWN))
+		else if(Master.get_digital(DIGITAL_X))
 		{
 			InputMotor.move(128);
 		} 
@@ -214,19 +215,6 @@ void opcontrol() {
 			waitUntil(Master.get_digital(DIGITAL_R1) == false);
 		}
 
-	// Input Piston
-
-		if (Master.get_digital(DIGITAL_L2) == true) {
-			if (InputPiston.get_value() == false) {
-				InputPiston.set_value(true);
-			}
-			else {
-				InputPiston.set_value(false);
-			}
-			waitUntil(Master.get_digital(DIGITAL_L2) == false);
-		}
-
-
 	// color sensor
 
 		//                        < 020
@@ -275,6 +263,10 @@ void opcontrol() {
 			}
 			waitUntil(Master.get_digital(DIGITAL_X) == false);
 		}
+
+	pros::lcd::print(0, "I1 = %f", Inertial1.get_heading());
+	pros::lcd::print(1, "I2 = %f", Inertial2.get_heading());
+	pros::lcd::print(2, "R = %f", readOdomAngle(RotationalTurn));
 
 	// end-of-cycle delay
 	pros::delay(20);

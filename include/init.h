@@ -46,7 +46,8 @@ Pnuematics
 // Sensors
 
     extern pros::Optical colorSense;
-    extern pros::IMU Inertial;
+    extern pros::IMU Inertial1;
+    extern pros::IMU Inertial2;
     extern pros::Rotation Rotational;
     extern pros::Rotation RotationalTurn;
 

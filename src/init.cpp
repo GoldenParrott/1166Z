@@ -31,7 +31,6 @@ Pnuematics
 */
 
     pros::ADIDigitalOut MobileGoalManipulator(1);
-    pros::ADIDigitalOut InputPiston(99);
     pros::ADIDigitalOut ArmPiston(2);
     pros::ADIDigitalOut Grabber(99);
 
@@ -46,8 +45,8 @@ Pnuematics
     pros::Optical colorSense(99);
     pros::IMU Inertial1(4);
     pros::IMU Inertial2(5);
-    pros::Rotation Rotational(99);
-    pros::Rotation RotationalTurn(9);
+    pros::Rotation Rotational(20);
+    pros::Rotation RotationalTurn(8);
 
 //Variables
 int autonnumber = 1;

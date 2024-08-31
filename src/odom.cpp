@@ -38,17 +38,7 @@ double readOdomVelocity(pros::Rotation odom) {
 }
 
 double readOdomAngle(pros::Rotation turnOdom) {
-    // the pre-measured distance between the robot's center of rotation
-    double distanceBetweenCenterAndOdom = 5;
-
-    // gets the distance that the robot moved (in cm)
-    double odomReading = readOdomPod(turnOdom);
-
-    // the angle that the robot has moved
-    /* measured by finding the central angle of the arc with the distance from the odom pod
-     * (using a derived version of the arc formula) */
-    double robotHeading = odomReading / distanceBetweenCenterAndOdom;
-    //     theta/angle  =    arc      /           radius
+    double robotHeading = turnOdom.get_angle() / 100;
 
     return robotHeading;
 }
