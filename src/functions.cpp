@@ -22,3 +22,15 @@ void colorSensorOn() {
 	}
 }
 */
+
+// ensures that the rotational sensor's position is within the range of a heading at all times
+void updateOdomPosition() {
+	while (true) {
+		if (RotationalTurn.get_position() > 36000) {
+			RotationalTurn.set_position(0);
+		} else if (RotationalTurn.get_position() < 0) {
+			RotationalTurn.set_position(36000);
+		}
+		pros::delay(5);
+	}
+}

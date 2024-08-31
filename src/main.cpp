@@ -11,6 +11,11 @@
 void initialize() {
 
 	autonnumber = -1;
+
+	Rotational.set_position(0);
+	RotationalTurn.set_position(0);
+
+	pros::Task updateRotational = pros::Task(updateOdomPosition);
 	
 }
 
@@ -127,8 +132,6 @@ pros::lcd::initialize();
 	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 
 	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
-	RotationalTurn.reset_position();
 
 	while (true) {
 

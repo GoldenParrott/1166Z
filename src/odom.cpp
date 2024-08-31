@@ -38,7 +38,7 @@ double readOdomVelocity(pros::Rotation odom) {
 }
 
 double readOdomAngle(pros::Rotation turnOdom) {
-    double robotHeading = turnOdom.get_angle() / 100;
+    double robotHeading = (double) turnOdom.get_position() / 100.0;
 
     return robotHeading;
 }

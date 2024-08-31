@@ -98,14 +98,8 @@ void redRingside(void);
 void autonSwitcher(void);
 
 // functions.cpp
+void updateOdomPosition();
 void colorSensorOn(void);
-void colorSensorBlock(void);
-void raiseArm(void);
-void lowerArm(void);
-void transportThenGripTASK(void);
-void blockBlueRing(void);
-int convertToRed(int inertialHeadingBlue);
-void unblockTransport(void);
 
 // draw.cpp
 void drawBlueMogo(void);
