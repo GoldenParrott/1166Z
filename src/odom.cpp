@@ -1,7 +1,7 @@
 #include "init.h"
 
 double readOdomPod(pros::Rotation odom) {
-    // sets up the odometry to convert angle readings to m/s
+    // sets up the odometry to convert angle readings to cm
     double wheelCircumference = 3.14 * 2; // 2 is the pre-measured wheel diameter in inches
 	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
 						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
@@ -38,9 +38,20 @@ double readOdomVelocity(pros::Rotation odom) {
 }
 
 double readOdomAngle(pros::Rotation turnOdom) {
-    double robotHeading = (double) turnOdom.get_position() / 100.0;
+    // the pre-measured distance between the robot's center of rotation
+    double distanceBetweenCenterAndOdom = 10.0;
 
-    return robotHeading;
+    // gets the distance that the robot moved (in cm)
+    double odomReading = (double) readOdomPod(turnOdom);
+
+    // the angle that the robot has moved
+    /* measured by finding the central angle of the arc with the distance from the odom pod
+     * (using a derived version of the arc formula) */
+    double robotHeadingRadians = (double) odomReading / distanceBetweenCenterAndOdom;
+    //     theta/angle  =    arc      /           radius
+    double robotHeadingDegrees = (robotHeadingRadians * 180.0) / 3.14;
+
+    return robotHeadingDegrees;
 }
 
 
