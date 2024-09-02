@@ -172,23 +172,23 @@ pros::lcd::initialize();
 		
 	// Transport only
 		if (Master.get_digital(DIGITAL_B)) {
-			Transport.move(128);
-		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
+			Transport.move(128);	
+		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) && (Master.get_digital(DIGITAL_R2) == false)) {
 			Transport.brake();
 		}
 
 	// SLow Transport
-		if (Master.get_digital(DIGITAL_R2)) {
-			Transport.move(-48);
+		if(Master.get_digital(DIGITAL_R2) == true){
+			Transport.move(48);	
 		}
 
 	// Arm (Motor)
 		if (Master.get_digital(DIGITAL_UP)) {
 			Arm.move(128);
-			waitUntil(Master.get_digital(DIGITAL_UP) == false);
+			//waitUntil(Master.get_digital(DIGITAL_UP) == false);
 		} else if (Master.get_digital(DIGITAL_DOWN)) {
 			Arm.move(-128);
-			waitUntil(Master.get_digital(DIGITAL_DOWN) == false);
+			//waitUntil(Master.get_digital(DIGITAL_DOWN) == false);
 		}
 		else {
 			Arm.brake();
