@@ -150,9 +150,9 @@ pros::lcd::initialize();
 
 	// Intake Conveyor (Transport) and Input
 		if (Master.get_digital(DIGITAL_RIGHT)){
-			Intake.move(-128);
+			Intake.move(-200);
 		} else if(Master.get_digital(DIGITAL_LEFT)){
-			Intake.move(128);
+			Intake.move(200);
 		} else {
 			Intake.brake();
 		}
@@ -166,22 +166,22 @@ pros::lcd::initialize();
 		{
 			InputMotor.move(128);
 		} 
-		else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
+		else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) 
+				  && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
 			InputMotor.brake();
 		}
 		
 	// Transport only
 		if (Master.get_digital(DIGITAL_B)) {
 			Transport.move(128);	
-		} else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) && (Master.get_digital(DIGITAL_R2) == false)) {
+		} else if (Master.get_digital(DIGITAL_R2)){
+			Transport.move(-70);
+		} else if ((Master.get_digital(DIGITAL_LEFT) == false) && (Master.get_digital(DIGITAL_RIGHT) == false) 
+					&& (Master.get_digital(DIGITAL_B) == false) && (Master.get_digital(DIGITAL_R2) == false)) {
 			Transport.brake();
 		}
 
-	// SLow Transport
-		if(Master.get_digital(DIGITAL_R2) == true){
-			Transport.move(48);	
-		}
-
+	
 	// Arm (Motor)
 		if (Master.get_digital(DIGITAL_UP)) {
 			Arm.move(128);
