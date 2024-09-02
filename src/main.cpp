@@ -150,9 +150,9 @@ pros::lcd::initialize();
 
 	// Intake Conveyor (Transport) and Input
 		if (Master.get_digital(DIGITAL_RIGHT)){
-			Intake.move(-200);
+			Intake.move(-128);
 		} else if(Master.get_digital(DIGITAL_LEFT)){
-			Intake.move(200);
+			Intake.move(128);
 		} else {
 			Intake.brake();
 		}
@@ -174,9 +174,12 @@ pros::lcd::initialize();
 	// Transport only
 		if (Master.get_digital(DIGITAL_B)) {
 			Transport.move(128);	
-		} else if (Master.get_digital(DIGITAL_R2)){
+		} 
+	// Slow Transport
+		else if (Master.get_digital(DIGITAL_R2)){
 			Transport.move(-70);
-		} else if ((Master.get_digital(DIGITAL_LEFT) == false) && (Master.get_digital(DIGITAL_RIGHT) == false) 
+		} 
+		else if ((Master.get_digital(DIGITAL_LEFT) == false) && (Master.get_digital(DIGITAL_RIGHT) == false) 
 					&& (Master.get_digital(DIGITAL_B) == false) && (Master.get_digital(DIGITAL_R2) == false)) {
 			Transport.brake();
 		}
@@ -185,10 +188,8 @@ pros::lcd::initialize();
 	// Arm (Motor)
 		if (Master.get_digital(DIGITAL_UP)) {
 			Arm.move(128);
-			//waitUntil(Master.get_digital(DIGITAL_UP) == false);
 		} else if (Master.get_digital(DIGITAL_DOWN)) {
 			Arm.move(-128);
-			//waitUntil(Master.get_digital(DIGITAL_DOWN) == false);
 		}
 		else {
 			Arm.brake();
