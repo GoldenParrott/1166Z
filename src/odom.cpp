@@ -68,29 +68,17 @@ double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2, pros
     // gets heading from each of the sensors
     double I1Heading = inertial1.getFilteredHeading();
     double I2Heading = inertial1.getFilteredHeading();
-    double OdomHeading = readOdomAngle(turnOdom);
 
     // gets the uncertainty from each of the IMUs
     double I1Uncertainty = inertial1.getFilterUncertainty();
     double I2Uncertainty = inertial2.getFilterUncertainty();
-    double OdomUncertainty = 0.3; // pre-set by user
 
     // weights each of the IMUs
-    double I1Weight = OdomUncertainty / (OdomUncertainty + I1Uncertainty); // weight of I1
-    double I2Weight = OdomUncertainty / (OdomUncertainty + I2Uncertainty); // weight of I2
-    if (I1Weight + I2Weight > 1) { // only triggers if the weight of both values is over 1
-        double excess = (I1Weight + I2Weight) - 1; // calculates the excess by taking the combination 
-                                                   // of both values and subtracting 1 from them
-
-        // removes the excess by removing half of it from each weight, in total removing all of it
-        I1Weight -= (excess / 2);
-        I2Weight -= (excess / 2);
-    }
-
-    double OdomWeight = 1 - (I1Uncertainty + I2Uncertainty); // weight of odometry pod (lesser if the uncertainties of the other values are smaller)
+    double I1Weight = I2Uncertainty / (I2Uncertainty + I1Uncertainty); // weight of I1
+    double I2Weight = 1 - I1Weight; // weight of I2
 
     // aggregates the heading by applying the weights to all the headings
-    double aggregatedHeading = (I1Weight * I1Heading) + (I2Weight * I2Heading) + (OdomWeight * OdomHeading);
+    double aggregatedHeading = (I1Weight * I1Heading) + (I2Weight * I2Heading);
 
     return aggregatedHeading;
 }
