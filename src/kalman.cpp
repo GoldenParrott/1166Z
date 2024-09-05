@@ -35,7 +35,7 @@ void KalmanFilter::KalmanFilterLoop()
 
     // measurement guess phase
     currentHeading = inertial->get_heading(); // initial measurement, treated as "filtered" for starting cycle
-    currentCovariance = 0; // initial guess
+    currentCovariance = 0.01; // initial guess
 
     // prediction phase
     statePrediction = currentHeading + (velocity * (this->delay / 1000));; // State Extrapolation Equation
@@ -73,12 +73,11 @@ void KalmanFilter::KalmanFilterLoop()
                 statePrediction = currentHeading + (velocity * (this->delay / 1000));; // State Extrapolation Equation (deg = deg + (dps * (ms / 1000)))
                 estimateVariancePrediction = currentCovariance + ((std::pow(this->delay, 2) / 1000) * predictionDeviation); // Covariance Extrapolation Equation (deg = deg + (sec^2 * deg))
 
-
-
                 // ENDING DELAY AND OUTPUT UPDATE
-                this->filteredHeading = currentHeading;
+            this->filteredHeading = currentHeading;
                 this->filterUncertainty = currentCovariance;
                 pros::delay(this->delay);
+            // pros::delay(5000);
     }
 }
 

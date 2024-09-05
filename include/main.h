@@ -157,7 +157,7 @@ class KalmanFilter {
 double readOdomPod(pros::Rotation odom);
 double readOdomVelocity(pros::Rotation odom);
 double readOdomAngle(pros::Rotation turnOdom);
-double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2, pros::Rotation turnOdom);
+double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2);
 
 #ifdef __cplusplus
 }

@@ -64,10 +64,10 @@ double readOdomAngle(pros::Rotation turnOdom) {
 
 
 
-double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2, pros::Rotation turnOdom) {
+double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2) {
     // gets heading from each of the sensors
     double I1Heading = inertial1.getFilteredHeading();
-    double I2Heading = inertial1.getFilteredHeading();
+    double I2Heading = inertial2.getFilteredHeading();
 
     // gets the uncertainty from each of the IMUs
     double I1Uncertainty = inertial1.getFilterUncertainty();
@@ -79,6 +79,17 @@ double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2, pros
 
     // aggregates the heading by applying the weights to all the headings
     double aggregatedHeading = (I1Weight * I1Heading) + (I2Weight * I2Heading);
+
+    pros::lcd::print(0, "KF1 = %f", I1Heading);
+	pros::lcd::print(1, "KF2 = %f", I2Heading);
+
+	pros::lcd::print(2, "IU1 = %f", I1Uncertainty);
+	pros::lcd::print(3, "IU2 = %f", I2Uncertainty);
+
+	pros::lcd::print(4, "IW1 = %f", I1Weight);
+	pros::lcd::print(5, "IW2 = %f", I2Weight);
+
+	pros::lcd::print(7, "AGG = %f", aggregatedHeading);
 
     return aggregatedHeading;
 }

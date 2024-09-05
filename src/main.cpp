@@ -120,6 +120,9 @@ switch (autonnumber) {
 void opcontrol() {
 
 pros::lcd::initialize();
+
+pros::delay(4000);
+
 	if (colorSensorOn_task_ptr != NULL) {
 		colorSensorOn_task_ptr->remove();
 	}
@@ -132,6 +135,14 @@ pros::lcd::initialize();
 	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 
 	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+
+	// initializes Kalman Filters for the inertial sensors
+	KalmanFilter Kalman1 = KalmanFilter(&Inertial1, &RotationalTurn);
+	KalmanFilter Kalman2 = KalmanFilter(&Inertial2, &RotationalTurn);
+
+	Kalman1.startFilter();
+	Kalman2.startFilter();
 
 	while (true) {
 
@@ -267,10 +278,23 @@ pros::lcd::initialize();
 			}
 			waitUntil(Master.get_digital(DIGITAL_X) == false);
 		}
-
+/*
 	pros::lcd::print(0, "I1 = %f", Inertial1.get_heading());
 	pros::lcd::print(1, "I2 = %f", Inertial2.get_heading());
-	pros::lcd::print(2, "R = %f", readOdomAngle(RotationalTurn));
+
+	pros::lcd::print(2, "ODOM = %f", readOdomVelocity(RotationalTurn));
+
+	pros::lcd::print(3, "KF1 = %f", Kalman1.getFilteredHeading());
+	pros::lcd::print(4, "KF1 U = %f", Kalman1.getFilterUncertainty());
+
+	pros::lcd::print(5, "KF2 = %f", Kalman2.getFilteredHeading());
+	pros::lcd::print(6, "KF2 U = %f", Kalman2.getFilterUncertainty());
+
+	pros::lcd::print(7, "AGG = %f", getAggregatedHeading(Kalman2, Kalman1));
+*/
+	
+
+	getAggregatedHeading(Kalman2, Kalman1);
 
 	// end-of-cycle delay
 	pros::delay(20);
