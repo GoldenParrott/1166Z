@@ -67,7 +67,7 @@ double readOdomAngle(pros::Rotation turnOdom) {
 double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2) {
     // gets heading from each of the sensors
     double I1Heading = inertial1.getFilteredHeading();
-    double I2Heading = inertial2.getFilteredHeading();
+    double I2Heading = inertial1.getFilteredHeading();
 
     // gets the uncertainty from each of the IMUs
     double I1Uncertainty = inertial1.getFilterUncertainty();
