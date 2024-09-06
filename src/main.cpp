@@ -278,7 +278,7 @@ pros::delay(4000);
 			}
 			waitUntil(Master.get_digital(DIGITAL_X) == false);
 		}
-/*
+
 	pros::lcd::print(0, "I1 = %f", Inertial1.get_heading());
 	pros::lcd::print(1, "I2 = %f", Inertial2.get_heading());
 
@@ -291,10 +291,6 @@ pros::delay(4000);
 	pros::lcd::print(6, "KF2 U = %f", Kalman2.getFilterUncertainty());
 
 	pros::lcd::print(7, "AGG = %f", getAggregatedHeading(Kalman2, Kalman1));
-*/
-	
-
-	getAggregatedHeading(Kalman2, Kalman1);
 
 	// end-of-cycle delay
 	pros::delay(20);

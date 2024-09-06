@@ -7,6 +7,7 @@ void KalmanFilter::KalmanFilterLoop()
 
     // current measurement value
     double currentMeasurement = 1;
+    double previousMeasurement = 1;
 
     // current actual values
     double currentHeading = 1;
@@ -53,6 +54,13 @@ void KalmanFilter::KalmanFilterLoop()
                 currentHeading = statePrediction + (kalmanGain * (currentMeasurement - statePrediction)); // State Update Equation (deg = deg + (value * (deg - deg)))
                 currentCovariance = (1 - kalmanGain) * estimateVariancePrediction; // Covariance Update Equation
 
+                // reset of filter if it passes 0
+                if (((previousMeasurement > 355) && (currentMeasurement < 5)) ||
+                    ((previousMeasurement < 5) && (currentMeasurement > 355))) 
+                    {
+                        currentHeading = currentMeasurement;
+                    }
+
                 // VELOCITY UPDATE
                 velocity = readOdomVelocity(*turnRotational);
 
@@ -74,10 +82,11 @@ void KalmanFilter::KalmanFilterLoop()
                 estimateVariancePrediction = currentCovariance + ((std::pow(this->delay, 2) / 1000) * predictionDeviation); // Covariance Extrapolation Equation (deg = deg + (sec^2 * deg))
 
                 // ENDING DELAY AND OUTPUT UPDATE
-            this->filteredHeading = currentHeading;
+                previousMeasurement = currentMeasurement;
+
+                this->filteredHeading = currentHeading;
                 this->filterUncertainty = currentCovariance;
                 pros::delay(this->delay);
-            // pros::delay(5000);
     }
 }
 
