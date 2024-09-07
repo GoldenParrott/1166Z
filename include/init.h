@@ -58,16 +58,13 @@ extern int logoCount;
 extern int drvtrDZ;
 extern int drvtrFB;
 extern int drvtrLR;
-extern double armGoal;
-extern double armmax;
-extern double armPosition;
 // upright = 1900, upleft = -1900
 
-extern bool armCalibrated;
-extern bool armMoving;
-extern bool armMovementComplete;
 extern bool toggleColorSensor;
 extern int colorDelay;
+
+extern bool redirectOn;
+extern int redirectStartPoint;
 
 extern bool presettingA;
 extern bool presettingX;
