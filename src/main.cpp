@@ -223,7 +223,7 @@ pros::delay(4000);
 			// us from looping through the code repeatedly ↓↓
 			waitUntil(Master.get_digital(DIGITAL_R1) == false);
 		}
-		
+
 
 	// color sensor (redirect)
 
@@ -307,12 +307,6 @@ pros::delay(4000);
 						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
 	long double singleDegree = wheelRevolution / 360; // the distance that the robot moves in one degree of rotation of its wheels
 
-	// Odometry Pre-Measurement
-	// resets the rotation of all motors before the movement so the movement can be calculated from zero to the destination
-	BackRight.tare_position();
-	BackLeft.tare_position();
-	FrontRight.tare_position();
-	FrontLeft.tare_position();
 
 	// used to measure the rotational sensor values of all the motors (this comes in degrees)
 	double br = BackRight.get_position();

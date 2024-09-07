@@ -35,6 +35,7 @@ Pnuematics
 
     extern pros::ADIDigitalOut MobileGoalManipulator;
     extern pros::ADIDigitalOut InputPiston;
+    extern pros::ADIDigitalOut ArmPiston;
     extern pros::ADIDigitalOut Grabber;
 
 

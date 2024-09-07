@@ -4,24 +4,24 @@
     pros::Controller Master(pros::E_CONTROLLER_MASTER);
 
 //Motors
-    
-    pros::Motor FrontLeft(99, pros::E_MOTOR_GEAR_600, 1);
-    pros::Motor MidLeft(99, pros::E_MOTOR_GEAR_600, 1);
-    pros::Motor BackLeft(99, pros::E_MOTOR_GEAR_600, 0);
+
+    pros::Motor FrontLeft(6, pros::E_MOTOR_GEAR_600, 1);
+    pros::Motor MidLeft(4, pros::E_MOTOR_GEAR_600, 1);
+    pros::Motor BackLeft(2, pros::E_MOTOR_GEAR_600, 0);
     pros::Motor_Group LeftWheels({FrontLeft, MidLeft, BackLeft});
 
-    pros::Motor FrontRight(99, pros::E_MOTOR_GEAR_600, 0);
+    pros::Motor FrontRight(7, pros::E_MOTOR_GEAR_600, 0);
     pros::Motor MidRight(14, pros::E_MOTOR_GEAR_600, 0);
-    pros::Motor BackRight(99, pros::E_MOTOR_GEAR_600, 1);
+    pros::Motor BackRight(19, pros::E_MOTOR_GEAR_600, 1);
     pros::Motor_Group RightWheels({FrontRight, MidRight, BackRight});
 
     pros::Motor_Group AllWheels({FrontLeft, MidLeft, BackLeft, FrontRight, MidRight, BackRight});
 
-    pros::Motor InputMotor(99, pros::E_MOTOR_GEAR_200, 0);
-    pros::Motor Transport(99, pros::E_MOTOR_GEAR_200, 1);
+    pros::Motor InputMotor(11, pros::E_MOTOR_GEAR_200, 0);
+    pros::Motor Transport(3, pros::E_MOTOR_GEAR_200, 1);
     pros::Motor_Group Intake({InputMotor, Transport});
 
-    pros::Motor Arm(99, pros::E_MOTOR_GEAR_200, 1);
+    pros::Motor Arm(17, pros::E_MOTOR_GEAR_200, 1);
 
 /*
 ABCDEFGH
@@ -30,9 +30,10 @@ ABCDEFGH
 Pnuematics
 */
 
-    pros::ADIDigitalOut MobileGoalManipulator(99);
+    pros::ADIDigitalOut MobileGoalManipulator(8);
+    pros::ADIDigitalOut InputPiston(6);
     pros::ADIDigitalOut ArmPiston(99);
-    pros::ADIDigitalOut Grabber(99);
+    pros::ADIDigitalOut Grabber(7);
 
 
 // Tasks
@@ -42,11 +43,11 @@ Pnuematics
 
 // Sensors
 
-    pros::Optical colorSense(99);
-    pros::IMU Inertial1(99);
-    pros::IMU Inertial2(99);
-    pros::Rotation Rotational(99, 1);
-    pros::Rotation RotationalTurn(99);
+    pros::Optical colorSense(11);
+    pros::IMU Inertial1(5);
+    pros::IMU Inertial2(8);
+    pros::Rotation Rotational(12, 1);
+    pros::Rotation RotationalTurn(20);
 
 //Variables
 int autonnumber;

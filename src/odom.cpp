@@ -63,7 +63,6 @@ double readOdomAngle(pros::Rotation turnOdom) {
 
 
 
-
 double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2) {
     // gets heading from each of the sensors
     double I1Heading = inertial1.getFilteredHeading();
