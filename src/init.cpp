@@ -43,7 +43,7 @@ Pnuematics
 
 // Sensors
 
-    pros::Optical colorSense(11);
+    pros::Optical colorSense(1);
     pros::IMU Inertial1(5);
     pros::IMU Inertial2(8);
     pros::Rotation Rotational(12, 1);

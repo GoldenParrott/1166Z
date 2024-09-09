@@ -54,8 +54,49 @@ double readOdomAngle(pros::Rotation turnOdom) {
     return robotHeadingDegrees;
 }
 
+double initializeCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Coordinate offset, int startHeading) {
+    // starting offset distance in centimeters
+    double startDistance = std::pow(offset.x, 2) + std::pow(offset.y, 2);
+}
 
+double getLocation(double heading, double dist) {
+    // ensures that the heading is between 0 and 90 so it can be treated as an angle of a right triangle
+    int quadrant;
+    if (heading < 90) {
+        quadrant = 1;
+    } else if (heading < 180) {
+        quadrant = 4;
+        heading -= 90;
+    } else if (heading < 270) {
+        quadrant = 3;
+        heading -= 180;
+    } else {
+        quadrant = 2;
+        heading -= 270;
+    }
+    // treats the distance moved as the hypotenuse of and the heading as the base angle of a triangle
+    // and uses them to calculate the value of both legs (the x and y locations)
+    double xLoc = std::cos(heading) * dist;
+    double yLoc = std::sin(heading) * dist;
 
+    // switches the x and y values based on the quadrant of the triangle
+    switch (quadrant) {
+        case 1:
+            xLoc = xLoc;
+            yLoc = yLoc;
+            break;
+        case 2:
+            xLoc = -xLoc;
+            yLoc = yLoc;
+        case 3:
+            xLoc = -xLoc;
+            yLoc = -yLoc;
+        case 4:
+            xLoc = xLoc;
+            yLoc = -yLoc;
+    }
+
+}
 
 
 
@@ -84,7 +125,7 @@ double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2) {
         if (I1Uncertainty < I2Uncertainty) {
             aggregatedHeading = I1Heading;
         } else {
-            aggregatedHeading = I2Uncertainty;
+            aggregatedHeading = I2Heading;
         }
     }
 

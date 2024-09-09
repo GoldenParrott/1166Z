@@ -12,6 +12,8 @@ void initialize() {
 
 	autonnumber = -1;
 
+
+	colorSense.set_led_pwm(100);
 	Rotational.set_position(0);
 	RotationalTurn.set_position(0);
 
@@ -41,9 +43,7 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-	
 	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
-
 }
 
 /**
@@ -120,8 +120,19 @@ switch (autonnumber) {
 void opcontrol() {
 
 pros::lcd::initialize();
+BackRight.tare_position();
+	BackLeft.tare_position();
+	FrontRight.tare_position();
+	FrontLeft.tare_position();
 
 pros::delay(4000);
+
+
+	// resets the rotation of all motors before the movement so the movement can be calculated from zero to the destination
+	BackRight.tare_position();
+	BackLeft.tare_position();
+	FrontRight.tare_position();
+	FrontLeft.tare_position();
 
 	if (colorSensorOn_task_ptr != NULL) {
 		colorSensorOn_task_ptr->remove();
@@ -227,42 +238,41 @@ pros::delay(4000);
 
 	// color sensor (redirect)
 
-		// handles the cases for if L2 is being held down
-		if (Master.get_digital(DIGITAL_L2)) {
+		// handles the cases for if R2 is being held down
+		if (Master.get_digital(DIGITAL_R2)) {
 			// case 1: redirect is currently on
 			if (redirectOn == true) {
-				// case 1a: if the difference between the starting point and the current point 
+				// case 1a: if the difference between the starting point and the current point
 				// 			is greater than 700 (meaning that it has gone all the way), 
 				//			turn off the redirect
-				if (abs(Transport.get_position() - redirectStartPoint) >= 700) {
+				if (abs(Transport.get_position() - redirectStartPoint) >= 2100) {
 					redirectOn = false;
 					redirectStartPoint = 0;
-					Intake.brake();
+					Transport.brake();
 				// case 1b: if case 1a is not true, then continue moving the intake down
 				} else {
-					Intake.move(128);
+					Intake.move(100);
 				}
 			}
 			// case 2: redirect is not on, but the color sensor has found a Ring of the proper color
-			else if ((((colorSense.get_hue() > 200) && (autonnumber > 0))) ||
-				     (((colorSense.get_hue() < 20) && (autonnumber < 0))))
+			else if ((colorSense.get_hue() > 200 || autonnumber > 0) || // blue
+				     (colorSense.get_hue() < 16 && (colorSense.get_hue() > 10) && (autonnumber < 0))) // red
 			{
 				// in this case, the redirect is started and the starting point is stored for later
-				Intake.move(128);
+				Intake.move(100);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();
 			}
 			// case 3: if the redirect is not on and should not be on, 
 			//		   then L2 moves the robot forward as normal
 			else {
-				Intake.move(-128);
+				Intake.move(-100);
 			}
 		// if L2 is not being pressed, then the redirect is turned off
-		} else if (Master.get_digital(DIGITAL_L2)) {
+		} else if (!Master.get_digital(DIGITAL_R2)) {
 			redirectOn = false;
 			redirectStartPoint = 0;
-		} 
-		waitUntil(!Master.get_digital(DIGITAL_R2));
+		}
 
 		Master.print(0, 0, "RD = %d", redirectOn);
 
@@ -285,7 +295,18 @@ pros::delay(4000);
 			else {
 				Grabber.set_value(false);
 			}
-			waitUntil(Master.get_digital(DIGITAL_X) == false);
+			waitUntil(Master.get_digital(DIGITAL_A) == false);
+		}
+
+	// Input Piston
+		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+			if (InputPiston.get_value() == false) {
+				InputPiston.set_value(true);
+			}
+			else {
+				InputPiston.set_value(false);
+			}
+			waitUntil(Master.get_digital(DIGITAL_L2) == false);
 		}
 
 
@@ -302,11 +323,15 @@ pros::delay(4000);
 
 	// Odometry Measurement Setup
 	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
+
 	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
 	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
 						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
 	long double singleDegree = wheelRevolution / 360; // the distance that the robot moves in one degree of rotation of its wheels
 
+
+
+// Odometry Pre-Measurement
 
 	// used to measure the rotational sensor values of all the motors (this comes in degrees)
 	double br = BackRight.get_position();
@@ -314,12 +339,12 @@ pros::delay(4000);
 	double fr = FrontRight.get_position();
 	double fl = FrontLeft.get_position();
 
-	double currentMotorReading = ((br + bl + fr + fl) / 4); // measures the average rotation of all motors to determine the movement of the entire robot
-	double currentWheelReading = currentMotorReading * gearRatio; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
+	double currentWheelReading = br * gearRatio; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
 
 	// measures the current distance moved by the robot by multiplying the number of degrees that it has moved 
 	// by the number of centimeters moved in a single degree of movement
 	double currentDistanceMovedByWheel = currentWheelReading * singleDegree;
+
 
 	pros::lcd::print(1, "ENC = %f", currentDistanceMovedByWheel);
 

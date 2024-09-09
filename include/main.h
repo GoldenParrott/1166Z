@@ -80,7 +80,7 @@ struct PIDReturn {
 };
 struct ConstantContainer {
     double kP; 
-    double kI; 
+    double kI;
     double kD;
 };
 // pid.cpp functions
@@ -158,6 +158,11 @@ double readOdomPod(pros::Rotation odom);
 double readOdomVelocity(pros::Rotation odom);
 double readOdomAngle(pros::Rotation turnOdom);
 double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2);
+
+struct Coordinate {
+    int x;
+    int y;
+};
 
 #ifdef __cplusplus
 }
