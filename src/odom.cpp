@@ -46,22 +46,40 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotatio
     imu2->set_heading(startHeading);
 }
 
-Coordinate getLocation(double heading, double dist) {
-    // ensures that the heading is between 0 and 90 so it can be treated as an angle of a right triangle
-    int quadrant;
-    if (heading < 90) {
-       
-    } else if (heading < 180) {
-        heading -= 90;
-    } else if (heading < 270) {
-        heading -= 180;
-    } else {
-        heading -= 270;
-    }
-    // treats the distance moved as the hypotenuse of and the heading as the base angle of a triangle
-    // and uses them to calculate the value of both legs (the x and y locations)
-    double xLoc = std::cos(heading) * dist;
-    double yLoc = std::sin(heading) * dist;
 
-    return Coordinate(xLoc, yLoc);
+Coordinate getLocation(double heading, double dist, Coordinate prevLoc) {
+    // switches the heading based on the direction of the turn
+    heading = dist > 0
+        ? heading // does nothing if the distance moved is positive
+        : heading < 180 // flips if the distance moved is negative
+            ? heading + 180 // flips the heading to itself + 180 if it is less than 180, putting it on the greater side of the circle
+            : heading - 180; // flips the heading to itself - 180 if it is greater than 180, putting it on the lesser side of the circle
+
+    // calculates the angle of only the triangle by subtracting from it based on its quadrant
+    int triangleAngle = 0;
+    if (heading < 90) {
+       triangleAngle = 90 - heading;
+    } else if (heading < 180) {
+        triangleAngle = heading - 90;
+    } else if (heading < 270) {
+        triangleAngle = 270 - heading;
+    } else {
+        triangleAngle = heading - 270;
+    }
+
+    // treats the distance moved as the hypotenuse of and the heading as the base angle of a triangle
+    // and uses them to calculate the value of both legs (the changes in x and y)
+    double xChange = std::cos(heading) * dist;
+    double yChange = std::sin(heading) * dist;
+
+    // sets the final x and y positions to the changes in x and y added to the previous coordinates
+    double xLoc = prevLoc.x + xChange;
+    double yLoc = prevLoc.y + yChange;
+
+    // initialized final coordinate as structure for return
+    Coordinate finalCoord;
+    finalCoord.x = xLoc;
+    finalCoord.y = yLoc;
+
+    return finalCoord;
 }

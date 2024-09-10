@@ -14,7 +14,7 @@ void blueGoalside() {
 
 
 void redGoalside() {
-
+	PIDMover(70);
 }
 
 
