@@ -32,7 +32,7 @@ Pnuematics
 
     pros::ADIDigitalOut MobileGoalManipulator(8);
     pros::ADIDigitalOut InputPiston(6);
-    pros::ADIDigitalOut ArmPiston(99);
+    pros::ADIDigitalOut ArmPiston(5);
     pros::ADIDigitalOut Grabber(7);
 
 

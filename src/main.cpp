@@ -251,7 +251,7 @@ pros::delay(4000);
 					Transport.brake();
 				// case 1b: if case 1a is not true, then continue moving the intake down
 				} else {
-					Intake.move(100);
+					Intake.move(80);
 				}
 			}
 			// case 2: redirect is not on, but the color sensor has found a Ring of the proper color
@@ -259,14 +259,14 @@ pros::delay(4000);
 				     (colorSense.get_hue() < 16 && (colorSense.get_hue() > 10) && (autonnumber < 0))) // red
 			{
 				// in this case, the redirect is started and the starting point is stored for later
-				Intake.move(100);
+				Intake.move(80);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();
 			}
 			// case 3: if the redirect is not on and should not be on, 
 			//		   then L2 moves the robot forward as normal
 			else {
-				Intake.move(-100);
+				Intake.move(-80);
 			}
 		// if L2 is not being pressed, then the redirect is turned off
 		} else if (!Master.get_digital(DIGITAL_R2)) {
@@ -278,11 +278,11 @@ pros::delay(4000);
 
 	// Arm Piston
 		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
-			if (Grabber.get_value() == false) {
-				Grabber.set_value(true);
+			if (ArmPiston.get_value() == false) {
+				ArmPiston.set_value(true);
 			}
 			else {
-				Grabber.set_value(false);
+				ArmPiston.set_value(false);
 			}
 			waitUntil(Master.get_digital(DIGITAL_Y) == false);
 		}

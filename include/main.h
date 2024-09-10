@@ -152,17 +152,20 @@ class KalmanFilter {
         void startFilter(void);
         void endFilter(void);
 };
-
-// odom.cpp
+// tracking.cpp
+double calculateSingleDegree(double wheelDiameter);
 double readOdomPod(pros::Rotation odom);
 double readOdomVelocity(pros::Rotation odom);
 double readOdomAngle(pros::Rotation turnOdom);
 double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2);
 
+// odom.cpp
 struct Coordinate {
-    int x;
-    int y;
+    double x;
+    double y;
 };
+void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Coordinate offset, int startHeading, int quadrant);
+Coordinate getLocation(double heading, double dist);
 
 #ifdef __cplusplus
 }
