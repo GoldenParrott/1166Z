@@ -165,7 +165,7 @@ struct Coordinate {
     double y;
 };
 void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Coordinate offset, int startHeading, int quadrant);
-Coordinate getLocation(double heading, double dist);
+Coordinate getLocation(double heading, double dist, Coordinate prevLoc);
 
 #ifdef __cplusplus
 }
