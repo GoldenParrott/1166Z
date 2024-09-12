@@ -1,7 +1,7 @@
 #include "init.h"
 
 void blueRingside() {
-
+	PIDMover({1, 2});
 }
 
 
@@ -14,7 +14,6 @@ void blueGoalside() {
 
 
 void redGoalside() {
-	PIDMover(70);
 }
 
 

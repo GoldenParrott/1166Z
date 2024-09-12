@@ -66,3 +66,5 @@ int redirectStartPoint = 0;
 
 bool presettingA = false;
 bool presettingX = false;
+
+Coordinate universalCurrentLocation = {0, 0};

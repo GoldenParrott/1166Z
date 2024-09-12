@@ -10,8 +10,7 @@
  */
 void initialize() {
 
-	autonnumber = -1;
-
+	autonnumber = 1;
 
 	colorSense.set_led_pwm(100);
 	Rotational.set_position(0);
@@ -75,7 +74,8 @@ void autonomous() {
 	drawLogo();
 
 switch (autonnumber) {
-	case 1: 
+	case 1:
+		initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {151, 116}, 270, 2);
 		blueGoalside();
 		break;
 	case 2:

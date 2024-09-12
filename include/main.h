@@ -62,17 +62,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-// main.cpp
-void autonomous(void);
-void initialize(void);
-void disabled(void);
-void competition_initialize(void);
-void armraiser(void);
-void opcontrol(void);
-
-// pid.cpp
-
-// pid.cpp structures
+// structures
 struct PIDReturn {
     int prevError; 
     int prevIntegral; 
@@ -83,8 +73,21 @@ struct ConstantContainer {
     double kI;
     double kD;
 };
-// pid.cpp functions
-void PIDMover(int setPoint,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
+struct Coordinate {
+    double x;
+    double y;
+};
+
+// main.cpp
+void autonomous(void);
+void initialize(void);
+void disabled(void);
+void competition_initialize(void);
+void armraiser(void);
+void opcontrol(void);
+
+// pid.cpp
+void PIDMover(Coordinate goalPosition,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 void PIDTurner(int setPoint, int direction,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 void PIDArc(int chordLength, int maxDist, int direction,                std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 
@@ -160,12 +163,9 @@ double readOdomAngle(pros::Rotation turnOdom);
 double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2);
 
 // odom.cpp
-struct Coordinate {
-    double x;
-    double y;
-};
 void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Coordinate offset, int startHeading, int quadrant);
-Coordinate getLocation(double heading, double dist, Coordinate prevLoc);
+Coordinate updateLocation(double heading, double dist, Coordinate prevLoc);
+double calculateDistance(Coordinate point1, Coordinate point2);
 
 #ifdef __cplusplus
 }

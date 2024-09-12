@@ -70,4 +70,7 @@ extern int redirectStartPoint;
 extern bool presettingA;
 extern bool presettingX;
 
+// declared in initialize(), not init.cpp
+extern Coordinate universalCurrentLocation;
+
 #endif

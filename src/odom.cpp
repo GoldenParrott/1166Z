@@ -47,7 +47,7 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotatio
 }
 
 
-Coordinate getLocation(double heading, double dist, Coordinate prevLoc) {
+Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
     // switches the heading based on the direction of the turn
     heading = dist > 0
         ? heading // does nothing if the distance moved is positive
@@ -76,10 +76,10 @@ Coordinate getLocation(double heading, double dist, Coordinate prevLoc) {
     double xLoc = prevLoc.x + xChange;
     double yLoc = prevLoc.y + yChange;
 
-    // initialized final coordinate as structure for return
-    Coordinate finalCoord;
-    finalCoord.x = xLoc;
-    finalCoord.y = yLoc;
+    return {xLoc, yLoc};
+}
 
-    return finalCoord;
+// distance formula function
+double calculateDistance(Coordinate point1, Coordinate point2) {
+    return std::sqrt(std::pow((point2.x - point1.x), 2) + std::pow((point2.y - point1.y), 2));
 }

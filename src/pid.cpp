@@ -1,7 +1,7 @@
 #include "init.h"
 
 void PIDMover(
-		int setPoint, // how far you want to move in inches
+		Coordinate goalPosition, // goal coordinate position
 
 		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
 		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
@@ -29,7 +29,9 @@ void PIDMover(
 	
 
 
-
+// sets the set point to the difference between the current point and the goal point
+	Coordinate originalPosition = universalCurrentLocation;
+	int setPoint = calculateDistance(universalCurrentLocation, goalPosition);
 
 // Odometry Measurement Setup
 	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
@@ -92,6 +94,8 @@ void PIDMover(
 				AllWheels.brake();
 		}
 	}
+	// updates current location after movement
+	universalCurrentLocation = updateLocation(Inertial1.get_heading(), currentDistanceMovedByWheel, originalPosition);
 }
 
 void PIDTurner(
