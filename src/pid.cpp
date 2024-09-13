@@ -32,6 +32,7 @@ void PIDMover(
 // sets the set point to the difference between the current point and the goal point
 	Coordinate originalPosition = universalCurrentLocation;
 	int setPoint = calculateDistance(universalCurrentLocation, goalPosition);
+	int remainingDistance = setPoint;
 
 // Odometry Measurement Setup
 	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
@@ -86,7 +87,10 @@ void PIDMover(
 		// fifteen millisecond delay between cycles
 		pros::delay(15);
 
-		currentDistanceMovedByWheel = readOdomPod(Rotational);
+		// calculates the distance moved as the difference between the distance left to move
+		// and the total distance to move
+		remainingDistance = calculateDistance(universalCurrentLocation, goalPosition);
+		currentDistanceMovedByWheel = setPoint - remainingDistance;
 
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
@@ -94,8 +98,6 @@ void PIDMover(
 				AllWheels.brake();
 		}
 	}
-	// updates current location after movement
-	universalCurrentLocation = updateLocation(Inertial1.get_heading(), currentDistanceMovedByWheel, originalPosition);
 }
 
 void PIDTurner(
@@ -127,7 +129,7 @@ void PIDTurner(
 // PID LOOPING VARIABLES
 	int negativePower;
 
-	int inertialReadingInit = Inertial1.get_heading();
+	int inertialReadingInit = getAggregatedHeading(Kalman1, Kalman2);
 	int distanceToMove;
 
 	if (direction == 1) {
@@ -223,8 +225,8 @@ void PIDTurner(
 
 		// the change in reading is set to the absolute value of the change in reading due to everything being positive
 		int changeInDistance = direction == 1 
-			? inertialReadingInit - Inertial1.get_heading() 
-			: Inertial1.get_heading() - inertialReadingInit;
+			? inertialReadingInit - getAggregatedHeading(Kalman1, Kalman2)
+			: getAggregatedHeading(Kalman1, Kalman2) - inertialReadingInit;
 		changeInReading = changeInDistance < 0
 		    ? changeInDistance + 360
 			: changeInDistance;

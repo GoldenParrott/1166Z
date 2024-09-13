@@ -34,20 +34,24 @@ Pnuematics
     pros::ADIDigitalOut InputPiston(6);
     pros::ADIDigitalOut ArmPiston(5);
     pros::ADIDigitalOut Grabber(7);
+    pros::ADIDigitalOut Hang(4);
 
 
 // Tasks
 
-    pros::Task* colorSensorOn_task_ptr = NULL;
 
 
 // Sensors
 
     pros::Optical colorSense(1);
-    pros::IMU Inertial1(5);
-    pros::IMU Inertial2(8);
+
     pros::Rotation Rotational(12, 1);
     pros::Rotation RotationalTurn(20);
+
+    pros::IMU Inertial1(5);
+    KalmanFilter Kalman1 = KalmanFilter(&Inertial1, &RotationalTurn);
+    pros::IMU Inertial2(8);
+    KalmanFilter Kalman2 = KalmanFilter(&Inertial2, &RotationalTurn);
 
 //Variables
 int autonnumber;

@@ -37,20 +37,26 @@ Pnuematics
     extern pros::ADIDigitalOut InputPiston;
     extern pros::ADIDigitalOut ArmPiston;
     extern pros::ADIDigitalOut Grabber;
+    extern pros::ADIDigitalOut Hang;
 
 
 // Tasks
 
-    extern pros::Task *colorSensorOn_task_ptr;
+    extern pros::Task* kalman1_task_ptr;
+    extern pros::Task* kalman2_task_ptr;
 
 
 // Sensors
 
     extern pros::Optical colorSense;
-    extern pros::IMU Inertial1;
-    extern pros::IMU Inertial2;
+
     extern pros::Rotation Rotational;
     extern pros::Rotation RotationalTurn;
+
+    extern pros::IMU Inertial1;
+    extern KalmanFilter Kalman1;
+    extern pros::IMU Inertial2;
+    extern KalmanFilter Kalman2;
 
 // Variables
 extern int autonnumber;

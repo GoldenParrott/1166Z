@@ -83,3 +83,21 @@ Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
 double calculateDistance(Coordinate point1, Coordinate point2) {
     return std::sqrt(std::pow((point2.x - point1.x), 2) + std::pow((point2.y - point1.y), 2));
 }
+
+// continually updates the value of the universal current location for use by every function
+void updateCoordinateLoop() {
+
+    // declaration of previous location
+    Coordinate previousLocation = universalCurrentLocation;
+    
+    while (true) {
+        // updates the location
+        universalCurrentLocation = updateLocation(getAggregatedHeading(Kalman1, Kalman2), Rotational.get_position(), previousLocation);
+        // resets the rotational for the next movement
+        Rotational.reset_position();
+        // previous location for use in next cycle
+        previousLocation = universalCurrentLocation;
+        // delay between cycles
+        pros::delay(5);
+    }
+}

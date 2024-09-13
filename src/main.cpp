@@ -58,18 +58,24 @@ void competition_initialize() {
  */
 void autonomous() {
 
+	// starts the coordinate updating system
+	pros::Task coordinateUpdater_task = pros::Task(updateCoordinateLoop);
+
 	// autonomous setup
 	colorSense.set_led_pwm(100);
+
 	AllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
+
 	Intake.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Intake.tare_position();
+
 	Arm.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Arm.tare_position();
 
-	if (colorSensorOn_task_ptr == NULL) {
-		// colorSensorOn_task_ptr = new pros::Task(colorSensorOn, 'Color Eject On');
-	}
+	Kalman1.startFilter();
+	Kalman2.startFilter();
 
+	
 	
 	drawLogo();
 
@@ -119,24 +125,8 @@ switch (autonnumber) {
 
 void opcontrol() {
 
-pros::lcd::initialize();
-BackRight.tare_position();
-	BackLeft.tare_position();
-	FrontRight.tare_position();
-	FrontLeft.tare_position();
-
-pros::delay(4000);
-
-
-	// resets the rotation of all motors before the movement so the movement can be calculated from zero to the destination
-	BackRight.tare_position();
-	BackLeft.tare_position();
-	FrontRight.tare_position();
-	FrontLeft.tare_position();
-
-	if (colorSensorOn_task_ptr != NULL) {
-		colorSensorOn_task_ptr->remove();
-	}
+	Kalman1.endFilter();
+	Kalman2.endFilter();
 
 	// resets all pistons
 	Grabber.set_value(false);
@@ -147,13 +137,6 @@ pros::delay(4000);
 
 	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-
-	// initializes Kalman Filters for the inertial sensors
-	KalmanFilter Kalman1 = KalmanFilter(&Inertial1, &RotationalTurn);
-	KalmanFilter Kalman2 = KalmanFilter(&Inertial2, &RotationalTurn);
-
-	Kalman1.startFilter();
-	Kalman2.startFilter();
 
 	while (true) {
 
@@ -182,10 +165,10 @@ pros::delay(4000);
 		{
 			InputMotor.move(-128);
 		}
-		else if(Master.get_digital(DIGITAL_X))
+		/* else if(Master.get_digital(DIGITAL_X))
 		{
 			InputMotor.move(128);
-		} 
+		} */
 		else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) 
 				  && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
 			InputMotor.brake();
@@ -308,7 +291,16 @@ pros::delay(4000);
 			}
 			waitUntil(Master.get_digital(DIGITAL_L2) == false);
 		}
-
+	// Hang
+		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+			if (Hang.get_value() == false) {
+				Hang.set_value(true);
+			}
+			else {
+				Hang.set_value(false);
+			}
+			waitUntil(Master.get_digital(DIGITAL_X) == false);
+		}
 
 
 
