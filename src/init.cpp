@@ -45,7 +45,7 @@ Pnuematics
 
     pros::Optical colorSense(1);
 
-    pros::Rotation Rotational(12, 1);
+    pros::Rotation Rotational(12);
     pros::Rotation RotationalTurn(20);
 
     pros::IMU Inertial1(5);

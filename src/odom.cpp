@@ -29,17 +29,8 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotatio
             break;
     }
 
-    // starting offset distance in centimeters
-    double startDistance = std::pow(offset.x, 2) + std::pow(offset.y, 2);
-
-    // gets the centimeter distance moved in a single degree of rotation
-    double singleDegree = calculateSingleDegree(2); // 2 is the pre-measured wheel diameter in inches
-    // converts the distance in centimeters to degrees of the tracking wheel
-    double valueDeg = startDistance / singleDegree;
-    // converts the distance in degrees to the distance in centidegrees for the rotational sensor
-    double valueRaw = valueDeg * 100;
-    // sets the offset rotational sensor value to the rotational sensor value
-    rotational->set_position(valueRaw);
+    // sets the current location to the offset
+    universalCurrentLocation = offset;
 
     // sets the headings to the heading offset
     imu1->set_heading(startHeading);
@@ -49,28 +40,28 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotatio
 
 Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
     // switches the heading based on the direction of the turn
-    heading = dist > 0
+    heading = dist >= 0
         ? heading // does nothing if the distance moved is positive
         : heading < 180 // flips if the distance moved is negative
             ? heading + 180 // flips the heading to itself + 180 if it is less than 180, putting it on the greater side of the circle
             : heading - 180; // flips the heading to itself - 180 if it is greater than 180, putting it on the lesser side of the circle
 
     // calculates the angle of only the triangle by subtracting from it based on its quadrant
-    int triangleAngle = 0;
+    double triangleAngle = 0;
     if (heading < 90) {
-       triangleAngle = 90 - heading;
+       triangleAngle = heading;
     } else if (heading < 180) {
         triangleAngle = heading - 90;
     } else if (heading < 270) {
-        triangleAngle = 270 - heading;
-    } else {
-        triangleAngle = heading - 270;
+        triangleAngle = heading - 180;
+    } else if (heading < 360) {
+        triangleAngle = 360 - heading;
     }
 
     // treats the distance moved as the hypotenuse of and the heading as the base angle of a triangle
     // and uses them to calculate the value of both legs (the changes in x and y)
-    double xChange = std::cos(heading) * dist;
-    double yChange = std::sin(heading) * dist;
+    double xChange = std::sin(triangleAngle) * dist;
+    double yChange = std::cos(triangleAngle) * dist;
 
     // sets the final x and y positions to the changes in x and y added to the previous coordinates
     double xLoc = prevLoc.x + xChange;
@@ -92,7 +83,7 @@ void updateCoordinateLoop() {
     
     while (true) {
         // updates the location
-        universalCurrentLocation = updateLocation(getAggregatedHeading(Kalman1, Kalman2), Rotational.get_position(), previousLocation);
+        universalCurrentLocation = updateLocation(getAggregatedHeading(Kalman1, Kalman2), readOdomPod(Rotational), previousLocation);
         // resets the rotational for the next movement
         Rotational.reset_position();
         // previous location for use in next cycle

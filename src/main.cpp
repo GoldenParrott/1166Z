@@ -43,6 +43,18 @@ void disabled() {
  */
 void competition_initialize() {
 	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
+
+	switch (autonnumber) {
+		case 1: 
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {120, 120}, 180, 1);
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+	}
 }
 
 /**
@@ -81,7 +93,6 @@ void autonomous() {
 
 switch (autonnumber) {
 	case 1:
-		initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {151, 116}, 270, 2);
 		blueGoalside();
 		break;
 	case 2:
@@ -124,6 +135,14 @@ switch (autonnumber) {
  */
 
 void opcontrol() {
+
+
+	// initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {0, 0}, 270, 2);
+	pros::Task coordinateUpdater_task = pros::Task(updateCoordinateLoop);
+
+	pros::lcd::initialize();
+	pros::delay(4000);
+
 
 	Kalman1.endFilter();
 	Kalman2.endFilter();
@@ -323,22 +342,9 @@ void opcontrol() {
 
 
 
-// Odometry Pre-Measurement
-
-	// used to measure the rotational sensor values of all the motors (this comes in degrees)
-	double br = BackRight.get_position();
-	double bl = BackLeft.get_position();
-	double fr = FrontRight.get_position();
-	double fl = FrontLeft.get_position();
-
-	double currentWheelReading = br * gearRatio; // measures the current reading (in degrees) of the wheel by multiplying it by the gear ratio
-
-	// measures the current distance moved by the robot by multiplying the number of degrees that it has moved 
-	// by the number of centimeters moved in a single degree of movement
-	double currentDistanceMovedByWheel = currentWheelReading * singleDegree;
-
-
-	pros::lcd::print(1, "ENC = %f", currentDistanceMovedByWheel);
+	pros::lcd::print(0, "x = %f", universalCurrentLocation.x);
+	pros::lcd::print(1, "y = %f", universalCurrentLocation.y);
+	pros::lcd::print(2, "h = %f", getAggregatedHeading(Kalman1, Kalman2));
 
 	// end-of-cycle delay
 	pros::delay(20);

@@ -21,12 +21,12 @@ void PIDMover(
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 0.75; // customizable
-	moverConstants.kI = 0.2; // customizable
+	moverConstants.kP = 0.5; // customizable
+	moverConstants.kI = 0.0; // customizable
 	moverConstants.kD = 0.0; // customizable
 
 	
-	
+
 
 
 // sets the set point to the difference between the current point and the goal point
@@ -36,7 +36,6 @@ void PIDMover(
 
 // Odometry Measurement Setup
 	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
-	setPoint = setPoint * 2.54; // converts from inches to cm, as the function call uses inches for ease of measurement
 
 	for (int i = 0; i < executeAts.size(); i++) {
 		executeAts[i] *= 2.54;
@@ -45,9 +44,7 @@ void PIDMover(
 
 
 // Odometry Pre-Measurement
-	// resets the rotation of all motors before the movement so the movement can be calculated from zero to the destination
-	Rotational.reset();
-
+	
 	// used to measure the rotational sensor values of all the motors (this comes in degrees)
 	double currentDistanceMovedByWheel = readOdomPod(Rotational);
 
@@ -91,6 +88,9 @@ void PIDMover(
 		// and the total distance to move
 		remainingDistance = calculateDistance(universalCurrentLocation, goalPosition);
 		currentDistanceMovedByWheel = setPoint - remainingDistance;
+
+
+	Master.print(0, 0, "set = %d", remainingDistance);
 
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {

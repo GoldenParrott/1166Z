@@ -19,7 +19,7 @@ double readOdomPod(pros::Rotation odom) {
     double singleDegree = calculateSingleDegree(2); // 2 is the pre-measured wheel diameter in inches
 
     // gets the reading from the rotational sensor
-    int rawReading = odom.get_position(); // gives centidegrees (a 0-36,000 scale)
+    int rawReading = odom.get_position() * -1; // gives centidegrees (a 0-36,000 scale)
     double readingDeg = rawReading / 100; // reduces the centidegrees to degrees (a 0-360 scale)
     
     // converts the reading to centimeters
