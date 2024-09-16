@@ -2,6 +2,7 @@
 
 void PIDMover(
 		Coordinate goalPosition, // goal coordinate position
+		bool reverse = false, // defaults to false- explicitly set to true to reverse the robot
 
 		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
 		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
@@ -63,16 +64,23 @@ void PIDMover(
 
 	// gets the power for the current cycle
 	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
+	double power = cycle.power;
 
-	// switches the direction if it has passed its goal
+	// finds if the robot has passed the perpendicular line's inequality or not
 	bool greaterThanNegativeLine = universalCurrentLocation.y >= (negativeSide.slope * universalCurrentLocation.x) + negativeSide.yIntercept;
 
-	if (greaterThanNegativeLine && negativeSide.equality) {
-		
+	// reverses the direction if the robot has passed the inequality
+	if ((greaterThanNegativeLine && negativeSide.equality > 0) ||
+		(!greaterThanNegativeLine && negativeSide.equality < 0)) {
+			power *= -1;
+	}
+	// reverses the direction if the robot has been commanded to move in reverse
+	if (reverse) {
+		power *= -1;
 	}
 
 	// moves the wheels at the desired power, ending the cycle
-	AllWheels.move(cycle.power);
+	AllWheels.move(power);
 
 
 

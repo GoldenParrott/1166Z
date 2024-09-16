@@ -98,7 +98,7 @@ void armraiser(void);
 void opcontrol(void);
 
 // pid.cpp
-void PIDMover(Coordinate goalPosition,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
+void PIDMover(Coordinate goalPosition, bool reverse,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 void PIDTurner(int setPoint, int direction,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 void PIDArc(int chordLength, int maxDist, int direction,                std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 

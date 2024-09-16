@@ -175,7 +175,7 @@ void opcontrol() {
 	// Intake Conveyor (Transport) and Input
 		if (Master.get_digital(DIGITAL_RIGHT)){
 			Intake.move(-128);
-		} else if(Master.get_digital(DIGITAL_LEFT)){
+		} else if(Master.get_digital(DIGITAL_DOWN)){
 			Intake.move(128);
 		}
 
@@ -194,19 +194,19 @@ void opcontrol() {
 		}
 		
 	// Transport only
-		if (Master.get_digital(DIGITAL_B)) {
+		if (Master.get_digital(DIGITAL_LEFT)) {
 			Transport.move(128);	
 		}
 		else if ((Master.get_digital(DIGITAL_LEFT) == false) && (Master.get_digital(DIGITAL_RIGHT) == false) 
-					&& (Master.get_digital(DIGITAL_B) == false) && (Master.get_digital(DIGITAL_L2) == false)) {
+					&& (Master.get_digital(DIGITAL_DOWN) == false) && (Master.get_digital(DIGITAL_L2) == false)) {
 			Transport.brake();
 		}
 
 	
 	// Arm (Motor)
-		if (Master.get_digital(DIGITAL_UP)) {
+		if (Master.get_digital(DIGITAL_Y)) {
 			Arm.move(128);
-		} else if (Master.get_digital(DIGITAL_DOWN)) {
+		} else if (Master.get_digital(DIGITAL_B)) {
 			Arm.move(-128);
 		}
 		else {
@@ -279,14 +279,14 @@ void opcontrol() {
 		Master.print(0, 0, "RD = %d", redirectOn);
 
 	// Arm Piston
-		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (ArmPiston.get_value() == false) {
 				ArmPiston.set_value(true);
 			}
 			else {
 				ArmPiston.set_value(false);
 			}
-			waitUntil(Master.get_digital(DIGITAL_Y) == false);
+			waitUntil(Master.get_digital(DIGITAL_UP) == false);
 		}
 
 	// Grabber

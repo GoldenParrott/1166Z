@@ -9,7 +9,7 @@ void blueRingside() {
 
 
 void blueGoalside() {
-	PIDMover({120, 60});
+	PIDMover({120, 60}, false);
 }
 
 
