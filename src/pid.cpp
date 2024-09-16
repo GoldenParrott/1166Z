@@ -34,6 +34,9 @@ void PIDMover(
 	int setPoint = calculateDistance(universalCurrentLocation, goalPosition);
 	int remainingDistance = setPoint;
 
+// finds the part of the coordinate plane in which the robot has passed its destination
+	Line negativeSide = calculatePerpendicular(originalPosition, goalPosition);
+
 // Odometry Measurement Setup
 	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
 
@@ -60,6 +63,13 @@ void PIDMover(
 
 	// gets the power for the current cycle
 	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
+
+	// switches the direction if it has passed its goal
+	bool greaterThanNegativeLine = universalCurrentLocation.y >= (negativeSide.slope * universalCurrentLocation.x) + negativeSide.yIntercept;
+
+	if (greaterThanNegativeLine && negativeSide.equality) {
+		
+	}
 
 	// moves the wheels at the desired power, ending the cycle
 	AllWheels.move(cycle.power);

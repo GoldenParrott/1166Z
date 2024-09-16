@@ -70,11 +70,6 @@ Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
     return {xLoc, yLoc};
 }
 
-// distance formula function
-double calculateDistance(Coordinate point1, Coordinate point2) {
-    return std::sqrt(std::pow((point2.x - point1.x), 2) + std::pow((point2.y - point1.y), 2));
-}
-
 // continually updates the value of the universal current location for use by every function
 void updateCoordinateLoop() {
 

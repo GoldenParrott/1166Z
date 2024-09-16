@@ -91,34 +91,6 @@ void KalmanFilter::KalmanFilterLoop()
 }
 
 
-
-// calculates the standard deviation of a set of values, used for the filter (private)
-double KalmanFilter::calculateStandardDeviation(
-    std::deque<double> listOfValues // list of differences from the estimates
-)
-{
-    // calculates the mean of the values
-    double meanOfValues = 0;
-    for (int i = 0; i < listOfValues.size(); i++) {
-        meanOfValues += listOfValues[i]; // adds each value together to calculate their mean
-    }
-    meanOfValues = meanOfValues / listOfValues.size();
-
-    // calculates the variance of the values
-    std::vector<double> listOfDifferences;
-    double variance = 0;
-    for (int i = 0; i < listOfValues.size(); i++) {
-        variance += std::pow((listOfValues[i] - meanOfValues), 2); // variance is calculated by adding the squares of each value's difference from the mean together
-    }
-    variance = variance / listOfValues.size();
-
-    double standardDeviation = std::sqrt(variance); // standard deviation = square root of variance
-
-    return standardDeviation;
-}
-
-
-
 // constructor (public)
 KalmanFilter::KalmanFilter(pros::IMU* inertial, pros::Rotation* turnRotational) {
 

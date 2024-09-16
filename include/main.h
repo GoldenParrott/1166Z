@@ -77,6 +77,17 @@ struct Coordinate {
     double x;
     double y;
 };
+struct Line {
+    double slope;
+    double yIntercept;
+    int equality = 0; /*
+                        -2 is <=
+                        -1 is <
+                         0 is =
+                         1 is >
+                         2 is >=
+                  */
+};
 
 // main.cpp
 void autonomous(void);
@@ -140,7 +151,6 @@ class KalmanFilter {
 
         // internal methods
         void KalmanFilterLoop(void); // actual filter
-        double calculateStandardDeviation(std::deque<double> listOfDifferences); // standard deviation calculation used in filter
 
 
     public:
@@ -167,6 +177,12 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pr
 Coordinate updateLocation(double heading, double dist, Coordinate prevLoc);
 double calculateDistance(Coordinate point1, Coordinate point2);
 void updateCoordinateLoop(void);
+
+// math.cpp
+double calculateStandardDeviation(std::deque<double> listOfDifferences);
+double calculateDistance(Coordinate point1, Coordinate point2);
+Line calculatePerpendicular(Coordinate point1, Coordinate point2);
+int findEquality(Line line, Coordinate includedPoint);
 
 #ifdef __cplusplus
 }
