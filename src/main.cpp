@@ -12,6 +12,8 @@ void initialize() {
 
 	autonnumber = 1;
 
+	pros::lcd::initialize();
+
 	colorSense.set_led_pwm(100);
 	Rotational.set_position(0);
 	RotationalTurn.set_position(0);
@@ -46,7 +48,7 @@ void competition_initialize() {
 
 	switch (autonnumber) {
 		case 1: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {120, 120}, 180, 1);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-120, -120}, 90, 3);
 			break;
 		case 2:
 			break;
@@ -89,7 +91,7 @@ void autonomous() {
 
 	
 	
-	drawLogo();
+	// drawLogo();
 
 switch (autonnumber) {
 	case 1:

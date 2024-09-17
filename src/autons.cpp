@@ -5,15 +5,18 @@ void blueRingside() {
 }
 
 
-
-
-
 void blueGoalside() {
-	PIDMover({120, 60}, false);
+	// PIDMover({-120, -60}, false);
+	while (true) {
+		pros::lcd::print(0, "x = %f", universalCurrentLocation.x);
+		pros::lcd::print(1, "y = %f", universalCurrentLocation.y);
+		pros::delay(50);
+	}
 }
 
 
 void redGoalside() {
+
 }
 
 
@@ -36,7 +39,7 @@ void autonSwitcher(){
 	}
 
 	
-
+/*
 	switch (autonnumber) {
 	case -2:
 		drawRedRing();
@@ -50,6 +53,6 @@ void autonSwitcher(){
 	case 2:
 		drawBlueRing();
 		break;
-	}
+	} */
 	pros::delay(50);
 }

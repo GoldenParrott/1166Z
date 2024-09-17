@@ -32,7 +32,7 @@ void PIDMover(
 
 // sets the set point to the difference between the current point and the goal point
 	Coordinate originalPosition = universalCurrentLocation;
-	int setPoint = calculateDistance(universalCurrentLocation, goalPosition);
+	int setPoint = calculateDistance(originalPosition, goalPosition);
 	int remainingDistance = setPoint;
 
 // finds the part of the coordinate plane in which the robot has passed its destination
@@ -69,9 +69,16 @@ void PIDMover(
 	// finds if the robot has passed the perpendicular line's inequality or not
 	bool greaterThanNegativeLine = universalCurrentLocation.y >= (negativeSide.slope * universalCurrentLocation.x) + negativeSide.yIntercept;
 
+	// handles the line if it is vertical
+	if (negativeSide.slope == NAN) {
+		greaterThanNegativeLine = universalCurrentLocation.x > negativeSide.yIntercept;
+	} else if (negativeSide.slope == 0) {
+		greaterThanNegativeLine = universalCurrentLocation.y > negativeSide.yIntercept;
+	}
+
 	// reverses the direction if the robot has passed the inequality
-	if ((greaterThanNegativeLine && negativeSide.equality > 0) ||
-		(!greaterThanNegativeLine && negativeSide.equality < 0)) {
+	if ((greaterThanNegativeLine && negativeSide.equality < 0) ||
+		(!greaterThanNegativeLine && negativeSide.equality > 0)) {
 			power *= -1;
 	}
 	// reverses the direction if the robot has been commanded to move in reverse
@@ -108,7 +115,7 @@ void PIDMover(
 		currentDistanceMovedByWheel = setPoint - remainingDistance;
 
 
-	Master.print(0, 0, "set = %d", remainingDistance);
+	Master.print(0, 0, "set = %d", setPoint);
 
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {

@@ -38,24 +38,34 @@ Line calculatePerpendicular(
     Line Line1;
     Line LinePerp;
 
-    try {
-        Line1.slope = (point2.y - point1.y) / (point2.x - point1.x); // calculates the slope of the first line
-        Line1.yIntercept = (-1 * (Line1.slope * point1.x)) + point1.y; // formula for y-intercept based on point-slope form
-        Line1.equality = 0; // this line is just treated as an equation
-    
-
-        LinePerp.slope = -1 * (1 / Line1.slope); // slope of a perpendicular line is the negative reciprocal of the slope of the original
-        LinePerp.yIntercept = (-1 * (LinePerp.slope * point2.x)) + point2.y;
-        LinePerp.equality = findEquality(LinePerp, point1); // sets the inequality to include the side with point 1 on it
-
-    } catch (...) { // catches an error if the code divides by zero, meaning that the line takes the form of x = k and that the slope is undefined
+    if (point2.y - point1.y == 0) { // handles the case if y does not change (line takes the form of x = k)
         LinePerp.slope = NAN;
-        LinePerp.yIntercept = NAN;
+        LinePerp.yIntercept = point2.x; // yIntercept serves as the value of k (in x = k) for this case
         LinePerp.equality = point1.x > point2.x // a copy of findEquality that simply compares the x-values of both points to determine the equality
                                 ? 2 // if the value of the first point is greater than the value of the second point, 
                                      // then the equality is on the opposite side (negative)
                                 : -2;
+        return LinePerp;
     }
+    else if (point2.x - point1.x == 0) { // handles the case if x does not change (line takes the form of y = k)
+        LinePerp.slope = 0;
+        LinePerp.yIntercept = point2.y; // yIntercept serves as the value of k (in y = k) for this case
+        LinePerp.equality = point1.y > point2.y // a copy of findEquality that simply compares the x-values of both points to determine the equality
+                                ? 2 // if the value of the first point is greater than the value of the second point, 
+                                     // then the equality is on the opposite side (negative)
+                                : -2;
+        return LinePerp;
+    }
+    
+    // handles all y = mx + b cases
+    Line1.slope = (point2.y - point1.y) / (point2.x - point1.x); // calculates the slope of the first line
+    Line1.yIntercept = (-1 * (Line1.slope * point1.x)) + point1.y; // formula for y-intercept based on point-slope form
+    Line1.equality = 0; // this line is just treated as an equation
+    
+
+    LinePerp.slope = -1 * (1 / Line1.slope); // slope of a perpendicular line is the negative reciprocal of the slope of the original
+    LinePerp.yIntercept = (-1 * (LinePerp.slope * point2.x)) + point2.y;
+    LinePerp.equality = findEquality(LinePerp, point1); // sets the inequality to include the side with point 1 on it
 
     return LinePerp;
 }

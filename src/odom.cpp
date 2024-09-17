@@ -9,26 +9,6 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotatio
                           int quadrant // quadrant of the field in which the robot starts
                         ) 
 {
-    // switches the x and y values based on the quadrant of the triangle
-    switch (quadrant) {
-        case 1:
-            offset.x = offset.x;
-            offset.y = offset.y;
-            break;
-        case 2:
-            offset.x = -offset.x;
-            offset.y = offset.y;
-            break;
-        case 3:
-            offset.x = -offset.x;
-            offset.y = -offset.y;
-            break;
-        case 4:
-            offset.x = offset.x;
-            offset.y = -offset.y;
-            break;
-    }
-
     // sets the current location to the offset
     universalCurrentLocation = offset;
 
