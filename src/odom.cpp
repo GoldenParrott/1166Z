@@ -40,8 +40,8 @@ Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
 
     // treats the distance moved as the hypotenuse of and the heading as the base angle of a triangle
     // and uses them to calculate the value of both legs (the changes in x and y)
-    double xChange = std::sin(triangleAngle) * dist;
-    double yChange = std::cos(triangleAngle) * dist;
+    double xChange = std::sin(((triangleAngle * 3.14)/ 180)) * dist;
+    double yChange = std::cos(((triangleAngle * 3.14)/ 180)) * dist;
 
     // sets the final x and y positions to the changes in x and y added to the previous coordinates
     double xLoc = prevLoc.x + xChange;

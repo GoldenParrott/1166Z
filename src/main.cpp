@@ -323,31 +323,6 @@ void opcontrol() {
 			waitUntil(Master.get_digital(DIGITAL_X) == false);
 		}
 
-
-
-
-
-
-
-
-
-
-	pros::lcd::print(0, "ODOM = %f", readOdomPod(Rotational));
-
-	// Odometry Measurement Setup
-	double gearRatio = 0.75; // the gear ratio of the robot (gear axle / motor axle)
-
-	double wheelCircumference = 3.14 * 3.25; // 3.25 is the wheel diameter in inches
-	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
-						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
-	long double singleDegree = wheelRevolution / 360; // the distance that the robot moves in one degree of rotation of its wheels
-
-
-
-	pros::lcd::print(0, "x = %f", universalCurrentLocation.x);
-	pros::lcd::print(1, "y = %f", universalCurrentLocation.y);
-	pros::lcd::print(2, "h = %f", getAggregatedHeading(Kalman1, Kalman2));
-
 	// end-of-cycle delay
 	pros::delay(20);
 	}

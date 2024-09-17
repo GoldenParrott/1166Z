@@ -3,9 +3,7 @@
 double calculateSingleDegree(double wheelDiameter) {
     // sets up the odometry to convert angle readings to cm
     double wheelCircumference = 3.14 * wheelDiameter; // 2 is the pre-measured wheel diameter in inches
-	double wheelRevolution = wheelCircumference * 2.54; // wheel circumference in cm
-						// this is equivalent to how far the robot moves in one 360-degree rotation of its wheels
-	long double singleDegree = wheelRevolution / 360; // the distance that the robot moves in one degree of rotation of its wheels
+	long double singleDegree = wheelCircumference / 360; // the distance that the robot moves in one degree of rotation of its wheels
 
     return singleDegree;
 }
