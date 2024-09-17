@@ -5,8 +5,7 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotatio
                           pros::Imu *imu2, // second inertial sensor
                           Coordinate offset, // an ordered pair representing the current 
                                              // location of the robot in relation to the origin
-                          int startHeading, // starting heading in relation to the absolute zero heading
-                          int quadrant // quadrant of the field in which the robot starts
+                          int startHeading // starting heading in relation to the absolute zero heading
                         ) 
 {
     // sets the current location to the offset

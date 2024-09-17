@@ -48,7 +48,7 @@ void competition_initialize() {
 
 	switch (autonnumber) {
 		case 1: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-120, -120}, 90, 3);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-120, -120}, 90);
 			break;
 		case 2:
 			break;

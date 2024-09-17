@@ -173,7 +173,7 @@ double readOdomAngle(pros::Rotation turnOdom);
 double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2);
 
 // odom.cpp
-void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Coordinate offset, int startHeading, int quadrant);
+void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Coordinate offset, int startHeading);
 Coordinate updateLocation(double heading, double dist, Coordinate prevLoc);
 double calculateDistance(Coordinate point1, Coordinate point2);
 void updateCoordinateLoop(void);
