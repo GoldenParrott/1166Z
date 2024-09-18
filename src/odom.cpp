@@ -76,3 +76,40 @@ void updateCoordinateLoop() {
         pros::delay(5);
     }
 }
+
+// this is a reversed version of the update coordinate function that finds the heading of a line on a coordinate plane given two poins on the line
+// it is used to find headings for corrective turns
+double findHeadingOfLine(
+    Coordinate point1, // the initial point
+    Coordinate point2 // the final point
+)
+{
+    // finds the difference between the x- and y- values to get the rise and run of the line
+    double xChange = point2.x - point1.x;
+    double yChange = point2.y - point1.y;
+
+
+    bool yIsPositive = yChange > 0;
+    bool xIsPositive = xChange > 0;
+
+    // finds the positive position of the angle in relation to the previous multiple of 90 degrees
+    double triangleAngle = 0;
+    if ((yIsPositive && xIsPositive) || (!yIsPositive && !xIsPositive)) { // quadrants 1 or 3
+        triangleAngle = std::atan(abs(xChange) / abs(yChange)); // tangent is opposite/adjacent, and x is opposite in these cases
+    }
+    else { // quadrants 2 or 4
+        triangleAngle = std::atan(abs(yChange) / abs(xChange)); // tangent is opposite/adjacent, and y is opposite in these cases
+    }
+
+    double heading = 0;
+    if (xIsPositive && yIsPositive) { // quadrant 1
+       heading = heading;
+    } else if (!xIsPositive && yIsPositive) { // quadrant 2
+        heading = triangleAngle + 90;
+    } else if (!xIsPositive && !yIsPositive) { // quadrant 3
+        heading = triangleAngle + 180;
+    } else if (xIsPositive && !yIsPositive) { // quadrant 4
+        heading = triangleAngle + 270;
+    }
+    return heading;
+}

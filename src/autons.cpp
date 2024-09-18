@@ -6,7 +6,7 @@ void blueRingside() {
 
 
 void blueGoalside() {
-	PIDMover({-24, -24}, false);
+	PIDMover({-24, -48}, false);
 }
 
 

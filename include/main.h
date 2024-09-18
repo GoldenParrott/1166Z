@@ -112,8 +112,6 @@ void redRingside(void);
 void autonSwitcher(void);
 
 // functions.cpp
-void updateOdomPosition();
-void colorSensorOn(void);
 
 // draw.cpp
 void drawBlueMogo(void);
@@ -171,12 +169,14 @@ double readOdomPod(pros::Rotation odom);
 double readOdomVelocity(pros::Rotation odom);
 double readOdomAngle(pros::Rotation turnOdom);
 double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2);
+void bindTurnTrackingWheelHeading();
 
 // odom.cpp
 void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Coordinate offset, int startHeading);
 Coordinate updateLocation(double heading, double dist, Coordinate prevLoc);
 double calculateDistance(Coordinate point1, Coordinate point2);
 void updateCoordinateLoop(void);
+double findHeadingOfLine(Coordinate point1, Coordinate point2);
 
 // math.cpp
 double calculateStandardDeviation(std::deque<double> listOfDifferences);

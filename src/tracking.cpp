@@ -87,3 +87,16 @@ double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2) {
 
     return aggregatedHeading;
 }
+
+
+// ensures that the rotational sensor's position is within the range of a heading at all times
+void bindTurnTrackingWheelHeading() {
+	while (true) {
+		if (readOdomAngle(RotationalTurn) > 360) {
+			RotationalTurn.set_position(0);
+		} else if (readOdomAngle(RotationalTurn) < 0) {
+			RotationalTurn.set_position(36000);
+		}
+		pros::delay(5);
+	}
+}

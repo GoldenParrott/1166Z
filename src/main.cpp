@@ -18,8 +18,7 @@ void initialize() {
 	Rotational.set_position(0);
 	RotationalTurn.set_position(0);
 
-	pros::Task updateRotational = pros::Task(updateOdomPosition);
-	
+	pros::Task updateRotational = pros::Task(bindTurnTrackingWheelHeading);
 }
 
 /**
@@ -28,7 +27,7 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
-
+	
 	MobileGoalManipulator.set_value(false);
 	Grabber.set_value(false);
 
@@ -48,7 +47,7 @@ void competition_initialize() {
 
 	switch (autonnumber) {
 		case 1: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 45);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 270);
 			break;
 		case 2:
 			break;
