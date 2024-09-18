@@ -49,6 +49,7 @@ Pnuematics
 // Sensors
 
     extern pros::Optical colorSense;
+    extern pros::Distance Distance;
 
     extern pros::Rotation Rotational;
     extern pros::Rotation RotationalTurn;

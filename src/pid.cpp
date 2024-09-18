@@ -16,13 +16,13 @@ void PIDMover(
 	// General Variables
 	int error;
 	int power;
-	int tolerance = 2;
+	double tolerance = 1;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 0.5; // customizable
+	moverConstants.kP = 7.5; // customizable
 	moverConstants.kI = 0.0; // customizable
 	moverConstants.kD = 0.0; // customizable
 
@@ -32,7 +32,7 @@ void PIDMover(
 
 // sets the set point to the difference between the current point and the goal point
 	Coordinate originalPosition = universalCurrentLocation;
-	int setPoint = calculateDistance(originalPosition, goalPosition);
+	double setPoint = calculateDistance(originalPosition, goalPosition);
 	int remainingDistance = setPoint;
 
 // finds the part of the coordinate plane in which the robot has passed its destination
@@ -58,7 +58,7 @@ void PIDMover(
 	cycle.power = 0;
 	cycle.prevIntegral = 0;
 
-	 
+
 
 	while (actionCompleted != true) {
 
@@ -115,7 +115,7 @@ void PIDMover(
 		currentDistanceMovedByWheel = setPoint - remainingDistance;
 
 
-	Master.print(0, 0, "set = %d", setPoint);
+	Master.print(0, 0, "set = %d", remainingDistance);
 
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {

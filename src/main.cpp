@@ -48,7 +48,7 @@ void competition_initialize() {
 
 	switch (autonnumber) {
 		case 1: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-120, -120}, 90);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 45);
 			break;
 		case 2:
 			break;
@@ -138,14 +138,7 @@ switch (autonnumber) {
 
 void opcontrol() {
 
-
-	// initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {0, 0}, 270, 2);
-	pros::Task coordinateUpdater_task = pros::Task(updateCoordinateLoop);
-
-	pros::lcd::initialize();
-	pros::delay(4000);
-
-
+	// ends the Kalman Filters from autonomous
 	Kalman1.endFilter();
 	Kalman2.endFilter();
 
@@ -190,17 +183,15 @@ void opcontrol() {
 		{
 			InputMotor.move(128);
 		} */
-		else if ((Master.get_digital(DIGITAL_RIGHT) == false) && (Master.get_digital(DIGITAL_LEFT) == false) 
+		else if ((Master.get_digital(DIGITAL_RIGHT) == false)
 				  && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
 			InputMotor.brake();
 		}
 		
-	// Transport only
-		if (Master.get_digital(DIGITAL_LEFT)) {
-			Transport.move(128);	
-		}
-		else if ((Master.get_digital(DIGITAL_LEFT) == false) && (Master.get_digital(DIGITAL_RIGHT) == false) 
-					&& (Master.get_digital(DIGITAL_DOWN) == false) && (Master.get_digital(DIGITAL_L2) == false)) {
+	// Transport braking
+		if ((Master.get_digital(DIGITAL_RIGHT) == false) 
+			&& (Master.get_digital(DIGITAL_DOWN) == false) && (Master.get_digital(DIGITAL_L2) == false)
+			&& (Master.get_digital(DIGITAL_R2) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
 			Transport.brake();
 		}
 
@@ -240,7 +231,7 @@ void opcontrol() {
 		}
 
 
-	// color sensor (redirect)
+	// distance sensor (redirect)
 
 		// handles the cases for if R2 is being held down
 		if (Master.get_digital(DIGITAL_R2)) {
@@ -255,22 +246,21 @@ void opcontrol() {
 					Transport.brake();
 				// case 1b: if case 1a is not true, then continue moving the intake down
 				} else {
-					Intake.move(80);
+					Intake.move(128);
 				}
 			}
-			// case 2: redirect is not on, but the color sensor has found a Ring of the proper color
-			else if ((colorSense.get_hue() > 200 || autonnumber > 0) || // blue
-				     (colorSense.get_hue() < 16 && (colorSense.get_hue() > 10) && (autonnumber < 0))) // red
+			// case 2: redirect is not on, but the distance sensor is at the proper distance
+			else if (Distance.get() < 75) // 
 			{
 				// in this case, the redirect is started and the starting point is stored for later
-				Intake.move(80);
+				Intake.move(128);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();
 			}
 			// case 3: if the redirect is not on and should not be on, 
 			//		   then L2 moves the robot forward as normal
 			else {
-				Intake.move(-80);
+				Intake.move(-128);
 			}
 		// if L2 is not being pressed, then the redirect is turned off
 		} else if (!Master.get_digital(DIGITAL_R2)) {
@@ -279,6 +269,46 @@ void opcontrol() {
 		}
 
 		Master.print(0, 0, "RD = %d", redirectOn);
+
+
+	// distance sensor (eject)
+
+		// handles the cases for if B is being held down
+		if (Master.get_digital(DIGITAL_LEFT)) {
+			// case 1: redirect is currently on
+			if (redirectOn == true) {
+				// case 1a: if the difference between the starting point and the current point
+				// 			is greater than 700 (meaning that it has gone all the way), 
+				//			turn off the redirect
+				if (abs(Transport.get_position() - redirectStartPoint) >= 1300) {
+					redirectOn = false;
+					redirectStartPoint = 0;
+					Transport.brake();
+				// case 1b: if case 1a is not true, then continue moving the intake down
+				} else {
+					Intake.move(128);
+				}
+			}
+			// case 2: eject is not on, but the distance sensor is at the proper distance and the color sensor has found the right color
+			else if (((colorSense.get_hue() > 200 || autonnumber > 0) || // blue
+				     (colorSense.get_hue() < 16 && (colorSense.get_hue() > 10) && (autonnumber < 0))) // red
+					 && (Distance.get() < 75))
+			{
+				// in this case, the redirect is started and the starting point is stored for later
+				Intake.move(128);
+				redirectOn = true;
+				redirectStartPoint = Transport.get_position();
+			}
+			// case 3: if the redirect is not on and should not be on, 
+			//		   then L2 moves the robot forward as normal
+			else {
+				Intake.move(-128);
+			}
+		// if L2 is not being pressed, then the redirect is turned off
+		} else if (!Master.get_digital(DIGITAL_LEFT)) {
+			redirectOn = false;
+			redirectStartPoint = 0;
+		}
 
 	// Arm Piston
 		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
@@ -292,25 +322,25 @@ void opcontrol() {
 		}
 
 	// Grabber
-		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 			if (Grabber.get_value() == false) {
 				Grabber.set_value(true);
 			}
 			else {
 				Grabber.set_value(false);
 			}
-			waitUntil(Master.get_digital(DIGITAL_A) == false);
+			waitUntil(Master.get_digital(DIGITAL_L2) == false);
 		}
 
 	// Input Piston
-		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
 			if (InputPiston.get_value() == false) {
 				InputPiston.set_value(true);
 			}
 			else {
 				InputPiston.set_value(false);
 			}
-			waitUntil(Master.get_digital(DIGITAL_L2) == false);
+			waitUntil(Master.get_digital(DIGITAL_A) == false);
 		}
 	// Hang
 		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {

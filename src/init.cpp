@@ -44,6 +44,7 @@ Pnuematics
 // Sensors
 
     pros::Optical colorSense(1);
+    pros::Distance Distance(18);
 
     pros::Rotation Rotational(12);
     pros::Rotation RotationalTurn(20);

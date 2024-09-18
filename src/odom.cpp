@@ -34,13 +34,23 @@ Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
     } else if (heading < 270) {
         triangleAngle = heading - 180;
     } else if (heading < 360) {
-        triangleAngle = 360 - heading;
+        triangleAngle = heading - 270;
     }
-
+    pros::lcd::print(3, "H = %f", triangleAngle);
     // treats the distance moved as the hypotenuse of and the heading as the base angle of a triangle
     // and uses them to calculate the value of both legs (the changes in x and y)
-    double xChange = std::sin(((triangleAngle * 3.14)/ 180)) * dist;
-    double yChange = std::cos(((triangleAngle * 3.14)/ 180)) * dist;
+    double xChange = 0;
+    double yChange = 0;
+    // if the heading is in quadrants 1 or 3, then the x-value is the opposite leg (sine) and the y-value is the adjacent leg (cosine)
+    if ((heading < 90) || (heading >= 180 && heading < 270)) {
+        xChange = std::sin(((triangleAngle * 3.14) / 180)) * dist;
+        yChange = std::cos(((triangleAngle * 3.14) / 180)) * dist;
+    }
+    // otherwise, if the heading is in quadrants 2 or 4, then the x-value is the adjacent leg (cosine) and the y-value is the opposite leg (sine)
+    else {
+        xChange = std::cos(((triangleAngle * 3.14) / 180)) * dist;
+        yChange = std::sin(((triangleAngle * 3.14) / 180)) * dist;
+    }
 
     // sets the final x and y positions to the changes in x and y added to the previous coordinates
     double xLoc = prevLoc.x + xChange;

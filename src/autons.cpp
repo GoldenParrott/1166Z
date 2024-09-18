@@ -6,12 +6,7 @@ void blueRingside() {
 
 
 void blueGoalside() {
-	// PIDMover({-120, -60}, false);
-	while (true) {
-		pros::lcd::print(0, "x = %f", universalCurrentLocation.x);
-		pros::lcd::print(1, "y = %f", universalCurrentLocation.y);
-		pros::delay(50);
-	}
+	PIDMover({-24, -24}, false);
 }
 
 
