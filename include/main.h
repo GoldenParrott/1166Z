@@ -111,7 +111,7 @@ void redGoalside(void);
 void redRingside(void);
 void autonSwitcher(void);
 
-// functions.cpp
+// autotasks.cpp
 
 // draw.cpp
 void drawBlueMogo(void);
