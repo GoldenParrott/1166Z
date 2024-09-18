@@ -2,7 +2,7 @@
 
 void PIDMover(
 		Coordinate goalPosition, // goal coordinate position
-		bool reverse = false, // defaults to false- explicitly set to true to reverse the robot
+		bool reverse, // defaults to false- explicitly set to true to reverse the robot
 
 		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
 		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
@@ -15,14 +15,13 @@ void PIDMover(
 // PID Calculation Variables
 	// General Variables
 	int error;
-	int power;
-	double tolerance = 1;
+	double tolerance = 0.5;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 7.5; // customizable
+	moverConstants.kP = 20; // customizable
 	moverConstants.kI = 0.0; // customizable
 	moverConstants.kD = 0.0; // customizable
 
@@ -114,13 +113,10 @@ void PIDMover(
 		remainingDistance = calculateDistance(universalCurrentLocation, goalPosition);
 		currentDistanceMovedByWheel = setPoint - remainingDistance;
 
-
-	Master.print(0, 0, "set = %d", remainingDistance);
-
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
-				actionCompleted = true;
-				AllWheels.brake();
+				//actionCompleted = true;
+				//AllWheels.brake();
 		}
 	}
 }
@@ -139,7 +135,6 @@ void PIDTurner(
 // PID CALCULATION VARIABLES
 // General Variables
 	int error;
-	int power;
 	int tolerance = 1;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
@@ -190,18 +185,18 @@ void PIDTurner(
 	int changeInReading = 0;
 
 
-	distanceToMove -= 2;
+
 
 
 	// constant definitions
 	if (distanceToMove <= 90) {
-		turnerConstants.kP = 1.35;
-		turnerConstants.kI = 0.19;
-		turnerConstants.kD = 0.1;
+		turnerConstants.kP = 0.75;
+		turnerConstants.kI = 0;
+		turnerConstants.kD = 0;
 	} else {
-		turnerConstants.kP = 0.9;
-		turnerConstants.kI = 0.13;
-		turnerConstants.kD = 0.2;
+		turnerConstants.kP = 0.75;
+		turnerConstants.kI = 0;
+		turnerConstants.kD = 0;
 	}
 
 	// this initializes variables that are used to measure values from previous cycles
@@ -216,7 +211,7 @@ void PIDTurner(
 	
 	// gets the power for the current cycle
 	cycle = PIDCalc(changeInReading, distanceToMove, isPositive, turnerConstants, cycle);
-
+	double power = cycle.power;
 
 
 	// custom lambda functions

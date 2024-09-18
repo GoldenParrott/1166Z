@@ -27,7 +27,7 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
-	
+
 	MobileGoalManipulator.set_value(false);
 	Grabber.set_value(false);
 
@@ -47,7 +47,7 @@ void competition_initialize() {
 
 	switch (autonnumber) {
 		case 1: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 270);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
 			break;
 		case 2:
 			break;
