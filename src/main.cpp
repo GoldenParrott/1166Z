@@ -138,8 +138,8 @@ switch (autonnumber) {
 void opcontrol() {
 
 	// ends the Kalman Filters from autonomous
-	Kalman1.endFilter();
-	Kalman2.endFilter();
+	//Kalman1.endFilter();
+	//Kalman2.endFilter();
 
 	// resets all pistons
 	Grabber.set_value(false);
@@ -239,7 +239,7 @@ void opcontrol() {
 				// case 1a: if the difference between the starting point and the current point
 				// 			is greater than 700 (meaning that it has gone all the way), 
 				//			turn off the redirect
-				if (abs(Transport.get_position() - redirectStartPoint) >= 2100) {
+				if (abs(Transport.get_position() - redirectStartPoint) >= 0) {
 					redirectOn = false;
 					redirectStartPoint = 0;
 					Transport.brake();
@@ -255,6 +255,7 @@ void opcontrol() {
 				Intake.move(128);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();
+				pros::delay(500);
 			}
 			// case 3: if the redirect is not on and should not be on, 
 			//		   then L2 moves the robot forward as normal
@@ -266,9 +267,6 @@ void opcontrol() {
 			redirectOn = false;
 			redirectStartPoint = 0;
 		}
-
-		Master.print(0, 0, "RD = %d", redirectOn);
-
 
 	// distance sensor (eject)
 

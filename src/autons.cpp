@@ -8,7 +8,18 @@ void blueRingside() {
 void blueGoalside() {
 	//PIDTurner(findHeadingOfLine(universalCurrentLocation, {-24, -48}), 2);
 	//PIDTurner(90, 2);
-	PIDMover({-24, -48}, false);
+
+	auto print = []() {while (true) {
+		Master.print(0, 0, "x = %f", universalCurrentLocation.x);
+		Master.print(1, 0, "y = %f", universalCurrentLocation.y);
+	}};
+	pros::Task p(print);
+
+	PIDMover({0, -48}, false);
+
+	Master.print(2, 0, "stopped");
+
+	pros::delay(500);
 }
 
 

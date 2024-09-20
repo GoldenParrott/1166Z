@@ -14,14 +14,13 @@ void PIDMover(
 
 // PID Calculation Variables
 	// General Variables
-	int error;
-	double tolerance = 0.5;
+	double tolerance = 1;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 20; // customizable
+	moverConstants.kP = 5; // customizable
 	moverConstants.kI = 0.0; // customizable
 	moverConstants.kD = 0.0; // customizable
 
@@ -32,7 +31,7 @@ void PIDMover(
 // sets the set point to the difference between the current point and the goal point
 	Coordinate originalPosition = universalCurrentLocation;
 	double setPoint = calculateDistance(originalPosition, goalPosition);
-	int remainingDistance = setPoint;
+	double remainingDistance = setPoint;
 
 // finds the part of the coordinate plane in which the robot has passed its destination
 	Line negativeSide = calculatePerpendicular(originalPosition, goalPosition);
@@ -69,7 +68,7 @@ void PIDMover(
 	bool greaterThanNegativeLine = universalCurrentLocation.y >= (negativeSide.slope * universalCurrentLocation.x) + negativeSide.yIntercept;
 
 	// handles the line if it is vertical
-	if (negativeSide.slope == NAN) {
+	if (std::isnan(negativeSide.slope)) {
 		greaterThanNegativeLine = universalCurrentLocation.x > negativeSide.yIntercept;
 	} else if (negativeSide.slope == 0) {
 		greaterThanNegativeLine = universalCurrentLocation.y > negativeSide.yIntercept;
@@ -113,12 +112,14 @@ void PIDMover(
 		remainingDistance = calculateDistance(universalCurrentLocation, goalPosition);
 		currentDistanceMovedByWheel = setPoint - remainingDistance;
 
+
 		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
 		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
-				//actionCompleted = true;
-				//AllWheels.brake();
+				actionCompleted = true;
+				AllWheels.brake();
 		}
 	}
+
 }
 
 void PIDTurner(
@@ -527,8 +528,8 @@ void PIDArm(
 
 
 PIDReturn PIDCalc(
-	int distanceMoved, // current distance moved (in odometry units)
-	int setPoint, // goal distance to move (in odometry units)
+	double distanceMoved, // current distance moved (in odometry units)
+	double setPoint, // goal distance to move (in odometry units)
 	bool isPositive, // direction of movement
 	ConstantContainer constants, // all constants
 	PIDReturn lastCycle // data from previous cycle
@@ -538,9 +539,9 @@ PIDReturn PIDCalc(
 	// P: Proportional -- slows down as we reach our target for more accuracy
 
 		// error = goal reading - current reading
-		int error = int (setPoint - distanceMoved);
+		double error = setPoint - distanceMoved;
 		// kP (proportional constant) determines how fast we want to go overall while still keeping accuracy
-		int proportionalOut = error * constants.kP;
+		double proportionalOut = error * constants.kP;
 
 
 
@@ -548,7 +549,7 @@ PIDReturn PIDCalc(
 	// I: Integral -- starts slow and speeds up as time goes on to prevent undershooting
 
 		// starts the integral at the error, then compounds it with the new current error every loop
-		int integral = int (lastCycle.prevIntegral + error);
+		double integral = lastCycle.prevIntegral + error;
 		// prevents the integral variable from causing the robot to overshoot
 		if ((isPositive && (error <= 0)) || (!isPositive && (error >= 0))) {
 			integral = 0;
@@ -565,7 +566,7 @@ PIDReturn PIDCalc(
 				: -100;
 			}
 		// kI (integral constant) brings integral down to a reasonable/useful output number
-		int integralOut = integral * constants.kI;
+		double integralOut = integral * constants.kI;
 
 		// adds integral to return structure for compounding
 		thisCycle.prevIntegral = integral;
@@ -575,10 +576,10 @@ PIDReturn PIDCalc(
 	// D: Derivative -- slows the robot more and more as it goes faster
 
         // starts the derivative by making it the rate of change from the previous cycle to this one
-        int derivative = int (error - lastCycle.prevError);
+        double derivative = error - lastCycle.prevError;
 
         // kD (derivative constant) prevents derivative from over- or under-scaling
-        int derivativeOut = derivative * constants.kD;
+        double derivativeOut = derivative * constants.kD;
 
 		// sets the previous error to the current error for use in the next derivative
 		thisCycle.prevError = error;
@@ -586,7 +587,7 @@ PIDReturn PIDCalc(
 
 
 	// Adds the results of each of the calculations together to get the desired power
-		int power = proportionalOut + integralOut + derivativeOut;
+		double power = proportionalOut + integralOut + derivativeOut;
 
 		thisCycle.power = power;
 

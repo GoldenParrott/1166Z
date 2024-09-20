@@ -18,6 +18,7 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotatio
 
 
 Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
+    double originalHeading = heading;
     // switches the heading based on the direction of the turn
     heading = dist >= 0
         ? heading // does nothing if the distance moved is positive
@@ -43,13 +44,22 @@ Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
     double yChange = 0;
     // if the heading is in quadrants 1 or 3, then the x-value is the opposite leg (sine) and the y-value is the adjacent leg (cosine)
     if ((heading < 90) || (heading >= 180 && heading < 270)) {
-        xChange = std::sin(((triangleAngle * 3.14) / 180)) * dist;
-        yChange = std::cos(((triangleAngle * 3.14) / 180)) * dist;
+        xChange = std::sin(((triangleAngle * 3.141592) / 180)) * dist;
+        yChange = std::cos(((triangleAngle * 3.141592) / 180)) * dist;
     }
     // otherwise, if the heading is in quadrants 2 or 4, then the x-value is the adjacent leg (cosine) and the y-value is the opposite leg (sine)
     else {
-        xChange = std::cos(((triangleAngle * 3.14) / 180)) * dist;
-        yChange = std::sin(((triangleAngle * 3.14) / 180)) * dist;
+        xChange = std::cos(((triangleAngle * 3.141592) / 180)) * dist;
+        yChange = std::sin(((triangleAngle * 3.141592) / 180)) * dist;
+    }
+
+    // reverses the movement of x and y if they moved in a positive direction and moved down or if they moved in a negative direction and moved up
+    // checks for this by checking if the robot moved forward and had a heading that is in the positive y-axis
+    if (originalHeading > 90 && originalHeading < 270) { // if heading is between 90 and 270 on the bottom side (moving down in the y-axis), flip the y-movement
+        yChange = -yChange;
+    }
+    if (originalHeading < 360 && originalHeading > 180) { // if heading is between 180 and 360 on the left side (moving down in the x-axis), flip the x-movement
+        xChange = -xChange;
     }
 
     // sets the final x and y positions to the changes in x and y added to the previous coordinates
