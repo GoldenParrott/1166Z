@@ -16,8 +16,8 @@ void blueGoalside() {
 	pros::Task p(print);
 
 	PIDMover({0, -48}, false);
-
-	Master.print(2, 0, "stopped");
+	pros::delay(1000);
+	PIDMover({-48, -48}, true);
 
 	pros::delay(500);
 }

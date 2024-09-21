@@ -109,7 +109,7 @@ switch (autonnumber) {
 }
 
 	// ending commands
-	//Master.print(0, 0, 'Done');
+	Master.print(2, 0, "Done");
 
 	pros::delay(1000);
 	AllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);

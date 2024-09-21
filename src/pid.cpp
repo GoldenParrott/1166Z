@@ -101,7 +101,6 @@ void PIDMover(
 		}
 	}
 
-
 // PID Looping Odometry Measurement
 
 		// fifteen millisecond delay between cycles
@@ -113,11 +112,21 @@ void PIDMover(
 		currentDistanceMovedByWheel = setPoint - remainingDistance;
 
 
-		// checks to see if the robot has completed the movement by checking several conditions, and ends the movement if needed
-		if (((currentDistanceMovedByWheel <= setPoint + tolerance) && (currentDistanceMovedByWheel >= setPoint - tolerance))) {
+		// checks to see if the robot has completed the movement by checking if it is within a range of the perpendicular line of its goal point
+			if (( // handles the cases where the perpendicular line takes the form of y = mx + b or y = k
+				 (!std::isnan(negativeSide.slope)) && 
+				 ((universalCurrentLocation.y <= ((negativeSide.slope * universalCurrentLocation.x) + negativeSide.yIntercept) + tolerance) && 
+				 (universalCurrentLocation.y >= ((negativeSide.slope * universalCurrentLocation.x) + negativeSide.yIntercept) - tolerance))
+				) || ( // handles the case where the perpendicular line is vertical and takes the form of x = k
+				 (std::isnan(negativeSide.slope)) &&
+				 (universalCurrentLocation.x <= negativeSide.yIntercept + tolerance) &&
+				 (universalCurrentLocation.x >= negativeSide.yIntercept - tolerance)
+				)
+			   ) 
+			{
 				actionCompleted = true;
 				AllWheels.brake();
-		}
+			}
 	}
 
 }

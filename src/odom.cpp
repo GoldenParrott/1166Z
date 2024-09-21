@@ -74,14 +74,22 @@ void updateCoordinateLoop() {
 
     // declaration of previous location
     Coordinate previousLocation = universalCurrentLocation;
+    // calculates the change in odometry for the location update
+    double changeInOdom = 0;
+    double previousOdom = 0;
+    double cumulativeOdom = 0;
     
     while (true) {
+        // calculates the current distance moved
+        cumulativeOdom = readOdomPod(Rotational);
+        // calculates the change in odometry reading based on the previous measurement
+        changeInOdom = cumulativeOdom - previousOdom;
         // updates the location
-        universalCurrentLocation = updateLocation(getAggregatedHeading(Kalman1, Kalman2), readOdomPod(Rotational), previousLocation);
-        // resets the rotational for the next movement
-        Rotational.reset_position();
+        universalCurrentLocation = updateLocation(getAggregatedHeading(Kalman1, Kalman2), changeInOdom, previousLocation);
         // previous location for use in next cycle
         previousLocation = universalCurrentLocation;
+        // cumulative odometry value for use in next cycle as previous value
+        previousOdom = cumulativeOdom;
         // delay between cycles
         pros::delay(5);
     }
