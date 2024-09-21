@@ -80,18 +80,22 @@ void updateCoordinateLoop() {
     double cumulativeOdom = 0;
     
     while (true) {
-        // calculates the current distance moved
-        cumulativeOdom = readOdomPod(Rotational);
-        // calculates the change in odometry reading based on the previous measurement
-        changeInOdom = cumulativeOdom - previousOdom;
-        // updates the location
-        universalCurrentLocation = updateLocation(getAggregatedHeading(Kalman1, Kalman2), changeInOdom, previousLocation);
-        // previous location for use in next cycle
-        previousLocation = universalCurrentLocation;
-        // cumulative odometry value for use in next cycle as previous value
-        previousOdom = cumulativeOdom;
-        // delay between cycles
-        pros::delay(5);
+        if (!pros::Task::notify_take(true, 5)) { // while task is not paused by notification, run cycle 
+                                                // (the 5 waits for 5 milliseconds before the loop starts and serves as the delay)
+            // calculates the current distance moved
+            cumulativeOdom = readOdomPod(Rotational);
+            // calculates the change in odometry reading based on the previous measurement
+            changeInOdom = cumulativeOdom - previousOdom;
+            // updates the location
+            universalCurrentLocation = updateLocation(getAggregatedHeading(Kalman1, Kalman2), changeInOdom, previousLocation);
+            // previous location for use in next cycle
+            previousLocation = universalCurrentLocation;
+            // cumulative odometry value for use in next cycle as previous value
+            previousOdom = cumulativeOdom;
+        } else { // ensures that the code does not break while it is paused by a notification
+            previousOdom = cumulativeOdom;
+            previousLocation = universalCurrentLocation;
+        }
     }
 }
 
@@ -106,28 +110,31 @@ double findHeadingOfLine(
     double xChange = point2.x - point1.x;
     double yChange = point2.y - point1.y;
 
-
     bool yIsPositive = yChange > 0;
     bool xIsPositive = xChange > 0;
 
     // finds the positive position of the angle in relation to the previous multiple of 90 degrees
     double triangleAngle = 0;
     if ((yIsPositive && xIsPositive) || (!yIsPositive && !xIsPositive)) { // quadrants 1 or 3
-        triangleAngle = std::atan(abs(xChange) / abs(yChange)); // tangent is opposite/adjacent, and x is opposite in these cases
+        triangleAngle = std::atan(std::abs(xChange) / std::abs(yChange)); // tangent is opposite/adjacent, and x is opposite in these cases
     }
     else { // quadrants 2 or 4
-        triangleAngle = std::atan(abs(yChange) / abs(xChange)); // tangent is opposite/adjacent, and y is opposite in these cases
+        triangleAngle = std::atan(std::abs(yChange) / std::abs(xChange)); // tangent is opposite/adjacent, and y is opposite in these cases
     }
+    triangleAngle = (triangleAngle * 180) / 3.14;
 
     double heading = 0;
     if (xIsPositive && yIsPositive) { // quadrant 1
-       heading = heading;
-    } else if (!xIsPositive && yIsPositive) { // quadrant 2
+       heading = triangleAngle;
+    } else if (xIsPositive && !yIsPositive) { // quadrant 2
         heading = triangleAngle + 90;
     } else if (!xIsPositive && !yIsPositive) { // quadrant 3
         heading = triangleAngle + 180;
-    } else if (xIsPositive && !yIsPositive) { // quadrant 4
+    } else if (!xIsPositive && yIsPositive) { // quadrant 4
         heading = triangleAngle + 270;
     }
+
+    Master.print(0, 0, "h = %f", heading);
+
     return heading;
 }

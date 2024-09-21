@@ -20,9 +20,9 @@ void PIDMover(
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 5; // customizable
-	moverConstants.kI = 0.0; // customizable
-	moverConstants.kD = 0.0; // customizable
+	moverConstants.kP = 3.3; // customizable
+	moverConstants.kI = 0.5; // customizable
+	moverConstants.kD = 0.3; // customizable
 
 	
 
@@ -141,6 +141,9 @@ void PIDTurner(
 {
 
 	AllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
+
+	// pauses the position updating for the turn
+	coordinateUpdater_task->notify();
 
 // PID CALCULATION VARIABLES
 // General Variables
@@ -265,6 +268,7 @@ void PIDTurner(
 		if (((changeInReading <= (distanceToMove + tolerance)) && (changeInReading >= (distanceToMove - tolerance)))) {
 				actionCompleted = true;
 				AllWheels.brake();
+				coordinateUpdater_task->notify_clear();
 		}
 	}
 }

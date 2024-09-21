@@ -2,7 +2,7 @@
 
 double calculateSingleDegree(double wheelDiameter) {
     // sets up the odometry to convert angle readings to cm
-    double wheelCircumference = 3.14 * wheelDiameter; // 2 is the pre-measured wheel diameter in inches
+    double wheelCircumference = 3.141592 * wheelDiameter; // 2 is the pre-measured wheel diameter in inches
 	long double singleDegree = wheelCircumference / 360; // the distance that the robot moves in one degree of rotation of its wheels
 
     return singleDegree;
@@ -14,7 +14,7 @@ double calculateSingleDegree(double wheelDiameter) {
 
 double readOdomPod(pros::Rotation odom) {
     // gets the centimeter distance moved in a single degree of rotation
-    double singleDegree = calculateSingleDegree(2); // 2 is the pre-measured wheel diameter in inches
+    double singleDegree = calculateSingleDegree(2.031); // 2 is the pre-measured wheel diameter in inches (may need to be changed for precision)
 
     // gets the reading from the rotational sensor
     int rawReading = odom.get_position() * -1; // gives centidegrees (a 0-36,000 scale)

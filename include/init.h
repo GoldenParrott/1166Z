@@ -42,8 +42,7 @@ Pnuematics
 
 // Tasks
 
-    extern pros::Task* kalman1_task_ptr;
-    extern pros::Task* kalman2_task_ptr;
+    extern pros::Task* coordinateUpdater_task;
 
 
 // Sensors

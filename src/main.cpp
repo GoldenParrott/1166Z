@@ -47,7 +47,7 @@ void competition_initialize() {
 
 	switch (autonnumber) {
 		case 1: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {48, -48}, 0);
 			break;
 		case 2:
 			break;
@@ -72,7 +72,7 @@ void competition_initialize() {
 void autonomous() {
 
 	// starts the coordinate updating system
-	pros::Task coordinateUpdater_task = pros::Task(updateCoordinateLoop);
+	coordinateUpdater_task = new pros::Task(updateCoordinateLoop);
 
 	// autonomous setup
 	colorSense.set_led_pwm(100);
