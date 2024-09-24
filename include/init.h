@@ -42,7 +42,7 @@ Pnuematics
 
 // Tasks
 
-    extern pros::Task* coordinateUpdater_task;
+    extern pros::Task* coordinateUpdater_task_ptr;
 
 
 // Sensors

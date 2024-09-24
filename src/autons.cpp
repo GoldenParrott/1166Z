@@ -6,17 +6,17 @@ void blueRingside() {
 
 
 void blueGoalside() {
-/*
+
 	auto print = []() {while (true) {
 		Master.print(0, 0, "x = %f", universalCurrentLocation.x);
 		Master.print(1, 0, "y = %f", universalCurrentLocation.y);
 	}};
 	pros::Task p(print);
-*/
-
-	PIDMover({48, 0});
 
 
+	PIDMover({0, -48});
+
+	Transport.move(-65);
 	//PIDMover({48, -48}, false);
 	//pros::delay(1000);
 	//PIDMover({-48, -48}, true);

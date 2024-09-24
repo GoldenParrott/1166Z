@@ -14,15 +14,16 @@ void PIDMover(
 
 // PID Calculation Variables
 	// General Variables
-	double tolerance = 1;
+	double tolerance = 0.75;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
+	int cyclesAtGoal = 0;
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 3.3; // customizable
-	moverConstants.kI = 0.5; // customizable
-	moverConstants.kD = 0.3; // customizable
+	moverConstants.kP = 4; // customizable
+	moverConstants.kI = 0.05; // customizable
+	moverConstants.kD = 2.5; // customizable
 
 	
 
@@ -122,10 +123,14 @@ void PIDMover(
 				 (universalCurrentLocation.x <= negativeSide.yIntercept + tolerance) &&
 				 (universalCurrentLocation.x >= negativeSide.yIntercept - tolerance)
 				)
-			   ) 
+			   )
 			{
-				actionCompleted = true;
-				AllWheels.brake();
+				if (cyclesAtGoal >= 20) {
+					actionCompleted = true;
+					AllWheels.brake();
+				} else {
+					cyclesAtGoal++;
+				}
 			}
 	}
 
@@ -143,7 +148,7 @@ void PIDTurner(
 	AllWheels.set_brake_modes(MOTOR_BRAKE_HOLD);
 
 	// pauses the position updating for the turn
-	coordinateUpdater_task->notify();
+	coordinateUpdater_task_ptr->notify();
 
 // PID CALCULATION VARIABLES
 // General Variables
@@ -268,7 +273,7 @@ void PIDTurner(
 		if (((changeInReading <= (distanceToMove + tolerance)) && (changeInReading >= (distanceToMove - tolerance)))) {
 				actionCompleted = true;
 				AllWheels.brake();
-				coordinateUpdater_task->notify_clear();
+				coordinateUpdater_task_ptr->notify_clear();
 		}
 	}
 }
@@ -570,9 +575,10 @@ PIDReturn PIDCalc(
 		// prevents the integral from winding up too much, causing the number to be beyond the control of
         // even kI
 		// if we want to make this better, see Solution #3 for 3.3.2 in the packet
-		if (((isPositive) && (error >= 100)) || ((!isPositive) && (error <= -100))) {
+		/* if (((isPositive) && (error >= 100)) || ((!isPositive) && (error <= -100))) {
 			integral = 0;
 			}
+		*/
 		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
 			integral = isPositive
 				? 100

@@ -39,7 +39,7 @@ Pnuematics
 
 // Tasks
 
-    pros::Task* coordinateUpdater_task = NULL;
+    pros::Task* coordinateUpdater_task_ptr = NULL;
 
 // Sensors
 
