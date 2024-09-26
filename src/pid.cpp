@@ -14,7 +14,7 @@ void PIDMover(
 
 // PID Calculation Variables
 	// General Variables
-	double tolerance = 0.75;
+	double tolerance = 0.5;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 	int cyclesAtGoal = 0;
@@ -22,8 +22,8 @@ void PIDMover(
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
 	moverConstants.kP = 4; // customizable
-	moverConstants.kI = 0.05; // customizable
-	moverConstants.kD = 2.5; // customizable
+	moverConstants.kI = 0.1; // customizable
+	moverConstants.kD = 2.7; // customizable
 
 	
 
@@ -125,12 +125,14 @@ void PIDMover(
 				)
 			   )
 			{
-				if (cyclesAtGoal >= 20) {
+				if (cyclesAtGoal >= 10) {
 					actionCompleted = true;
 					AllWheels.brake();
 				} else {
 					cyclesAtGoal++;
 				}
+			} else {
+				cyclesAtGoal = 0;
 			}
 	}
 
@@ -152,8 +154,9 @@ void PIDTurner(
 
 // PID CALCULATION VARIABLES
 // General Variables
-	int error;
-	int tolerance = 1;
+	double error;
+	double tolerance = 1;
+	int cyclesAtGoal = 0;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
@@ -165,10 +168,10 @@ void PIDTurner(
 	bool isPositive = setPoint > 0;
 
 // PID LOOPING VARIABLES
-	int negativePower;
+	double negativePower;
 
-	int inertialReadingInit = getAggregatedHeading(Kalman1, Kalman2);
-	int distanceToMove;
+	double inertialReadingInit = getAggregatedHeading(Kalman1, Kalman2);
+	double distanceToMove;
 
 	if (direction == 1) {
 		// standard left turn is negative, so the calculation makes it positive if it is a normal turn
@@ -200,21 +203,34 @@ void PIDTurner(
 
 	// finally, the code sets a new value that will be set to the distance moved to zero to finalize this similarity
 	// distanceToMove is analogous to setPoint on PIDMover, and changeInReading is analogous to currentDistanceMovedByWheel
-	int changeInReading = 0;
+	double changeInReading = 0;
 
-
-
+/*
+// Arc Calculation
+	double diameter = 10.5; // manually measured diameter of the circle that has a center at the center of rotation of the robot and extends out to the middle of the wheels
+	double radius = diameter / 2; // basic circle math - the radius is half of the diameter
+	double centralAngleOfArc = distanceToMove; // the central angle is the previously-calculated angle for the robot to move
+	double arcLength = centralAngleOfArc * radius; // arc length formula (angle in radians * radius)
+	distanceToMove = arcLength; // sets distanceToMove to the length of the arc instead of the angle, as this will make for better calculations of speed
+*/
 
 
 	// constant definitions
-	if (distanceToMove <= 90) {
-		turnerConstants.kP = 0.75;
-		turnerConstants.kI = 0;
-		turnerConstants.kD = 0;
+	// >= 90 degree turns
+	if (distanceToMove >= 90) {
+		turnerConstants.kP = 1.25;
+		turnerConstants.kI = 0.2;
+		turnerConstants.kD = 13.3;
+	// < 90 degree turns
+	} else if (distanceToMove > 45) {
+		turnerConstants.kP = 1.18;
+		turnerConstants.kI = 0.16;
+		turnerConstants.kD = 23.225;
+	// < 45 degree turns
 	} else {
-		turnerConstants.kP = 0.75;
-		turnerConstants.kI = 0;
-		turnerConstants.kD = 0;
+		turnerConstants.kP = 1.25;
+		turnerConstants.kI = 0.25;
+		turnerConstants.kD = 22.5;
 	}
 
 	// this initializes variables that are used to measure values from previous cycles
@@ -262,18 +278,30 @@ void PIDTurner(
 		pros::delay(15);
 
 		// the change in reading is set to the absolute value of the change in reading due to everything being positive
-		int changeInDistance = direction == 1 
+		double changeInDistance = direction == 1 
 			? inertialReadingInit - getAggregatedHeading(Kalman1, Kalman2)
 			: getAggregatedHeading(Kalman1, Kalman2) - inertialReadingInit;
 		changeInReading = changeInDistance < 0
 		    ? changeInDistance + 360
 			: changeInDistance;
-		
+
+/*
+		// the change in reading is converted to an arc to make it align with the original arc
+		double changeInCentralAngleOfArc = changeInReading;
+		double arcDistanceMoved = radius * changeInCentralAngleOfArc;
+		changeInReading = arcDistanceMoved;
+*/
 
 		if (((changeInReading <= (distanceToMove + tolerance)) && (changeInReading >= (distanceToMove - tolerance)))) {
-				actionCompleted = true;
-				AllWheels.brake();
-				coordinateUpdater_task_ptr->notify_clear();
+				if (cyclesAtGoal >= 20) {
+					actionCompleted = true;
+					AllWheels.brake();
+					coordinateUpdater_task_ptr->notify_clear();
+				} else {
+					cyclesAtGoal++;
+				}
+		} else {
+			cyclesAtGoal = 0;
 		}
 	}
 }
@@ -298,7 +326,7 @@ void PIDArc(
 // General Variables
 	int error;
 	int power;
-	int tolerance = 1;
+	int tolerance = 0.75;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
 
@@ -569,7 +597,8 @@ PIDReturn PIDCalc(
 		// starts the integral at the error, then compounds it with the new current error every loop
 		double integral = lastCycle.prevIntegral + error;
 		// prevents the integral variable from causing the robot to overshoot
-		if ((isPositive && (error <= 0)) || (!isPositive && (error >= 0))) {
+		if ((((error <= 0)) && (lastCycle.prevError > 0)) || 
+			(((error >= 0)) && (lastCycle.prevError < 0))) {
 			integral = 0;
 		}
 		// prevents the integral from winding up too much, causing the number to be beyond the control of

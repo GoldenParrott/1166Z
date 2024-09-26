@@ -18,7 +18,6 @@ void initialize() {
 	Rotational.set_position(0);
 	RotationalTurn.set_position(0);
 
-	pros::Task updateRotational = pros::Task(bindTurnTrackingWheelHeading);
 }
 
 /**
@@ -47,7 +46,7 @@ void competition_initialize() {
 
 	switch (autonnumber) {
 		case 1: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 0);
 			break;
 		case 2:
 			break;
@@ -70,6 +69,9 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
+
+	// starts the system that fixes the turning tracking wheel's heading
+	pros::Task updateRotational = pros::Task(bindTurnTrackingWheelHeading);
 
 	// starts the coordinate updating system
 	coordinateUpdater_task_ptr = new pros::Task(updateCoordinateLoop);
