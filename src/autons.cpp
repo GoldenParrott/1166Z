@@ -13,7 +13,7 @@ void blueGoalside() {
 	pros::Task p(print);
 
 
-	PIDTurner(45, 2);
+	PIDTurner(100, 2);
 
 	Transport.move(-65);
 	//PIDMover({48, -48}, false);

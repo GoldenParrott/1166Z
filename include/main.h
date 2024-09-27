@@ -64,8 +64,8 @@ extern "C" {
 #endif
 // structures
 struct PIDReturn {
-    int prevError;
-    int prevIntegral; 
+    double prevError;
+    double prevIntegral; 
     int power;
 };
 struct ConstantContainer {

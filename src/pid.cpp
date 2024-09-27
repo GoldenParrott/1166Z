@@ -155,7 +155,7 @@ void PIDTurner(
 // PID CALCULATION VARIABLES
 // General Variables
 	double error;
-	double tolerance = 1;
+	double tolerance = 2.5;
 	int cyclesAtGoal = 0;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
@@ -218,19 +218,14 @@ void PIDTurner(
 	// constant definitions
 	// >= 90 degree turns
 	if (distanceToMove >= 90) {
-		turnerConstants.kP = 1.25;
-		turnerConstants.kI = 0.2;
-		turnerConstants.kD = 13.3;
+		turnerConstants.kP = 3;
+		turnerConstants.kI = 0.2; // 0.2
+		turnerConstants.kD = 26; // 13.1
 	// < 90 degree turns
-	} else if (distanceToMove > 45) {
-		turnerConstants.kP = 1.18;
-		turnerConstants.kI = 0.16;
-		turnerConstants.kD = 23.225;
-	// < 45 degree turns
 	} else {
 		turnerConstants.kP = 1.25;
-		turnerConstants.kI = 0.25;
-		turnerConstants.kD = 22.5;
+		turnerConstants.kI = 0.1; // 0.2
+		turnerConstants.kD = 30; // 13.1
 	}
 
 	// this initializes variables that are used to measure values from previous cycles
@@ -293,7 +288,7 @@ void PIDTurner(
 */
 
 		if (((changeInReading <= (distanceToMove + tolerance)) && (changeInReading >= (distanceToMove - tolerance)))) {
-				if (cyclesAtGoal >= 20) {
+				if (cyclesAtGoal >= 30) {
 					actionCompleted = true;
 					AllWheels.brake();
 					coordinateUpdater_task_ptr->notify_clear();
