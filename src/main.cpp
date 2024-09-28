@@ -30,6 +30,7 @@ void disabled() {
 	MobileGoalManipulator.set_value(false);
 	Grabber.set_value(false);
 
+	Master.clear();
 }
 
 /**

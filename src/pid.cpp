@@ -154,7 +154,6 @@ void PIDTurner(
 
 // PID CALCULATION VARIABLES
 // General Variables
-	double error;
 	double tolerance = 2.5;
 	int cyclesAtGoal = 0;
 	std::vector<bool> customsCompleted;
@@ -165,7 +164,7 @@ void PIDTurner(
 
 
 // Checks if the movement is positive or negative
-	bool isPositive = setPoint > 0;
+	bool isPositive = setPoint > getAggregatedHeading(Kalman1, Kalman2);
 
 // PID LOOPING VARIABLES
 	double negativePower;
@@ -279,6 +278,9 @@ void PIDTurner(
 		changeInReading = changeInDistance < 0
 		    ? changeInDistance + 360
 			: changeInDistance;
+
+	Master.print(0, 0, "e = %f", changeInReading);
+
 
 /*
 		// the change in reading is converted to an arc to make it align with the original arc
@@ -603,8 +605,8 @@ PIDReturn PIDCalc(
 			integral = 0;
 			}
 		*/
-		if (((isPositive) && (integral > 100)) || ((!isPositive) && (integral < -100))) {
-			integral = isPositive
+		if ((integral > 100) || (integral < -100)) {
+			integral = integral > 100
 				? 100
 				: -100;
 			}
