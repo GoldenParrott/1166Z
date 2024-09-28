@@ -223,9 +223,9 @@ void PIDTurner(
 		turnerConstants.kD = 26; // 13.1
 	// < 90 degree turns
 	} else {
-		turnerConstants.kP = 1.25;
+		turnerConstants.kP = 1.75;
 		turnerConstants.kI = 0.1; // 0.2
-		turnerConstants.kD = 30; // 13.1
+		turnerConstants.kD = 6; // 13.1
 	}
 
 	// this initializes variables that are used to measure values from previous cycles

@@ -7,13 +7,8 @@ void blueRingside() {
 
 void blueGoalside() {
 
-	auto print = []() {while (true) {
-		Master.print(0, 0, "h = %f", getAggregatedHeading(Kalman1, Kalman2));
-	}};
-	pros::Task p(print);
 
-
-	PIDTurner(100, 2);
+	PIDTurner(45, 2);
 
 	Transport.move(-65);
 	//PIDMover({48, -48}, false);
