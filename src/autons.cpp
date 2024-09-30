@@ -8,7 +8,7 @@ void blueRingside() {
 void blueGoalside() {
 
 
-	PIDTurner(45, 2);
+	PIDMover({-48, 0});
 
 	Transport.move(-65);
 	//PIDMover({48, -48}, false);

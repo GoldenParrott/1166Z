@@ -31,6 +31,11 @@ void disabled() {
 	Grabber.set_value(false);
 
 	Master.clear();
+
+	while (true) {
+		pros::lcd::print(3, "x = %f", universalCurrentLocation.x);
+		pros::lcd::print(4, "y = %f", universalCurrentLocation.y);
+	}
 }
 
 /**
@@ -139,7 +144,6 @@ switch (autonnumber) {
  */
 
 void opcontrol() {
-
 	if (coordinateUpdater_task_ptr != NULL) {
 		coordinateUpdater_task_ptr->remove();
 	}
@@ -163,7 +167,8 @@ void opcontrol() {
 	pros::Task ejectOn(eject);
 
 	while (true) {
-
+//Master.print(0, 0, "x = %f", universalCurrentLocation.x);
+Master.print(1, 0, "y = %f", universalCurrentLocation.y);
 	//Drivetrain
     	drvtrFB = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     	drvtrLR = Master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);

@@ -37,7 +37,6 @@ Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
     } else if (heading < 360) {
         triangleAngle = heading - 270;
     }
-    pros::lcd::print(3, "H = %f", triangleAngle);
     // treats the distance moved as the hypotenuse of and the heading as the base angle of a triangle
     // and uses them to calculate the value of both legs (the changes in x and y)
     double xChange = 0;

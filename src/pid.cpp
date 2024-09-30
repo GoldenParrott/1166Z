@@ -158,6 +158,8 @@ void PIDTurner(
 	int cyclesAtGoal = 0;
 	std::vector<bool> customsCompleted;
 	bool actionCompleted = false;
+	bool passedZero = false;
+	double prevHeading = 0;
 
 // Constants -- tuning depends on whether the robot is moving or turning
 	ConstantContainer turnerConstants;
@@ -204,6 +206,8 @@ void PIDTurner(
 	// distanceToMove is analogous to setPoint on PIDMover, and changeInReading is analogous to currentDistanceMovedByWheel
 	double changeInReading = 0;
 
+
+
 /*
 // Arc Calculation
 	double diameter = 10.5; // manually measured diameter of the circle that has a center at the center of rotation of the robot and extends out to the middle of the wheels
@@ -222,9 +226,10 @@ void PIDTurner(
 		turnerConstants.kD = 26; // 13.1
 	// < 90 degree turns
 	} else {
-		turnerConstants.kP = 1.75;
-		turnerConstants.kI = 0.1; // 0.2
-		turnerConstants.kD = 6; // 13.1
+		turnerConstants.kP = 1.5; // 2.3
+		turnerConstants.kI = 0.24; // 0.05
+		turnerConstants.kD = 35; // 50
+		tolerance = 3.5;
 	}
 
 	// this initializes variables that are used to measure values from previous cycles
@@ -269,17 +274,27 @@ void PIDTurner(
 				RightWheels.move(negativePower);
 			}
 
+		prevHeading = getAggregatedHeading(Kalman1, Kalman2);
+
 		pros::delay(15);
 
 		// the change in reading is set to the absolute value of the change in reading due to everything being positive
-		double changeInDistance = direction == 1 
+		double changeInDistance = direction == 1
 			? inertialReadingInit - getAggregatedHeading(Kalman1, Kalman2)
 			: getAggregatedHeading(Kalman1, Kalman2) - inertialReadingInit;
-		changeInReading = changeInDistance < 0
-		    ? changeInDistance + 360
-			: changeInDistance;
 
-	Master.print(0, 0, "e = %f", changeInReading);
+		// checks if the robot has passed zero between the last two cycles
+		if ((((getAggregatedHeading(Kalman1, Kalman2) <= 0)) && (prevHeading > 0)) || 
+			(((getAggregatedHeading(Kalman1, Kalman2) >= 0)) && (prevHeading < 0))) {
+				passedZero = passedZero 
+					? false
+					: true;
+		}
+
+		changeInReading = ((changeInDistance < 0) && !passedZero)
+		    ? changeInDistance + 360
+			: changeInDistance;	
+
 
 
 /*
