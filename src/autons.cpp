@@ -8,7 +8,7 @@ void blueRingside() {
 void blueGoalside() {
 
 
-	PIDMover({-48, 0});
+	PIDMover({-24, -24});
 
 	Transport.move(-65);
 	//PIDMover({48, -48}, false);
@@ -25,6 +25,43 @@ void redGoalside() {
 
 
 void redRingside() {
+
+	// wut
+	pros::Task cancel = pros::Task([]() {PIDTurner(180, 2);});
+	cancel.remove();
+
+	// starts the autonomous by raising the arm and moving to the first Ring
+	Arm.move_relative(270, 200);
+	InputPiston.set_value(true);
+	AllWheels.move_relative(130, 100);
+	pros::delay(400);
+
+	// picks up the first Ring
+	InputMotor.move(-128);
+	InputPiston.set_value(false);
+	pros::delay(600);
+	InputMotor.brake();
+	Transport.move_relative(-180, 200);
+
+	// backs up, then turns to the Rings next to the Alliance Stake and moves to them
+	PIDMover({53, -10}, true);
+	Master.print(0, 0, "ch = %f", getAggregatedHeading(Kalman1, Kalman2));
+	double fhol = findHeadingOfLine(universalCurrentLocation, {52, 8});
+	pros::delay(100);
+	Master.print(1, 0, "gh = %f", fhol);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {52, 8.5}), 2);
+	PIDMover({52, 8.5});
+
+	// turns to face the intake to the Alliance Stake and moves to it, then scores on it
+	PIDTurner(270, 1);
+	AllWheels.move_relative(-360, 100);
+	pros::delay(500);
+	Transport.move_relative(-280, 200);
+	pros::delay(500);
+
+	// moves forward
+	PIDMover({48, 0});
+	PIDTurner(74, 2);
 
 }
 

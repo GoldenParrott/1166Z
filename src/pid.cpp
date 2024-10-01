@@ -21,9 +21,9 @@ void PIDMover(
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 4; // customizable
-	moverConstants.kI = 0.1; // customizable
-	moverConstants.kD = 2.7; // customizable
+	moverConstants.kP = 4.5; // 4
+	moverConstants.kI = 0.0; // 0.1
+	moverConstants.kD = 0.0; // 2.7
 
 	
 

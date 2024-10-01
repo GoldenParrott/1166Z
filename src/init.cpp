@@ -66,9 +66,6 @@ int drvtrLR;
 bool toggleColorSensor = false;
 int colorDelay = 0;
 
-bool redirectOn = false;
-int redirectStartPoint = 0;
-
 bool presettingA = false;
 bool presettingX = false;
 

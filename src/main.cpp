@@ -10,7 +10,7 @@
  */
 void initialize() {
 
-	autonnumber = 1;
+	autonnumber = -2;
 
 	pros::lcd::initialize();
 
@@ -30,7 +30,6 @@ void disabled() {
 	MobileGoalManipulator.set_value(false);
 	Grabber.set_value(false);
 
-	Master.clear();
 
 	while (true) {
 		pros::lcd::print(3, "x = %f", universalCurrentLocation.x);
@@ -51,8 +50,8 @@ void competition_initialize() {
 	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
 
 	switch (autonnumber) {
-		case 1: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 0);
+		case -2: 
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {51, -3.5}, 328);
 			break;
 		case 2:
 			break;
@@ -95,6 +94,8 @@ void autonomous() {
 
 	Kalman1.startFilter();
 	Kalman2.startFilter();
+
+	pros::Task autoEjectOn(autoEject);
 
 	
 	
@@ -144,10 +145,11 @@ switch (autonnumber) {
  */
 
 void opcontrol() {
+/*
 	if (coordinateUpdater_task_ptr != NULL) {
 		coordinateUpdater_task_ptr->remove();
 	}
-
+*/
 	// ends the Kalman Filters from autonomous
 	Kalman1.endFilter();
 	Kalman2.endFilter();
@@ -168,7 +170,7 @@ void opcontrol() {
 
 	while (true) {
 //Master.print(0, 0, "x = %f", universalCurrentLocation.x);
-Master.print(1, 0, "y = %f", universalCurrentLocation.y);
+//Master.print(1, 0, "y = %f", universalCurrentLocation.y);
 	//Drivetrain
     	drvtrFB = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     	drvtrLR = Master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
