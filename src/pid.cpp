@@ -14,16 +14,18 @@ void PIDMover(
 
 // PID Calculation Variables
 	// General Variables
+	double power = 0;
 	double tolerance = 0.5;
-	std::vector<bool> customsCompleted;
+	std::vector<bool> customsCompleted(customs.size(), false);
 	bool actionCompleted = false;
 	int cyclesAtGoal = 0;
+	int cyclesFlipping = 0;
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 4.5; // 4
-	moverConstants.kI = 0.0; // 0.1
-	moverConstants.kD = 0.0; // 2.7
+	moverConstants.kP = 5.5; // 4
+	moverConstants.kI = 0.07; // 0.1
+	moverConstants.kD = 1; // 2.7
 
 	
 
@@ -39,12 +41,6 @@ void PIDMover(
 
 // Odometry Measurement Setup
 	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
-
-	for (int i = 0; i < executeAts.size(); i++) {
-		executeAts[i] *= 2.54;
-	}
-
-
 
 // Odometry Pre-Measurement
 	
@@ -63,6 +59,12 @@ void PIDMover(
 
 	// gets the power for the current cycle
 	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
+
+	// checks to see if the robot has been flipping between directions and stops in the exit condition if it is
+	if ((power > 0 && cycle.power < 0) || (power < 0 && cycle.power > 0)) {
+		cyclesFlipping++;
+	}
+
 	double power = cycle.power;
 
 	// finds if the robot has passed the perpendicular line's inequality or not
@@ -94,7 +96,7 @@ void PIDMover(
 		
 	for (int i = 0; i < customs.size(); i++) {
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
-		if (customs[i] != 0 && ((currentDistanceMovedByWheel >= executeAts[i] && isPositive) || (currentDistanceMovedByWheel <= executeAts[i] && !isPositive)) && !customsCompleted[i]) {
+		if (customs[i] != 0 && (((currentDistanceMovedByWheel >= executeAts[i]) && isPositive) || ((currentDistanceMovedByWheel <= executeAts[i]) && !isPositive))) { //&& !customsCompleted[i]) {
 			// runs the function
 			customs[i]();
 			// prevents the function from running again
@@ -134,6 +136,11 @@ void PIDMover(
 			} else {
 				cyclesAtGoal = 0;
 			}
+		// checks to see if the robot has been flipping back and forth in direction at the exit location and stops it if id does
+		   if (cyclesFlipping >= 5) {
+				actionCompleted = true;
+				AllWheels.brake();
+		   }
 	}
 
 }
@@ -156,7 +163,7 @@ void PIDTurner(
 // General Variables
 	double tolerance = 2.5;
 	int cyclesAtGoal = 0;
-	std::vector<bool> customsCompleted;
+	std::vector<bool> customsCompleted(executeAts.size(), false);
 	bool actionCompleted = false;
 	bool passedZero = false;
 	double prevHeading = 0;

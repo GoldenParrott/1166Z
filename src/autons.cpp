@@ -8,7 +8,8 @@ void blueRingside() {
 void blueGoalside() {
 
 
-	PIDMover({-24, -24});
+	InputMotor.move(-128);
+	PIDMover({78, -48}, true);
 
 	Transport.move(-65);
 	//PIDMover({48, -48}, false);
@@ -21,6 +22,23 @@ void blueGoalside() {
 
 void redGoalside() {
 
+	double motorStartPoint = 0;
+
+	auto triggerGrabber = []() {Grabber.set_value(true);};
+	auto moveTransportIn = []() {Transport.move_relative(-540, 200);};
+
+	InputMotor.move(-128);
+
+	pros::Task toMoGo = pros::Task([triggerGrabber] () {PIDMover({10, -49.5}, false, {triggerGrabber}, {27});});
+	pros::delay(1250);
+	toMoGo.remove();
+	AllWheels.brake();
+
+	moveTransportIn();
+
+	PIDMover({21.5, -48.375}, true);
+
+	//PIDTurner(198, 1);
 }
 
 

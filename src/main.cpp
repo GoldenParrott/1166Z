@@ -10,7 +10,7 @@
  */
 void initialize() {
 
-	autonnumber = -2;
+	autonnumber = -1;
 
 	pros::lcd::initialize();
 
@@ -50,14 +50,16 @@ void competition_initialize() {
 	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
 
 	switch (autonnumber) {
-		case -2: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {51, -3.5}, 328);
+		case 1:
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {48, -48}, 270);
 			break;
 		case 2:
 			break;
-		case 3:
+		case -1:
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {43, -39}, 252);
 			break;
-		case 4:
+		case -2: 
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {51, -3.5}, 328);
 			break;
 	}
 }
