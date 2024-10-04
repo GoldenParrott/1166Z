@@ -15,7 +15,8 @@ void PIDMover(
 // PID Calculation Variables
 	// General Variables
 	double power = 0;
-	double tolerance = 0.5;
+
+	double tolerance = 0.75;
 	std::vector<bool> customsCompleted(customs.size(), false);
 	bool actionCompleted = false;
 	int cyclesAtGoal = 0;
@@ -23,9 +24,9 @@ void PIDMover(
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 5.5; // 4
+	moverConstants.kP = 4.45; // 4
 	moverConstants.kI = 0.07; // 0.1
-	moverConstants.kD = 1; // 2.7
+	moverConstants.kD = 0.8; // 2.7
 
 	
 
@@ -35,6 +36,7 @@ void PIDMover(
 	Coordinate originalPosition = universalCurrentLocation;
 	double setPoint = calculateDistance(originalPosition, goalPosition);
 	double remainingDistance = setPoint;
+	bool greaterThanNegativeLine = false;
 
 // finds the part of the coordinate plane in which the robot has passed its destination
 	Line negativeSide = calculatePerpendicular(originalPosition, goalPosition);
@@ -59,16 +61,16 @@ void PIDMover(
 
 	// gets the power for the current cycle
 	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
-
+/*
 	// checks to see if the robot has been flipping between directions and stops in the exit condition if it is
 	if ((power > 0 && cycle.power < 0) || (power < 0 && cycle.power > 0)) {
 		cyclesFlipping++;
-	}
+	} */
 
-	double power = cycle.power;
+	power = cycle.power;
 
 	// finds if the robot has passed the perpendicular line's inequality or not
-	bool greaterThanNegativeLine = universalCurrentLocation.y >= (negativeSide.slope * universalCurrentLocation.x) + negativeSide.yIntercept;
+	greaterThanNegativeLine = universalCurrentLocation.y >= (negativeSide.slope * universalCurrentLocation.x) + negativeSide.yIntercept;
 
 	// handles the line if it is vertical
 	if (std::isnan(negativeSide.slope)) {
@@ -96,7 +98,7 @@ void PIDMover(
 		
 	for (int i = 0; i < customs.size(); i++) {
 		// ensures that the code will only run if the function has been provided and if executeAt has been reached
-		if (customs[i] != 0 && (((currentDistanceMovedByWheel >= executeAts[i]) && isPositive) || ((currentDistanceMovedByWheel <= executeAts[i]) && !isPositive))) { //&& !customsCompleted[i]) {
+		if (customs[i] != 0 && (currentDistanceMovedByWheel >= executeAts[i]) && !customsCompleted[i]) {
 			// runs the function
 			customs[i]();
 			// prevents the function from running again
@@ -136,11 +138,13 @@ void PIDMover(
 			} else {
 				cyclesAtGoal = 0;
 			}
+		/*
 		// checks to see if the robot has been flipping back and forth in direction at the exit location and stops it if id does
 		   if (cyclesFlipping >= 5) {
 				actionCompleted = true;
 				AllWheels.brake();
 		   }
+		*/
 	}
 
 }
@@ -161,12 +165,13 @@ void PIDTurner(
 
 // PID CALCULATION VARIABLES
 // General Variables
+	double power = 0;
+	double negativePower;
+
 	double tolerance = 2.5;
 	int cyclesAtGoal = 0;
 	std::vector<bool> customsCompleted(executeAts.size(), false);
 	bool actionCompleted = false;
-	bool passedZero = false;
-	double prevHeading = 0;
 
 // Constants -- tuning depends on whether the robot is moving or turning
 	ConstantContainer turnerConstants;
@@ -176,10 +181,8 @@ void PIDTurner(
 	bool isPositive = setPoint > getAggregatedHeading(Kalman1, Kalman2);
 
 // PID LOOPING VARIABLES
-	double negativePower;
-
 	double inertialReadingInit = getAggregatedHeading(Kalman1, Kalman2);
-	double distanceToMove;
+	double distanceToMove = 0;
 
 	if (direction == 1) {
 		// standard left turn is negative, so the calculation makes it positive if it is a normal turn
@@ -212,7 +215,10 @@ void PIDTurner(
 	// finally, the code sets a new value that will be set to the distance moved to zero to finalize this similarity
 	// distanceToMove is analogous to setPoint on PIDMover, and changeInReading is analogous to currentDistanceMovedByWheel
 	double changeInReading = 0;
+	double prevChangeInReading = 0;
 
+	// it also sets a value that is used as an intermediate value in the switch calculation every loop
+	double changeInDistance = 0;
 
 
 /*
@@ -233,9 +239,9 @@ void PIDTurner(
 		turnerConstants.kD = 26; // 13.1
 	// < 90 degree turns
 	} else {
-		turnerConstants.kP = 1.5; // 2.3
+		turnerConstants.kP = 2.3; // 2.3
 		turnerConstants.kI = 0.24; // 0.05
-		turnerConstants.kD = 35; // 50
+		turnerConstants.kD = 32; // 50
 		tolerance = 3.5;
 	}
 
@@ -248,10 +254,30 @@ void PIDTurner(
 	 
 
 	while (!actionCompleted) {
-	
+
+	// calculates the change in heading at the very start of each cycle 
+	// to ensure that the robot has not passed its relative zero by mistake
+	changeInDistance = direction == 1
+		? inertialReadingInit - getAggregatedHeading(Kalman1, Kalman2)
+		: getAggregatedHeading(Kalman1, Kalman2) - inertialReadingInit;
+	changeInReading = (changeInDistance < 0)
+		    ? changeInDistance + 360
+			: changeInDistance;
+	// if the robot's change in distance between the last two cycles is too great,
+	// then throw out the new value and use the one from the last successful cycle
+	if (changeInReading - prevChangeInReading > 90) {
+		Master.print(0, 0, "done");
+		changeInReading = prevChangeInReading;
+	}
+	// if the check passes, then the current change in distance is used
+	// is tracked for the next cycle
+	else {
+		prevChangeInReading = changeInReading;
+	}
+
 	// gets the power for the current cycle
 	cycle = PIDCalc(changeInReading, distanceToMove, isPositive, turnerConstants, cycle);
-	double power = cycle.power;
+	power = cycle.power;
 
 
 	// custom lambda functions
@@ -281,26 +307,15 @@ void PIDTurner(
 				RightWheels.move(negativePower);
 			}
 
-		prevHeading = getAggregatedHeading(Kalman1, Kalman2);
-
 		pros::delay(15);
 
 		// the change in reading is set to the absolute value of the change in reading due to everything being positive
-		double changeInDistance = direction == 1
+		changeInDistance = direction == 1
 			? inertialReadingInit - getAggregatedHeading(Kalman1, Kalman2)
 			: getAggregatedHeading(Kalman1, Kalman2) - inertialReadingInit;
-
-		// checks if the robot has passed zero between the last two cycles
-		if ((((getAggregatedHeading(Kalman1, Kalman2) <= 0)) && (prevHeading > 0)) || 
-			(((getAggregatedHeading(Kalman1, Kalman2) >= 0)) && (prevHeading < 0))) {
-				passedZero = passedZero 
-					? false
-					: true;
-		}
-
-		changeInReading = ((changeInDistance < 0) && !passedZero)
+		changeInReading = (changeInDistance < 0)
 		    ? changeInDistance + 360
-			: changeInDistance;	
+			: changeInDistance;
 
 
 

@@ -8,8 +8,9 @@ void blueRingside() {
 void blueGoalside() {
 
 
-	InputMotor.move(-128);
-	PIDMover({78, -48}, true);
+	//InputMotor.move(-128);
+	//PIDMover({78, -48}, true);
+	PIDTurner(5, 2);
 
 	Transport.move(-65);
 	//PIDMover({48, -48}, false);
@@ -44,12 +45,10 @@ void redGoalside() {
 
 void redRingside() {
 
-	// wut
-	pros::Task cancel = pros::Task([]() {PIDTurner(180, 2);});
-	cancel.remove();
+	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
 
 	// starts the autonomous by raising the arm and moving to the first Ring
-	Arm.move_relative(270, 200);
+	Arm.move_relative(180, 200);
 	InputPiston.set_value(true);
 	AllWheels.move_relative(130, 100);
 	pros::delay(400);
@@ -62,25 +61,36 @@ void redRingside() {
 	Transport.move_relative(-180, 200);
 
 	// backs up, then turns to the Rings next to the Alliance Stake and moves to them
-	PIDMover({53, -10}, true);
-	Master.print(0, 0, "ch = %f", getAggregatedHeading(Kalman1, Kalman2));
-	double fhol = findHeadingOfLine(universalCurrentLocation, {52, 8});
-	pros::delay(100);
-	Master.print(1, 0, "gh = %f", fhol);
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {52, 8.5}), 2);
-	PIDMover({52, 8.5});
+	PIDMover({-58.5, 17}, true);
+
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-53.5, 0}), 2);
+	PIDMover({-53.5, 0});
 
 	// turns to face the intake to the Alliance Stake and moves to it, then scores on it
-	PIDTurner(270, 1);
-	AllWheels.move_relative(-360, 100);
+	PIDTurner(92, 1);
+	AllWheels.move_relative(-365, 100);
 	pros::delay(500);
-	Transport.move_relative(-280, 200);
+	Transport.move_relative(-285, 200);
 	pros::delay(500);
 
-	// moves forward
-	PIDMover({48, 0});
-	PIDTurner(74, 2);
+	// moves forward from the Alliance Stake
+	PIDMover({-53.75, 0});
+	
+	// moves to MoGo
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-70.25, -13.25}), 2);
+	PIDMover({-28, 21.75}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
+	Arm.move_relative(-180, 200);
+	PIDMover({-20.5, 27.25}, true, {gripMoGoM}, {5});
 
+	// turns to, moves to, and intakes Rings in middle of quadrant
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-24, 40}), 2);
+	Intake.move(-128);
+	PIDMover({-24, 40});
+
+	// turns to, moves to, and touches Ladder
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-11.75, 8.5}), 2);
+	InputMotor.brake();
+	PIDMover({-11.75, 8.5});
 }
 
 void autonSwitcher(){
