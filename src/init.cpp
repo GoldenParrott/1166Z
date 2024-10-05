@@ -65,6 +65,7 @@ int drvtrLR;
 
 bool toggleColorSensor = false;
 int colorDelay = 0;
+bool ejectIsEjecting = false;
 
 bool presettingA = false;
 bool presettingX = false;

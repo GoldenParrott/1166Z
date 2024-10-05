@@ -185,9 +185,7 @@ void opcontrol() {
     	}  
 
 	// Intake Conveyor (Transport) and Input
-		if (Master.get_digital(DIGITAL_RIGHT)){
-			Intake.move(-128);
-		} else if(Master.get_digital(DIGITAL_DOWN)){
+		if(Master.get_digital(DIGITAL_DOWN)){
 			Intake.move(128);
 		}
 
@@ -223,7 +221,6 @@ void opcontrol() {
 			Arm.brake();
 		}
 
-// hi :)
 	//Mobile Goal Manipulator
 		// ↓↓ Pressing the R1 Button toggles between modes
 		if(Master.get_digital(DIGITAL_R1)){

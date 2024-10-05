@@ -2,6 +2,10 @@
 
 void blueRingside() {
 
+	pros::Task dontJam(unJam);
+	pros::Task tossIt(autoEject);
+
+/*
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
 
 	// starts the autonomous by raising the arm and moving to the first Ring
@@ -48,7 +52,7 @@ void blueRingside() {
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {11.75, 8.5}), 1);
 	InputMotor.brake();
 	PIDMover({11.75, 8.5});
-
+*/
 }
 
 
