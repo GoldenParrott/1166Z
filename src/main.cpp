@@ -1,7 +1,5 @@
 #include "init.h"
 
-
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -10,7 +8,7 @@
  */
 void initialize() {
 
-	autonnumber = -2;
+	autonnumber = 2;
 
 	pros::lcd::initialize();
 
@@ -50,9 +48,10 @@ void competition_initialize() {
 	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
 	switch (autonnumber) {
 		case 1:
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {48, -48}, 0);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {50, -36}, 253);
 			break;
 		case 2:
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 11.5}, 212);
 			break;
 		case -1:
 			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {43, -39}, 252);

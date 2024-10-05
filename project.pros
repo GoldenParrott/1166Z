@@ -309,9 +309,10 @@
       }
     },
     "upload_options": {
-      "after": "screen",
+      "after": "run",
       "slot": 1,
-      "icon": "pros"
+      "icon": "pros",
+      "description": ":D"
     },
     "use_early_access": true
   }

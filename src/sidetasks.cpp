@@ -69,8 +69,8 @@ void eject() {
 				}
 			}
 			// case 2: eject is not on, but the distance sensor is at the proper distance and the color sensor has found the right color
-			else if ((((colorSense.get_hue() > 180)                               && (autonnumber > 0)) || // blue
-				      ((colorSense.get_hue() < 16) && (colorSense.get_hue() > 10) && (autonnumber < 0)) // red
+			else if ((((colorSense.get_hue() > 180)                               && (autonnumber < 0)) || // blue
+				      ((colorSense.get_hue() < 25) && (colorSense.get_hue() > 10) && (autonnumber > 0)) // red
 					 )
 					&& (Distance.get() < 75)
 					)
@@ -98,9 +98,17 @@ void autoEject() {
 	bool ejectOn = false;
 	int ejectStartPoint = 0;
 
+	////////////////////////////////////////////
+	//										  //
+	//	ERROR: Code is SOMETIMES not reaching //
+	//	inside the color sensor statement 	  //
+	//	on lines 128-132. Also changed  	  //
+	//	red to <25 as it detects better    	  //
+	//									      //
+	////////////////////////////////////////////
+
 	while (true) {
     // distance sensor (eject)
-
 		// handles the cases for if B is being held down
 			// case 1: redirect is currently on
 			if (ejectOn == true) {
@@ -117,8 +125,8 @@ void autoEject() {
 				}
 			}
 			// case 2: eject is not on, but the distance sensor is at the proper distance and the color sensor has found the right color
-			else if ((((colorSense.get_hue() > 180)                               && (autonnumber > 0)) || // blue
-				      ((colorSense.get_hue() < 16) && (colorSense.get_hue() > 10) && (autonnumber < 0)) // red
+			else if ((((colorSense.get_hue() > 180)                               && (autonnumber < 0)) || // blue
+				      ((colorSense.get_hue() < 25) && (colorSense.get_hue() > 10) && (autonnumber > 0)) // red
 					 )
 					&& (Distance.get() < 75)
 					)
