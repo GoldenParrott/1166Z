@@ -2,8 +2,24 @@
 
 void blueRingside() {
 
-	pros::Task dontJam(unJam);
-	pros::Task tossIt(autoEject);
+	Intake.move(-128);
+	AllWheels.move_relative(480,100);
+	pros::delay(1000);
+	AllWheels.move_relative(-200,100);
+	pros::delay(1000);
+	AllWheels.move_relative(480,100);
+	pros::delay(1000);
+	AllWheels.move_relative(-200,100);
+	pros::delay(1000);
+	AllWheels.move_relative(480,100);
+	pros::delay(1000);
+	AllWheels.move_relative(-200,100);
+	pros::delay(1000);
+	AllWheels.move_relative(480,100);
+	pros::delay(1000);
+	AllWheels.move_relative(-200,100);
+	pros::delay(1000);
+
 
 /*
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
