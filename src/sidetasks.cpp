@@ -52,16 +52,23 @@ void redirect() {
 void eject() {
 	bool ejectOn = false;
 	int ejectStartPoint = 0;
-	int ejectToggle = -1;
+	bool ejectToggle = true;
 	while (true) {
 		// distance sensor (eject)
 		// Changes the eject to be in opposite stae whne the button is pressed
 		if (Master.get_digital_new_press(DIGITAL_LEFT)){
-			ejectToggle = -ejectToggle;
+			
+			if(ejectToggle == true){
+				ejectToggle = false;
+				Master.print(0,0,"Eject On ",NULL);
+			}else if(ejectToggle == false){
+				ejectToggle = true;
+				Master.print(0,0,"Eject Off",NULL);
+			}
 		}
 		// handles the cases for if the eject is in the enabled state
 		if(Master.get_digital(DIGITAL_RIGHT)){
-			if (ejectToggle == 1) {
+			if (ejectToggle == true) {
 				// case 1: redirect is currently on
 				if (ejectOn == true) {
 					// case 1a: if the difference between the starting point and the current point
@@ -95,7 +102,7 @@ void eject() {
 					Intake.move(-128);
 				}
 			// if L2 is in the disabled state, then the redirect is turned off
-			} else if (ejectToggle == -1){
+			} else if (ejectToggle == false){
 				Intake.move(-128);
 				ejectOn = false;
 				ejectStartPoint = 0;
