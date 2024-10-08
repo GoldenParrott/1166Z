@@ -2,23 +2,7 @@
 
 void blueRingside() {
 
-	Intake.move(-128);
-	AllWheels.move_relative(480,100);
-	pros::delay(1000);
-	AllWheels.move_relative(-200,100);
-	pros::delay(1000);
-	AllWheels.move_relative(480,100);
-	pros::delay(1000);
-	AllWheels.move_relative(-200,100);
-	pros::delay(1000);
-	AllWheels.move_relative(480,100);
-	pros::delay(1000);
-	AllWheels.move_relative(-200,100);
-	pros::delay(1000);
-	AllWheels.move_relative(480,100);
-	pros::delay(1000);
-	AllWheels.move_relative(-200,100);
-	pros::delay(1000);
+	PIDMover({-20, -48}, false);
 
 
 /*
@@ -164,7 +148,8 @@ void redRingside() {
 	// starts the autonomous by raising the arm and moving to the first Ring
 	Arm.move_relative(180, 200);
 	InputPiston.set_value(true);
-	AllWheels.move_relative(130, 100);
+	pros::delay(100);
+	AllWheels.move_relative(200, 100);
 	pros::delay(400);
 
 	// picks up the first Ring
@@ -174,11 +159,10 @@ void redRingside() {
 	InputMotor.brake();
 	Transport.move_relative(-180, 200);
 
-	// backs up, then turns to the Rings next to the Alliance Stake and moves to them
-	PIDMover({-58.5, 17}, true);
-
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-53.5, 0}), 2);
-	PIDMover({-53.5, 0});
+	// turns to the Rings next to the Alliance Stake and moves to them
+	pros::delay(200);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57.25, 0}), 2);
+	PIDMover({-57.25, 0});
 
 	// turns to face the intake to the Alliance Stake and moves to it, then scores on it
 	PIDTurner(92, 1);
@@ -193,8 +177,8 @@ void redRingside() {
 	// moves to MoGo
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-70.25, -13.25}), 2);
 	PIDMover({-28, 21.75}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
-	Arm.move_relative(-180, 200);
-	PIDMover({-20.5, 27.25}, true, {gripMoGoM}, {5});
+	Arm.move_relative(-200, 200);
+	//PIDMover({-20.5, 27.25}, true, {gripMoGoM}, {5});
 
 	// turns to, moves to, and intakes Rings in middle of quadrant
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-24, 40}), 2);

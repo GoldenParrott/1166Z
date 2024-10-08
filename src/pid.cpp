@@ -24,9 +24,9 @@ void PIDMover(
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 4.45; // 4
+	moverConstants.kP = 5.2; // 4
 	moverConstants.kI = 0.07; // 0.1
-	moverConstants.kD = 0.8; // 2.7
+	moverConstants.kD = 0.9; // 2.7
 
 	
 
@@ -61,11 +61,11 @@ void PIDMover(
 
 	// gets the power for the current cycle
 	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
-/*
+
 	// checks to see if the robot has been flipping between directions and stops in the exit condition if it is
 	if ((power > 0 && cycle.power < 0) || (power < 0 && cycle.power > 0)) {
 		cyclesFlipping++;
-	} */
+	}
 
 	power = cycle.power;
 
@@ -138,13 +138,13 @@ void PIDMover(
 			} else {
 				cyclesAtGoal = 0;
 			}
-		/*
+		
 		// checks to see if the robot has been flipping back and forth in direction at the exit location and stops it if id does
 		   if (cyclesFlipping >= 5) {
 				actionCompleted = true;
 				AllWheels.brake();
 		   }
-		*/
+		
 	}
 
 }
@@ -266,7 +266,6 @@ void PIDTurner(
 	// if the robot's change in distance between the last two cycles is too great,
 	// then throw out the new value and use the one from the last successful cycle
 	if (changeInReading - prevChangeInReading > 90) {
-		Master.print(0, 0, "done");
 		changeInReading = prevChangeInReading;
 	}
 	// if the check passes, then the current change in distance is used
