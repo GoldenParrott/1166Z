@@ -150,7 +150,7 @@ void autoEject() {
 	}
 }
 
-void unJam() {
+void unjam() {
 
 	while(true){
 		// Checks if Motor cannot move
@@ -169,7 +169,7 @@ void unJam() {
 
 		}else{
 			// No problems, continue moving
-			Transport.move(-128);
+			Transport.move(intakePower);
 		}
 
 		pros::delay(50);

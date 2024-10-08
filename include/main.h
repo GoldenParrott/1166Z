@@ -115,7 +115,7 @@ void autonSwitcher(void);
 void redirect(void);
 void eject(void);
 void autoEject(void);
-void unJam(void);
+void unjam(void);
 
 // draw.cpp
 void drawBlueMogo(void);
