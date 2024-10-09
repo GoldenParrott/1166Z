@@ -1,7 +1,5 @@
 #include "init.h"
 
-
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -10,7 +8,7 @@
  */
 void initialize() {
 
-	autonnumber = 1;
+	autonnumber = -2;
 
 	pros::lcd::initialize();
 
@@ -30,7 +28,6 @@ void disabled() {
 	MobileGoalManipulator.set_value(false);
 	Grabber.set_value(false);
 
-	Master.clear();
 
 	while (true) {
 		pros::lcd::print(3, "x = %f", universalCurrentLocation.x);
@@ -49,16 +46,19 @@ void disabled() {
  */
 void competition_initialize() {
 	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
-
 	switch (autonnumber) {
-		case 1: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 0);
+		case 1:
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {50, -36}, 253);
 			break;
 		case 2:
+			// initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 11.5}, 212);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
 			break;
-		case 3:
+		case -1:
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {43, -39}, 252);
 			break;
-		case 4:
+		case -2: 
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
 			break;
 	}
 }
@@ -91,10 +91,13 @@ void autonomous() {
 	Intake.tare_position();
 
 	Arm.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	Arm.tare_position();
 
 	Kalman1.startFilter();
 	Kalman2.startFilter();
+
+
 
 	
 	
@@ -144,6 +147,7 @@ switch (autonnumber) {
  */
 
 void opcontrol() {
+
 	if (coordinateUpdater_task_ptr != NULL) {
 		coordinateUpdater_task_ptr->remove();
 	}
@@ -159,8 +163,6 @@ void opcontrol() {
 	AllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
 
-	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
 
 	// starts the redirect and eject as side tasks
 	pros::Task redirectOn(redirect);
@@ -168,7 +170,7 @@ void opcontrol() {
 
 	while (true) {
 //Master.print(0, 0, "x = %f", universalCurrentLocation.x);
-Master.print(1, 0, "y = %f", universalCurrentLocation.y);
+//Master.print(1, 0, "y = %f", universalCurrentLocation.y);
 	//Drivetrain
     	drvtrFB = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     	drvtrLR = Master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
@@ -183,9 +185,7 @@ Master.print(1, 0, "y = %f", universalCurrentLocation.y);
     	}  
 
 	// Intake Conveyor (Transport) and Input
-		if (Master.get_digital(DIGITAL_RIGHT)){
-			Intake.move(-128);
-		} else if(Master.get_digital(DIGITAL_DOWN)){
+		if(Master.get_digital(DIGITAL_DOWN)){
 			Intake.move(128);
 		}
 
@@ -221,7 +221,6 @@ Master.print(1, 0, "y = %f", universalCurrentLocation.y);
 			Arm.brake();
 		}
 
-// hi :)
 	//Mobile Goal Manipulator
 		// ↓↓ Pressing the R1 Button toggles between modes
 		if(Master.get_digital(DIGITAL_R1)){

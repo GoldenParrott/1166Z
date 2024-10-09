@@ -15,7 +15,7 @@
     pros::Motor BackRight(19, pros::E_MOTOR_GEAR_600, 1);
     pros::Motor_Group RightWheels({FrontRight, MidRight, BackRight});
 
-    pros::Motor_Group AllWheels({FrontLeft, MidLeft, BackLeft, FrontRight, MidRight, BackRight});
+    pros::Motor_Group AllWheels({FrontLeft, FrontRight, BackLeft, BackRight, MidLeft, MidRight});
 
     pros::Motor InputMotor(11, pros::E_MOTOR_GEAR_200, 0);
     pros::Motor Transport(3, pros::E_MOTOR_GEAR_200, 1);
@@ -65,9 +65,7 @@ int drvtrLR;
 
 bool toggleColorSensor = false;
 int colorDelay = 0;
-
-bool redirectOn = false;
-int redirectStartPoint = 0;
+bool ejectIsEjecting = false;
 
 bool presettingA = false;
 bool presettingX = false;

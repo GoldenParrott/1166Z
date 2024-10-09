@@ -311,7 +311,8 @@
     "upload_options": {
       "after": "screen",
       "slot": 1,
-      "icon": "pros"
+      "icon": "pros",
+      "description": ":D"
     },
     "use_early_access": true
   }

@@ -69,9 +69,7 @@ extern int drvtrLR;
 
 extern bool toggleColorSensor;
 extern int colorDelay;
-
-extern bool redirectOn;
-extern int redirectStartPoint;
+extern bool ejectIsEjecting;
 
 extern bool presettingA;
 extern bool presettingX;

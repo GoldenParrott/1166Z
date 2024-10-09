@@ -133,7 +133,5 @@ double findHeadingOfLine(
         heading = triangleAngle + 270;
     }
 
-    Master.print(0, 0, "h = %f", heading);
-
     return heading;
 }

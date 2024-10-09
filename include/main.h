@@ -114,6 +114,7 @@ void autonSwitcher(void);
 // sidetasks.cpp
 void redirect(void);
 void eject(void);
+void autoEject(void);
 
 // draw.cpp
 void drawBlueMogo(void);
