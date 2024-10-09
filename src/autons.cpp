@@ -164,15 +164,16 @@ void redRingside() {
 	pros::delay(500);
 	InputMotor.move(128);
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-12, 72}), 1);
-	PIDMover({-54.75, -0.8}, true);
+	PIDMover({-54.75, 0}, true);
 
 	// turns to face the intake to the Alliance Stake and moves to it, then scores on it
-	PIDTurner(86, 2);
-	AllWheels.move_relative(-365, 100);
+	PIDTurner(90,2);
+	AllWheels.move_relative(-200,100);
 	pros::delay(500);
-	Transport.move_velocity(-200);
-	pros::delay(400);
+	Transport.move(-128);
+	pros::delay(500);
 	Transport.brake();
+
 
 	// moves forward from the Alliance Stake
 	auto posFN = []() {return (BackRight.get_position() + BackLeft.get_position() + FrontRight.get_position() + FrontLeft.get_position()) / 4;};
@@ -181,10 +182,10 @@ void redRingside() {
 	waitUntil(posFN() >= initialPos + 360);
 	
 	// moves to MoGo
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-70.25, -13.25}), 2);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-70.25, -15.25}), 2);
 	PIDMover({-28, 21.75}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
-	Arm.move_relative(-200, 200);
-	PIDMover({-20.5, 27.25}, true, {gripMoGoM}, {5});
+	Arm.move_relative(-160, 200);
+	PIDMover({-20.5, 27.25}, true, {gripMoGoM}, {6});
 
 	// turns to, moves to, and intakes Rings in middle of quadrant
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-24, 40}), 2);
@@ -194,8 +195,38 @@ void redRingside() {
 	// turns to, moves to, and touches Ladder
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-11.75, 8.5}), 2);
 	InputMotor.brake();
-	PIDMover({-11.75, 8.5});
+	PIDMover({-13, 12});
+	
 }
+
+
+void autoTest()
+{
+	//setup
+	// raises the arm and startes the intake moving and props up the input.
+	Arm.move_relative(180, 200);
+	InputMotor.move(-128);
+	InputPiston.set_value(true);
+	pros::delay(250);
+
+	// moves tword the stack of rings 
+	PIDMover({-24,-48});
+
+	// lowers the input and grabs the top ring
+	InputPiston.set_value(false);
+	pros::delay(250);
+	Transport.move_relative(-300,200);
+
+	//moves back and turns
+	PIDMover({-48,-48},true);
+	PIDTurner(5, 1 );
+	AllWheels.move_relative(-365, 100);
+	pros::delay(500);
+	Transport.move(-128);
+	pros::delay(400);
+	Transport.brake();
+
+;}
 
 void autonSwitcher(){
 

@@ -15,7 +15,7 @@ void initialize() {
 	colorSense.set_led_pwm(100);
 	Rotational.set_position(0);
 	RotationalTurn.set_position(0);
-
+	Arm.set_brake_mode(MOTOR_BRAKE_HOLD);
 }
 
 /**
@@ -60,6 +60,8 @@ void competition_initialize() {
 		case -2: 
 			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
 			break;
+		case 5:
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
 	}
 }
 
@@ -116,6 +118,8 @@ switch (autonnumber) {
 	case -2:
 		redRingside();
 		break;
+	case 5:
+		autoTest();
 
 }
 
@@ -151,7 +155,7 @@ void opcontrol() {
 	if (coordinateUpdater_task_ptr != NULL) {
 		coordinateUpdater_task_ptr->remove();
 	}
-
+	ArmPiston.set_value(true);
 	// ends the Kalman Filters from autonomous
 	Kalman1.endFilter();
 	Kalman2.endFilter();

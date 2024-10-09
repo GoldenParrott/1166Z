@@ -110,6 +110,7 @@ void blueRingside(void);
 void redGoalside(void);
 void redRingside(void);
 void autonSwitcher(void);
+void autoTest(void);
 
 // sidetasks.cpp
 void redirect(void);
@@ -117,11 +118,6 @@ void eject(void);
 void autoEject(void);
 
 // draw.cpp
-void drawBlueMogo(void);
-void drawRedMogo(void);
-void drawBlueRing(void);
-void drawRedRing(void);
-void drawLogo(void);
 
 // kalman.cpp
 #ifdef __cplusplus

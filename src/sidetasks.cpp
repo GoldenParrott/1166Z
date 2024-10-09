@@ -28,14 +28,18 @@ void redirect() {
 				}
 			}
 			// case 2: redirect is not on, but the distance sensor is at the proper distance
-			else if (Distance.get() < 100) {
+			else if (Distance.get() < 200) {
 				// in this case, the redirect is started and the starting point is stored for later
 				Intake.brake();
-				pros::delay(250);
+				pros::delay(350);
 				Intake.move(128);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();
 			}
+			/*else if()
+			{
+
+			}*/
 			// case 3: if the redirect is not on and should not be on, 
 			//		   then L2 moves the robot forward as normal
 			else {
@@ -53,17 +57,17 @@ void eject() {
 	bool ejectOn = false;
 	int ejectStartPoint = 0;
 	int ejectColor = 1;
-	Master.print(0,0,"Eject Red",NULL);
+	Master.print(0,0,"Scoring Blue",NULL);
 	while (true) {
 		// distance sensor (eject)
 		// Changes the eject to be for the opposite color when the button is pressed
 		if (Master.get_digital_new_press(DIGITAL_LEFT)){
 			if(ejectColor == 1){
 				ejectColor = 2;
-				Master.print(0,0,"Eject Blue ",NULL);
+				Master.print(0,0,"Scoring Red ",NULL);
 			}else if(ejectColor == 2){
 				ejectColor = 1;
-				Master.print(0,0,"Eject Red ",NULL);
+				Master.print(0,0,"Scoring Blue ",NULL);
 			}
 		}
 		// handles the cases for if the eject is in the enabled state
