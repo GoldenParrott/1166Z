@@ -58,7 +58,7 @@ void competition_initialize() {
 			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {43, -39}, 252);
 			break;
 		case -2: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55.375, 13}, 148);
+			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
 			break;
 	}
 }
@@ -91,12 +91,13 @@ void autonomous() {
 	Intake.tare_position();
 
 	Arm.set_encoder_units(MOTOR_ENCODER_DEGREES);
+	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	Arm.tare_position();
 
 	Kalman1.startFilter();
 	Kalman2.startFilter();
 
-	pros::Task autoEjectOn(autoEject);
+
 
 	
 	
@@ -146,11 +147,11 @@ switch (autonnumber) {
  */
 
 void opcontrol() {
-/*
+
 	if (coordinateUpdater_task_ptr != NULL) {
 		coordinateUpdater_task_ptr->remove();
 	}
-*/
+
 	// ends the Kalman Filters from autonomous
 	Kalman1.endFilter();
 	Kalman2.endFilter();
@@ -161,8 +162,6 @@ void opcontrol() {
 	AllWheels.move_velocity(1000);
 	AllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
-
-	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
 
 	// starts the redirect and eject as side tasks

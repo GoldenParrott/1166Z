@@ -70,7 +70,6 @@ extern int drvtrLR;
 extern bool toggleColorSensor;
 extern int colorDelay;
 extern bool ejectIsEjecting;
-extern int intakePower;
 
 extern bool presettingA;
 extern bool presettingX;

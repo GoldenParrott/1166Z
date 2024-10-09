@@ -167,11 +167,12 @@ void unjam() {
 
 			}
 
-		}else{
-			// No problems, continue moving
-			Transport.move(intakePower);
 		}
-
-		pros::delay(50);
+		else {
+			// No problems, continue moving
+			Transport.move(128);
+		}
 	}
+
+	pros::delay(50);
 }

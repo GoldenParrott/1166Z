@@ -2,8 +2,9 @@
 
 void blueRingside() {
 
-	PIDMover({-20, -48}, false);
-
+	Transport.move(-128);
+pros::delay(400);
+	Transport.brake();
 
 /*
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
@@ -149,7 +150,7 @@ void redRingside() {
 	Arm.move_relative(180, 200);
 	InputPiston.set_value(true);
 	pros::delay(100);
-	AllWheels.move_relative(200, 100);
+	AllWheels.move_relative(230, 100);
 	pros::delay(400);
 
 	// picks up the first Ring
@@ -157,28 +158,33 @@ void redRingside() {
 	InputPiston.set_value(false);
 	pros::delay(600);
 	InputMotor.brake();
-	Transport.move_relative(-180, 200);
+	Transport.move_relative(-210, 200);
 
 	// turns to the Rings next to the Alliance Stake and moves to them
-	pros::delay(200);
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57.25, 0}), 2);
-	PIDMover({-57.25, 0});
+	pros::delay(500);
+	InputMotor.move(128);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-12, 72}), 1);
+	PIDMover({-54.75, -0.8}, true);
 
 	// turns to face the intake to the Alliance Stake and moves to it, then scores on it
-	PIDTurner(92, 1);
+	PIDTurner(86, 2);
 	AllWheels.move_relative(-365, 100);
 	pros::delay(500);
-	Transport.move_relative(-285, 200);
-	pros::delay(500);
+	Transport.move_velocity(-200);
+	pros::delay(400);
+	Transport.brake();
 
 	// moves forward from the Alliance Stake
-	PIDMover({-53.75, 0});
+	auto posFN = []() {return (BackRight.get_position() + BackLeft.get_position() + FrontRight.get_position() + FrontLeft.get_position()) / 4;};
+	double initialPos = posFN();
+	AllWheels.move_relative(360, 200);
+	waitUntil(posFN() >= initialPos + 360);
 	
 	// moves to MoGo
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-70.25, -13.25}), 2);
 	PIDMover({-28, 21.75}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
 	Arm.move_relative(-200, 200);
-	//PIDMover({-20.5, 27.25}, true, {gripMoGoM}, {5});
+	PIDMover({-20.5, 27.25}, true, {gripMoGoM}, {5});
 
 	// turns to, moves to, and intakes Rings in middle of quadrant
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-24, 40}), 2);

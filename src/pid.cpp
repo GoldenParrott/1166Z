@@ -16,7 +16,7 @@ void PIDMover(
 	// General Variables
 	double power = 0;
 
-	double tolerance = 0.75;
+	double tolerance = 1;
 	std::vector<bool> customsCompleted(customs.size(), false);
 	bool actionCompleted = false;
 	int cyclesAtGoal = 0;
@@ -24,9 +24,9 @@ void PIDMover(
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 5.2; // 4
+	moverConstants.kP = 4.9; // 4
 	moverConstants.kI = 0.07; // 0.1
-	moverConstants.kD = 0.9; // 2.7
+	moverConstants.kD = 1; // 2.7
 
 	
 
@@ -61,12 +61,12 @@ void PIDMover(
 
 	// gets the power for the current cycle
 	cycle = PIDCalc(currentDistanceMovedByWheel, setPoint, isPositive, moverConstants, cycle);
-
+/*
 	// checks to see if the robot has been flipping between directions and stops in the exit condition if it is
 	if ((power > 0 && cycle.power < 0) || (power < 0 && cycle.power > 0)) {
 		cyclesFlipping++;
 	}
-
+*/
 	power = cycle.power;
 
 	// finds if the robot has passed the perpendicular line's inequality or not
@@ -140,10 +140,11 @@ void PIDMover(
 			}
 		
 		// checks to see if the robot has been flipping back and forth in direction at the exit location and stops it if id does
-		   if (cyclesFlipping >= 5) {
+		/*   if (cyclesFlipping >= 5) {
 				actionCompleted = true;
 				AllWheels.brake();
 		   }
+		*/
 		
 	}
 
