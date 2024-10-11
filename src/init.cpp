@@ -5,23 +5,23 @@
 
 //Motors
 
-    pros::Motor FrontLeft(6, pros::E_MOTOR_GEAR_600, 1);
-    pros::Motor MidLeft(4, pros::E_MOTOR_GEAR_600, 1);
+    pros::Motor FrontLeft(7, pros::E_MOTOR_GEAR_600, 1);
+    pros::Motor MidLeft(5, pros::E_MOTOR_GEAR_600, 1);
     pros::Motor BackLeft(2, pros::E_MOTOR_GEAR_600, 0);
     pros::Motor_Group LeftWheels({FrontLeft, MidLeft, BackLeft});
 
-    pros::Motor FrontRight(7, pros::E_MOTOR_GEAR_600, 0);
+    pros::Motor FrontRight(8, pros::E_MOTOR_GEAR_600, 0);
     pros::Motor MidRight(14, pros::E_MOTOR_GEAR_600, 0);
-    pros::Motor BackRight(19, pros::E_MOTOR_GEAR_600, 1);
+    pros::Motor BackRight(15, pros::E_MOTOR_GEAR_600, 1);
     pros::Motor_Group RightWheels({FrontRight, MidRight, BackRight});
 
     pros::Motor_Group AllWheels({FrontLeft, FrontRight, BackLeft, BackRight, MidLeft, MidRight});
 
     pros::Motor InputMotor(11, pros::E_MOTOR_GEAR_200, 0);
-    pros::Motor Transport(3, pros::E_MOTOR_GEAR_200, 1);
+    pros::Motor Transport(4, pros::E_MOTOR_GEAR_200, 1);
     pros::Motor_Group Intake({InputMotor, Transport});
 
-    pros::Motor Arm(17, pros::E_MOTOR_GEAR_200, 1);
+    pros::Motor Arm(13, pros::E_MOTOR_GEAR_200, 1);
 
 /*
 ABCDEFGH
@@ -44,14 +44,14 @@ Pnuematics
 // Sensors
 
     pros::Optical colorSense(1);
-    pros::Distance Distance(18);
+    pros::Distance Distance(19);
 
     pros::Rotation Rotational(12);
     pros::Rotation RotationalTurn(20);
 
-    pros::IMU Inertial1(5);
+    pros::IMU Inertial1(6);
     KalmanFilter Kalman1 = KalmanFilter(&Inertial1, &RotationalTurn);
-    pros::IMU Inertial2(8);
+    pros::IMU Inertial2(9);
     KalmanFilter Kalman2 = KalmanFilter(&Inertial2, &RotationalTurn);
 
 //Variables
