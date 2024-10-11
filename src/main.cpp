@@ -8,7 +8,8 @@
  */
 void initialize() {
 
-	autonnumber = -2;
+	autonnumber = 1;
+	globalAuton = false;
 
 	pros::lcd::initialize();
 
@@ -25,7 +26,6 @@ void initialize() {
  */
 void disabled() {
 
-	MobileGoalManipulator.set_value(false);
 	Grabber.set_value(false);
 
 
@@ -46,23 +46,36 @@ void disabled() {
  */
 void competition_initialize() {
 	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
-	switch (autonnumber) {
-		case 1:
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {50, -36}, 253);
-			break;
-		case 2:
-			// initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 11.5}, 212);
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
-			break;
-		case -1:
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {43, -39}, 252);
-			break;
-		case -2: 
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
-			break;
-		case 5:
-			initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
+	if (globalAuton == true) {
+		switch (autonnumber) {
+			case 1:
+				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
+				break;
+			case 2:
+				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {55.75, 11}, 212);
+				break;
+			case -1:
+				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {55.75, 11}, 212);
+				break;
+			case -2: 
+				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
+				break;
+			case 3:
+			case -3:
+				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
+				break;
+		}
+	} else {
+		switch (autonnumber) {
+			case 1:
+				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {49.5, -37.25}, 251);
+				break;
+			case -1:
+				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {43, -39}, 252);
+				break;
+		}
 	}
+
 }
 
 /**
@@ -99,29 +112,41 @@ void autonomous() {
 	Kalman1.startFilter();
 	Kalman2.startFilter();
 
+	pros::Task* autoEjecter_task_ptr = new pros::Task(autoEject);
 
-
-	
 	
 	// drawLogo();
 
-switch (autonnumber) {
-	case 1:
-		blueGoalside();
-		break;
-	case 2:
-		blueRingside();
-		break;
-	case -1:
-		redGoalside();
-		break;
-	case -2:
-		redRingside();
-		break;
-	case 5:
-		autoTest();
 
-}
+	if (globalAuton == true) {
+		switch (autonnumber) {
+			case 1:
+				globalBlueGoal();
+				break;
+			case 2:
+				globalBlueRing();
+				break;
+			case -1:
+				globalRedGoal();
+				break;
+			case -2:
+				globalRedRing();
+				break;
+		}
+	} else {
+		switch (autonnumber) {
+			case 1:
+				blueGoalside();
+				break;
+			case -1:
+				redGoalside();
+				break;
+			case 3:
+			case -3:
+				autoTest();
+				break;
+		}
+	}
 
 	// ending commands
 	Master.print(2, 0, "Done");
@@ -151,7 +176,7 @@ switch (autonnumber) {
  */
 
 void opcontrol() {
-
+Master.rumble(new char('-'));
 	if (coordinateUpdater_task_ptr != NULL) {
 		coordinateUpdater_task_ptr->remove();
 	}

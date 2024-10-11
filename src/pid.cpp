@@ -5,7 +5,7 @@ void PIDMover(
 		bool reverse, // defaults to false- explicitly set to true to reverse the robot
 
 		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
-		std::vector<int> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
+		std::vector<double> executeAts // the distance point (in inches) that you want to trigger the custom lambda function at (optional)
 		)
 {
 

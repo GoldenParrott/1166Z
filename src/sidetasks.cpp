@@ -9,6 +9,7 @@ void redirect() {
     // distance sensor (redirect)
 
 		int varSpeed = 128;
+		int slowdown = 2;
 		// handles the cases for if R2 is being held down
 		if (Master.get_digital(DIGITAL_R2)) {
 			// case 1: redirect is currently on
@@ -31,16 +32,23 @@ void redirect() {
 			else if (Distance.get() < 200) {
 				// in this case, the redirect is started and the starting point is stored for later
 				Intake.brake();
-				pros::delay(350);
+				pros::delay(330);
 				Intake.move(128);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();
 			}
-			/*else if()
+			// case 3: color sensor sees Ring, making it slow down more and more as the robot progresses
+			/*
+			else if (
+					(colorSense.get_hue() > 180) || // blue
+					(colorSense.get_hue() < 25) && (colorSense.get_hue() > 10)  // red
+					)
 			{
-
-			}*/
-			// case 3: if the redirect is not on and should not be on, 
+				Intake.move(-128 + slowdown);
+				slowdown = std::pow(slowdown, 2);
+			}
+			*/
+			// case 4: if the redirect is not on and should not be on, 
 			//		   then L2 moves the robot forward as normal
 			else {
 				Intake.move(-128);
@@ -132,7 +140,7 @@ void autoEject() {
 				if (abs(Transport.get_position() - ejectStartPoint) >= 200) {
 					ejectOn = false;
 					ejectStartPoint = 0;
-					Transport.brake();
+					Intake.move(-128);
 				// case 1b: if case 1a is not true, then continue moving the intake down
 				} else {
 					Intake.move(128);
@@ -146,7 +154,7 @@ void autoEject() {
 					)
 			{
 				// in this case, the redirect is started and the starting point is stored for later
-				pros::delay(75); // the robot waits for the Ring to reach the proper point before starting the eject
+				pros::delay(60); // the robot waits for the Ring to reach the proper point before starting the eject
 				Intake.move(128);
 				ejectOn = true;
 				ejectStartPoint = Transport.get_position();

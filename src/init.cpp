@@ -56,6 +56,7 @@ Pnuematics
 
 //Variables
 int autonnumber;
+int globalAuton;
 int logoCount = 0;
 
 int drvtrDZ = 10;

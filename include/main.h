@@ -98,19 +98,23 @@ void armraiser(void);
 void opcontrol(void);
 
 // pid.cpp
-void PIDMover(Coordinate goalPosition, bool reverse = false,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
+void PIDMover(Coordinate goalPosition, bool reverse = false,                 std::vector<std::function<void(void)>> custom = {}, std::vector<double> executeAts = {});
 void PIDTurner(int setPoint, int direction,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 void PIDArc(int chordLength, int maxDist, int direction,                std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
 
 PIDReturn PIDCalc(double distanceMoved, double setPoint, bool isPositive, ConstantContainer constants, PIDReturn lastCycle);
 
 // autons.cpp
-void blueGoalside(void);
-void blueRingside(void);
+// global autons
+void globalBlueGoal(void);
+void globalBlueRing(void);
+void globalRedGoal(void);
+void globalRedRing(void);
+// specific autons
 void redGoalside(void);
-void redRingside(void);
-void autonSwitcher(void);
+void blueGoalside(void);
 void autoTest(void);
+void autonSwitcher(void);
 
 // sidetasks.cpp
 void redirect(void);

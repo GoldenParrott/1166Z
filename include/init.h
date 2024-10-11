@@ -60,6 +60,7 @@ Pnuematics
 
 // Variables
 extern int autonnumber;
+extern int globalAuton;
 extern int logoCount;
 
 extern int drvtrDZ;
