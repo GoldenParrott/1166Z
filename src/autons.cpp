@@ -238,20 +238,69 @@ void redGoalside() {
 
 	// mid-PID actions
 	auto triggerGrabber = []() {Grabber.set_value(true);};
-	auto moveTransportIn = []() {Transport.move_relative(-540, 200);};
+	auto untriggerGrabber = []() {Grabber.set_value(false);};
+	auto moveTransportIn = []() {Transport.move_relative(-200, 100);};
+	auto raiseArm = []() {Arm.move_relative(380, 100);};
+	auto grabMoGo = []() {MobileGoalManipulator.set_value(true);};
+	auto dropMoGo = []() {MobileGoalManipulator.set_value(false);};
+	auto stopIntake = []() {Intake.brake();};
 
+	// Moves to the middle MoGo and intakes the Ring along the way (with time cutoff)
 	InputMotor.move(-128);
-
-	pros::Task toMoGo = pros::Task([triggerGrabber] () {PIDMover({10, -49.5}, false, {triggerGrabber}, {27});});
-	pros::delay(1250);
+	pros::Task toMoGo = pros::Task([raiseArm, moveTransportIn] () {PIDMover({-17.375, -48.125}, false, {raiseArm, moveTransportIn}, {1, 33});});
+	pros::delay(950);
 	toMoGo.remove();
 	AllWheels.brake();
+	Grabber.set_value(true);
+	pros::delay(200);
 
-	moveTransportIn();
+	// intakes the first Ring into the robot, moves backward with the MoGo yoinked, then ungrabs the MoGo
+	auto posFN = []() {return (BackRight.get_position() + BackLeft.get_position() + FrontRight.get_position() + FrontLeft.get_position()) / 4;};
+	double initialPos = posFN();
+	AllWheels.move_relative(-750, 200);
+	waitUntil(posFN() <= initialPos - 750);
+	Grabber.set_value(false);
 
-	PIDMover({21.5, -48.375}, true);
+	// lowers the arm a little, turns around, and grips the MoGo (with time cutoff)
+	pros::delay(125);
+	PIDTurner(271, 2);
+	toMoGo = pros::Task([raiseArm, moveTransportIn] () {PIDMover({-19, -42.75}, true);});
+	pros::delay(800);
+	toMoGo.remove();
+	AllWheels.brake();
+	MobileGoalManipulator.set_value(true);
 
-	//PIDTurner(198, 1);
+	// scores the first Ring on the MoGo, then drops it
+	pros::delay(300);
+	Transport.move_relative(-300, 200);
+	pros::delay(500);
+	Transport.brake();
+	MobileGoalManipulator.set_value(false);
+
+	// turns around, then moves to the other MoGo and grabs it
+	PIDTurner(167, 2);
+	PIDMover({-24, -31}, true);
+	MobileGoalManipulator.set_value(true);
+
+	// starts intaking and moves to the Corner
+	Intake.move(-128);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-69.5, -72}), 1);
+	PIDMover({-53.5, -56}, false);
+
+	// moves back and forth in the corner to get the bottom Ring
+	Intake.move(-128);
+	// move in
+	AllWheels.move_relative(550, 100);
+	pros::delay(800);
+	// back up
+	AllWheels.move(-100);
+	pros::delay(300);
+	AllWheels.brake();
+
+	// turns to and moves to the Ladder
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {0, 0}), 2);
+	Arm.move_relative(-380, 200);
+	PIDMover({-13.75, -14.25});
 
 }
 
@@ -312,7 +361,7 @@ void blueGoalside() {
 	// moves back and forth in the corner to get the bottom Ring
 	Intake.move(-128);
 	// move in
-	AllWheels.move_relative(480,100);
+	AllWheels.move_relative(550, 100);
 	pros::delay(800);
 	// back up
 	AllWheels.move(-100);
