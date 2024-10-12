@@ -42,6 +42,8 @@ void disabled() {
  */
 void competition_initialize() {
 
+	pros::Task autonsel(autonSelect);
+
 	if (globalAuton == true) {
 		switch (autonnumber) {
 			case 1: //Blue Mogo
@@ -112,7 +114,7 @@ void autonomous() {
 
 
 
-	// AUTONS NEED TO BE -4 THROUGH 4
+	
  
 	if (globalAuton == true) {
 		switch (autonnumber) {

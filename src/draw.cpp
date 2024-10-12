@@ -103,5 +103,6 @@ void autonSelect(){
 		// Used when bottom right of the field is pressed 
 			autonnumber = 2;
 		}
+        pros::delay(10);
     }
 }
