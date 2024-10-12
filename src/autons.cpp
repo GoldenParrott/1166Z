@@ -143,10 +143,10 @@ void globalRedGoal() {
 
 	// turns to face the intake to the Alliance Stake and moves to it, then scores on it
 	PIDTurner(270, 1);
-	AllWheels.move_relative(-200,100);
-	pros::delay(500);
+	AllWheels.move_relative(-350,100);
+	pros::delay(550);
 	Transport.move(-128);
-	pros::delay(250);
+	pros::delay(240);
 	Transport.brake();
 
 
@@ -168,7 +168,7 @@ void globalRedGoal() {
 	PIDMover({24, 40});
 
 	// turns to, moves to, and touches Ladder
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {15, 11}), 1);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {18, 11}), 1);
 	InputMotor.brake();
 	Transport.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	PIDMover({14, 13});

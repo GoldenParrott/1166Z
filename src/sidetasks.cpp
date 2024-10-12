@@ -32,7 +32,7 @@ void redirect() {
 			else if (Distance.get() < 200) {
 				// in this case, the redirect is started and the starting point is stored for later
 				Intake.brake();
-				pros::delay(330);
+				pros::delay(310);
 				Intake.move(128);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();
