@@ -60,7 +60,7 @@ Pnuematics
 
 // Variables
 extern int autonnumber;
-extern int globalAuton;
+extern bool globalAuton;
 extern int logoCount;
 
 extern int drvtrDZ;
@@ -77,5 +77,7 @@ extern bool presettingX;
 
 // declared in initialize(), not init.cpp
 extern Coordinate universalCurrentLocation;
+
+extern pros::screen_touch_status_s_t status;
 
 #endif

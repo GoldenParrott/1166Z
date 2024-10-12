@@ -7,10 +7,6 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-
-	autonnumber = 1;
-	globalAuton = false;
-
 	pros::lcd::initialize();
 
 	colorSense.set_led_pwm(100);
@@ -45,32 +41,32 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
+
 	if (globalAuton == true) {
 		switch (autonnumber) {
-			case 1:
+			case 1: //Blue Mogo
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
 				break;
-			case 2:
+			case 2: //Blue Ring
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {55.75, 11}, 212);
 				break;
-			case -1:
+			case -1: //Red Mogo
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {55.75, 11}, 212);
 				break;
-			case -2: 
+			case -2: //Red Ring
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
 				break;
 			case 3:
-			case -3:
+			case -3: //Test (?)
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
 				break;
 		}
 	} else {
 		switch (autonnumber) {
-			case 1:
+			case 1://Blue Mogo
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {50, -36}, 251);
 				break;
-			case -1:
+			case -1://Red Mogo
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {43, -39}, 252);
 				break;
 		}
@@ -114,10 +110,10 @@ void autonomous() {
 
 	pros::Task* autoEjecter_task_ptr = new pros::Task(autoEject);
 
-	
-	// drawLogo();
 
 
+	// AUTONS NEED TO BE -4 THROUGH 4
+ 
 	if (globalAuton == true) {
 		switch (autonnumber) {
 			case 1:
@@ -196,6 +192,8 @@ Master.rumble(new char('-'));
 	// starts the redirect and eject as side tasks
 	pros::Task redirectOn(redirect);
 	pros::Task ejectOn(eject);
+
+	autonSelect();
 
 	while (true) {
 //Master.print(0, 0, "x = %f", universalCurrentLocation.x);
@@ -318,6 +316,6 @@ Master.rumble(new char('-'));
 		}
 
 	// end-of-cycle delay
-	pros::delay(20);
+	pros::delay(10);
 	}
 }
