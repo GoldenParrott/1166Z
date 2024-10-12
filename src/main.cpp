@@ -45,10 +45,12 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-	pros::screen::touch_callback(autonSwitcher, TOUCH_PRESSED);
+
+	pros::Task autonsel(autonSelect);
+
 	if (globalAuton == true) {
 		switch (autonnumber) {
-			case 1:
+			case 1: //Blue Mogo
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
 				break;
 			case 2:
@@ -57,17 +59,17 @@ void competition_initialize() {
 			case -1:
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 13.125}, 208);
 				break;
-			case -2: 
+			case -2: //Red Ring
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
 				break;
 			case 3:
-			case -3:
+			case -3: //Test (?)
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
 				break;
 		}
 	} else {
 		switch (autonnumber) {
-			case 1:
+			case 1://Blue Mogo
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {50, -36}, 251);
 				break;
 			case -1:
@@ -114,10 +116,10 @@ void autonomous() {
 
 	pros::Task* autoEjecter_task_ptr = new pros::Task(autoEject);
 
+
+
 	
-	// drawLogo();
-
-
+ 
 	if (globalAuton == true) {
 		switch (autonnumber) {
 			case 1:
@@ -196,6 +198,8 @@ Master.rumble(new char('-'));
 	// starts the redirect and eject as side tasks
 	pros::Task redirectOn(redirect);
 	pros::Task ejectOn(eject);
+
+	autonSelect();
 
 	while (true) {
 //Master.print(0, 0, "x = %f", universalCurrentLocation.x);
@@ -318,6 +322,6 @@ Master.rumble(new char('-'));
 		}
 
 	// end-of-cycle delay
-	pros::delay(20);
+	pros::delay(10);
 	}
 }

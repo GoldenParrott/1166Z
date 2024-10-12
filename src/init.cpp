@@ -55,8 +55,8 @@ Pnuematics
     KalmanFilter Kalman2 = KalmanFilter(&Inertial2, &RotationalTurn);
 
 //Variables
-int autonnumber;
-bool globalAuton;
+int autonnumber = 0;
+bool globalAuton = false;
 int logoCount = 0;
 
 int drvtrDZ = 10;
@@ -72,3 +72,5 @@ bool presettingA = false;
 bool presettingX = false;
 
 Coordinate universalCurrentLocation = {0, 0};
+
+pros::screen_touch_status_s_t status;

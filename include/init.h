@@ -78,4 +78,6 @@ extern bool presettingX;
 // declared in initialize(), not init.cpp
 extern Coordinate universalCurrentLocation;
 
+extern pros::screen_touch_status_s_t status;
+
 #endif

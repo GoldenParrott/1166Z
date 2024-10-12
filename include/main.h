@@ -122,6 +122,7 @@ void eject(void);
 void autoEject(void);
 
 // draw.cpp
+void autonSelect(void);
 
 // kalman.cpp
 #ifdef __cplusplus
