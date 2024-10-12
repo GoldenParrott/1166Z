@@ -3,6 +3,7 @@
 void globalBlueRing() {
 
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
+	auto stopTransport = []() {Transport.brake();};
 
 	// starts the autonomous by raising the arm and moving to the first Ring
 	Arm.move_relative(180, 200);
@@ -16,18 +17,18 @@ void globalBlueRing() {
 	InputPiston.set_value(false);
 	pros::delay(600);
 	InputMotor.brake();
-	Transport.move_relative(-220, 200);
+	Transport.move_relative(-210, 200);
 
 	// turns to the Rings next to the Alliance Stake and moves to them
 	pros::delay(500);
 	InputMotor.move(128);
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {12, 72}), 2);
-	PIDMover({54.25, 0}, true);
+	PIDMover({54.25, 0.75}, true);
 
 	// turns to face the intake to the Alliance Stake and moves to it, then scores on it
 	PIDTurner(270, 1);
-	AllWheels.move_relative(-200,100);
-	pros::delay(500);
+	AllWheels.move_relative(-250,100);
+	pros::delay(552);
 	Transport.move(-128);
 	pros::delay(250);
 	Transport.brake();
@@ -40,8 +41,8 @@ void globalBlueRing() {
 	waitUntil(posFN() >= initialPos + 320);
 	
 	// moves to MoGo
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {71.5, -24}), 1);
-	PIDMover({31, 18.25}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
+	PIDTurner((findHeadingOfLine(universalCurrentLocation, {38, 24}) - 180), 1);
+	PIDMover({32, 17.25}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
 	Arm.move_relative(-160, 200);
 	PIDMover({21, 27.75}, true, {gripMoGoM}, {5.75});
 
@@ -51,10 +52,10 @@ void globalBlueRing() {
 	PIDMover({24, 40});
 
 	// turns to, moves to, and touches Ladder
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {15, 11}), 1);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {18, 11}), 1);
 	InputMotor.brake();
 	Transport.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	PIDMover({14, 13});
+	PIDMover({14, 13}, false, {stopTransport}, {36});
 
 }
 
@@ -120,6 +121,7 @@ void globalBlueGoal() {
 void globalRedGoal() {
 
 	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
+	auto stopTransport = []() {Transport.brake();};
 
 	// starts the autonomous by raising the arm and moving to the first Ring
 	Arm.move_relative(180, 200);
@@ -133,20 +135,20 @@ void globalRedGoal() {
 	InputPiston.set_value(false);
 	pros::delay(600);
 	InputMotor.brake();
-	Transport.move_relative(-220, 200);
+	Transport.move_relative(-210, 200);
 
 	// turns to the Rings next to the Alliance Stake and moves to them
 	pros::delay(500);
 	InputMotor.move(128);
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {12, 72}), 2);
-	PIDMover({54.25, 0}, true);
+	PIDMover({54.25, 0.75}, true);
 
 	// turns to face the intake to the Alliance Stake and moves to it, then scores on it
 	PIDTurner(270, 1);
-	AllWheels.move_relative(-350,100);
-	pros::delay(550);
+	AllWheels.move_relative(-250,100);
+	pros::delay(552);
 	Transport.move(-128);
-	pros::delay(240);
+	pros::delay(250);
 	Transport.brake();
 
 
@@ -157,8 +159,8 @@ void globalRedGoal() {
 	waitUntil(posFN() >= initialPos + 320);
 	
 	// moves to MoGo
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {71.5, -24}), 1);
-	PIDMover({31, 18.25}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
+	PIDTurner((findHeadingOfLine(universalCurrentLocation, {38, 24}) - 180), 1);
+	PIDMover({32, 17.25}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
 	Arm.move_relative(-160, 200);
 	PIDMover({21, 27.75}, true, {gripMoGoM}, {5.75});
 
@@ -171,7 +173,7 @@ void globalRedGoal() {
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {18, 11}), 1);
 	InputMotor.brake();
 	Transport.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	PIDMover({14, 13});
+	PIDMover({14, 13}, false, {stopTransport}, {36});
 }
 
 
@@ -219,7 +221,7 @@ void globalRedRing() {
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-70.25, -15.25}), 2);
 	PIDMover({-31.5, 19.75}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
 	Arm.move_relative(-160, 200);
-	PIDMover({-20.5, 27.25}, true, {gripMoGoM}, {5.75});
+	PIDMover({-20, 30.25}, true, {gripMoGoM}, {5.75});
 
 	// turns to, moves to, and intakes Rings in middle of quadrant
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-25, 40}), 2);

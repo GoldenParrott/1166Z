@@ -8,7 +8,7 @@
  */
 void initialize() {
 
-	autonnumber = -1;
+	autonnumber = -2;
 	globalAuton = true;
 
 	pros::lcd::initialize();
@@ -52,7 +52,7 @@ void competition_initialize() {
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
 				break;
 			case 2:
-				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {55.75, 11}, 212);
+				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 13.125}, 208);
 				break;
 			case -1:
 				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 13.125}, 208);
