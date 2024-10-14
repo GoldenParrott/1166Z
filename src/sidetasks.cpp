@@ -17,22 +17,22 @@ void redirect() {
 				// case 1a: if the difference between the starting point and the current point
 				// 			is greater than 700 (meaning that it has gone all the way), 
 				//			turn off the redirect
-				if (abs(Transport.get_position() - redirectStartPoint) >= 1300) {
+				if (abs(Transport.get_position() - redirectStartPoint) >= 1400) {
 					redirectOn = false;
 					redirectStartPoint = 0;
 					Transport.brake();
 				// case 1b: if case 1a is not true, then continue moving the intake down
-				} else if (abs(Transport.get_position() - redirectStartPoint) >= 1300) {
+				} else if (abs(Transport.get_position() - redirectStartPoint) >= 1400) {
 
 				} else {
-					Intake.move(128);
+					Intake.move(64);
 				}
 			}
 			// case 2: redirect is not on, but the distance sensor is at the proper distance
 			else if (Distance.get() < 200) {
 				// in this case, the redirect is started and the starting point is stored for later
 				Intake.brake();
-				pros::delay(310);
+				pros::delay(315);
 				Intake.move(128);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();

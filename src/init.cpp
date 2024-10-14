@@ -40,6 +40,8 @@ Pnuematics
 // Tasks
 
     pros::Task* coordinateUpdater_task_ptr = NULL;
+    pros::Task* rotationalBinder_task_ptr = NULL;
+    pros::Task* autoSelector_task_ptr = NULL;
 
 // Sensors
 
@@ -56,7 +58,7 @@ Pnuematics
 
 //Variables
 int autonnumber = 0;
-bool globalAuton = false;
+bool globalAuton = true;
 int logoCount = 0;
 
 int drvtrDZ = 10;

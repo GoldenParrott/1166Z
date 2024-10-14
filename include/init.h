@@ -43,7 +43,8 @@ Pnuematics
 // Tasks
 
     extern pros::Task* coordinateUpdater_task_ptr;
-
+    extern pros::Task* rotationalBinder_task_ptr ;
+    extern pros::Task* autoSelector_task_ptr;
 
 // Sensors
 

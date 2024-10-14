@@ -8,9 +8,6 @@
  */
 void initialize() {
 
-	autonnumber = -2;
-	globalAuton = true;
-
 	pros::lcd::initialize();
 
 	colorSense.set_led_pwm(100);
@@ -46,38 +43,40 @@ void disabled() {
  */
 void competition_initialize() {
 
-	pros::Task autonsel(autonSelect);
+	autoSelector_task_ptr = new pros::Task(autonSelect);
 
-	if (globalAuton == true) {
-		switch (autonnumber) {
-			case 1: //Blue Mogo
-				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
-				break;
-			case 2:
-				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 13.125}, 208);
-				break;
-			case -1:
-				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 13.125}, 208);
-				break;
-			case -2: //Red Ring
-				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
-				break;
-			case 3:
-			case -3: //Test (?)
-				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
-				break;
-		}
-	} else {
-		switch (autonnumber) {
-			case 1://Blue Mogo
-				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {50, -36}, 251);
-				break;
-			case -1:
-				initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-49.25, -60.325}, 69);
-				break;
+	while (true) {
+		if (globalAuton == true) {
+			switch (autonnumber) {
+				case 1: //Blue Mogo
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
+					break;
+				case 2:
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 13.125}, 208);
+					break;
+				case -1:
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 13.125}, 208);
+					break;
+				case -2: //Red Ring
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
+					break;
+				case 3:
+				case -3: //Test (?)
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
+					break;
+			}
+		} else {
+			switch (autonnumber) {
+				case 1://Blue Mogo
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {50, -36}, 251);
+					break;
+				case -1:
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-49.25, -60.325}, 69);
+					break;
+			}
 		}
 	}
-
+	pros::delay(10);
 }
 
 /**
@@ -92,6 +91,10 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
+	// disables the auto selector
+	if (autoSelector_task_ptr != NULL) {
+		autoSelector_task_ptr->remove();
+	}
 
 	// starts the system that fixes the turning tracking wheel's heading
 	pros::Task updateRotational = pros::Task(bindTurnTrackingWheelHeading);
@@ -182,6 +185,10 @@ Master.rumble(new char('-'));
 	if (coordinateUpdater_task_ptr != NULL) {
 		coordinateUpdater_task_ptr->remove();
 	}
+	if (rotationalBinder_task_ptr != NULL) {
+		rotationalBinder_task_ptr->remove();
+	}
+
 	ArmPiston.set_value(true);
 	// ends the Kalman Filters from autonomous
 	Kalman1.endFilter();
@@ -198,8 +205,6 @@ Master.rumble(new char('-'));
 	// starts the redirect and eject as side tasks
 	pros::Task redirectOn(redirect);
 	pros::Task ejectOn(eject);
-
-	autonSelect();
 
 	while (true) {
 //Master.print(0, 0, "x = %f", universalCurrentLocation.x);
