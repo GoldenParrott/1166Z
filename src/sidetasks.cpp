@@ -29,7 +29,7 @@ void redirect() {
 				}
 			}
 			// case 2: redirect is not on, but the distance sensor is at the proper distance
-			else if (Distance.get() < 200) {
+			else if (Distance.get() < 75) {
 				// in this case, the redirect is started and the starting point is stored for later
 				Intake.brake();
 				pros::delay(315);
