@@ -304,9 +304,9 @@ void redGoalside() {
 	AllWheels.brake();
 
 	// turns to and moves to the Ladder
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {0, 0}), 2);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-12, 0}), 2);
 	Arm.move_relative(-380, 200);
-	PIDMover({-13.75, -14.25});
+	PIDMover({-11.75, -12.25});
 
 }
 

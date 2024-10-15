@@ -91,7 +91,7 @@ void eject() {
 					Transport.brake();
 				// case 1b: if case 1a is not true, then continue moving the intake down
 				} else {
-					Transport.move(128);
+					Intake.move(128);
 				}
 			}
 			//case 2: eject is not on, but the distance sensor is at the proper distance and the color sensor has found a correct color
@@ -109,7 +109,7 @@ void eject() {
 			// case 3: if the redirect is not on and should not be on, 
 			//		   then L2 moves the robot forward as normal
 			else {
-				Transport.move(-128);
+				Intake.move(-128);
 			}
 		pros::delay(20);
 		}
@@ -140,10 +140,10 @@ void autoEject() {
 				if (abs(Transport.get_position() - ejectStartPoint) >= 200) {
 					ejectOn = false;
 					ejectStartPoint = 0;
-					Intake.move(-128);
+					Transport.move(-128);
 				// case 1b: if case 1a is not true, then continue moving the intake down
 				} else {
-					Intake.move(128);
+					Transport.move(128);
 				}
 			}
 			// case 2: eject is not on, but the distance sensor is at the proper distance and the color sensor has found the right color
@@ -155,7 +155,7 @@ void autoEject() {
 			{
 				// in this case, the redirect is started and the starting point is stored for later
 				pros::delay(65); // the robot waits for the Ring to reach the proper point before starting the eject
-				Intake.move(128);
+				Transport.move(128);
 				ejectOn = true;
 				ejectStartPoint = Transport.get_position();
 			}
