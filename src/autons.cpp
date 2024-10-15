@@ -30,7 +30,7 @@ void globalBlueRing() {
 	AllWheels.move_relative(-250,100);
 	pros::delay(552);
 	Transport.move(-128);
-	pros::delay(250);
+	pros::delay(260);
 	Transport.brake();
 
 
@@ -89,7 +89,7 @@ void globalBlueGoal() {
 	AllWheels.move_relative(-200,100);
 	pros::delay(500);
 	Transport.move(-128);
-	pros::delay(250);
+	pros::delay(260);
 	Transport.brake();
 
 
@@ -148,7 +148,7 @@ void globalRedGoal() {
 	AllWheels.move_relative(-250,100);
 	pros::delay(552);
 	Transport.move(-128);
-	pros::delay(250);
+	pros::delay(260);
 	Transport.brake();
 
 
@@ -207,7 +207,7 @@ void globalRedRing() {
 	AllWheels.move_relative(-200,100);
 	pros::delay(500);
 	Transport.move(-128);
-	pros::delay(250);
+	pros::delay(260);
 	Transport.brake();
 
 
@@ -250,7 +250,7 @@ void redGoalside() {
 	// Moves to the middle MoGo and intakes the Ring along the way (with time cutoff)
 	InputMotor.move(-128);
 	pros::Task toMoGo = pros::Task([raiseArm, moveTransportIn] () {PIDMover({-17.375, -48.125}, false, {raiseArm, moveTransportIn}, {1, 33});});
-	pros::delay(950);
+	pros::delay(925);
 	toMoGo.remove();
 	AllWheels.brake();
 	Grabber.set_value(true);
@@ -263,11 +263,11 @@ void redGoalside() {
 	waitUntil(posFN() <= initialPos - 750);
 	Grabber.set_value(false);
 
-	// lowers the arm a little, turns around, and grips the MoGo (with time cutoff)
+	// turns around and grips the MoGo (with time cutoff)
 	pros::delay(125);
-	PIDTurner(271, 2);
-	toMoGo = pros::Task([raiseArm, moveTransportIn] () {PIDMover({-19, -42.75}, true);});
-	pros::delay(800);
+	PIDTurner(265, 1);
+	toMoGo = pros::Task([raiseArm, moveTransportIn] () {PIDMover({-21, -42.75}, true);});
+	pros::delay(575);
 	toMoGo.remove();
 	AllWheels.brake();
 	MobileGoalManipulator.set_value(true);
@@ -280,20 +280,24 @@ void redGoalside() {
 	MobileGoalManipulator.set_value(false);
 
 	// turns around, then moves to the other MoGo and grabs it
-	PIDTurner(167, 2);
-	PIDMover({-24, -31}, true);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-24, -24}) - 180, 1);
+	PIDMover({-24, -24}, true);
+	AllWheels.move(-128);
+	pros::delay(180);
 	MobileGoalManipulator.set_value(true);
+	pros::delay(20);
+	AllWheels.brake();
 
 	// starts intaking and moves to the Corner
 	Intake.move(-128);
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-69.5, -72}), 1);
-	PIDMover({-53.5, -56}, false);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-69.5, -74}), 2);
+	PIDMover({-52.5, -55}, false);
 
 	// moves back and forth in the corner to get the bottom Ring
 	Intake.move(-128);
 	// move in
 	AllWheels.move_relative(550, 100);
-	pros::delay(800);
+	pros::delay(900);
 	// back up
 	AllWheels.move(-100);
 	pros::delay(300);
