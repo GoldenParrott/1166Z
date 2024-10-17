@@ -382,6 +382,58 @@ void blueGoalside() {
 }
 
 
+void autoSkills() {
+	// sets the time from initialization that the code starts at
+	int startTime = pros::millis();
+
+	// mid-PID actions
+	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
+	
+	// scores on the Alliance Stake
+	double initialPos = Transport.get_position();
+	Transport.move_relative(-450, 200);
+	waitUntil((Transport.get_position() >= initialPos + 450) || ((pros::millis() - startTime) / 1000 >= 1));
+	Transport.move_relative(100, 200);
+	pros::delay(300);
+	
+	// moves forward from the Alliance Stake
+	auto posFN = []() {return (BackRight.get_position() + BackLeft.get_position() + FrontRight.get_position() + FrontLeft.get_position()) / 4;};
+	initialPos = posFN();
+	AllWheels.move_relative(530, 200);
+	waitUntil(posFN() >= initialPos + 530);
+
+	// turns to a MoGo and moves to it, then grabs it
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-48, 22}), 1);
+	PIDMover({-48, -22}, true, {gripMoGoM}, {22});
+
+	// turns and moves to a Ring, then grabs it
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-26, -24}), 2);
+	Intake.move(-128);
+	Arm.move_relative(300, 200);
+	PIDMover({-26, -24});
+
+	// turns and moves to the Ring on the line, then grabs it
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-6.25, -49.5}), 2);
+	PIDMover({-8, -48});
+
+	// turns and moves to the next three Rings in a line, automatically grabbing them along the way
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57, -42}), 1);
+	PIDMover({-36, -44.571});
+	PIDMover({-57, -42});
+	pros::delay(500);
+
+	// turns and moves to the final Ring in this quadrant, then grabs it automatically
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-42, -55}), 1);
+	PIDMover({-42, -55});
+
+	// turns to the Corner and places the Mobile Goal there
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-56, -57.5}) + 180, 1);
+	PIDMover({-56, -57.5}, true);
+	MobileGoalManipulator.set_value(false);
+
+}
+
+
 void autoTest()
 {
 	MobileGoalManipulator.set_value(true);
@@ -403,37 +455,4 @@ void autoTest()
 	pros::delay(600);
 	AllWheels.move_relative(-250,100);
 	pros::delay(600);
-}
-
-void autonSwitcher(){
-
-	if (autonnumber == -1){
-		autonnumber = 1;
-	}else if(autonnumber == 1){
-		autonnumber = -2;
-	}else if(autonnumber == -2){
-		autonnumber = 2;
-	}else if(autonnumber == 2){
-		autonnumber = -1;
-	}else{
-		autonnumber = 1;
-	}
-
-	
-/*
-	switch (autonnumber) {
-	case -2:
-		drawRedRing();
-		break;
-	case -1:
-		drawRedMogo();
-		break;
-	case 1: 
-		drawBlueMogo();
-		break;
-	case 2:
-		drawBlueRing();
-		break;
-	} */
-	pros::delay(50);
 }

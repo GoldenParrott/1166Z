@@ -110,11 +110,11 @@ void globalBlueGoal(void);
 void globalBlueRing(void);
 void globalRedGoal(void);
 void globalRedRing(void);
+void autoTest(void);
 // specific autons
 void redGoalside(void);
 void blueGoalside(void);
-void autoTest(void);
-void autonSwitcher(void);
+void autoSkills(void);
 
 // sidetasks.cpp
 void redirect(void);

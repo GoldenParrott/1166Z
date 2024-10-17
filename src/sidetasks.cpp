@@ -17,12 +17,12 @@ void redirect() {
 				// case 1a: if the difference between the starting point and the current point
 				// 			is greater than 700 (meaning that it has gone all the way), 
 				//			turn off the redirect
-				if (abs(Transport.get_position() - redirectStartPoint) >= 1400) {
+				if (abs(Transport.get_position() - redirectStartPoint) >= 1500) {
 					redirectOn = false;
 					redirectStartPoint = 0;
 					Transport.brake();
 				// case 1b: if case 1a is not true, then continue moving the intake down
-				} else if (abs(Transport.get_position() - redirectStartPoint) >= 1400) {
+				} else if (abs(Transport.get_position() - redirectStartPoint) >= 1500) {
 
 				} else {
 					Intake.move(75);

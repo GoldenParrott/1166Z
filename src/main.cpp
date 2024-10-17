@@ -43,7 +43,9 @@ void disabled() {
  */
 void competition_initialize() {
 
-	autoSelector_task_ptr = new pros::Task(autonSelect);
+	//autoSelector_task_ptr = new pros::Task(autonSelect);
+	autonnumber = -2;
+	globalAuton = true;
 
 	while (true) {
 		if (globalAuton == true) {
@@ -72,6 +74,9 @@ void competition_initialize() {
 					break;
 				case -1:
 					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-49.25, -60.325}, 69);
+					break;
+				case -5:
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-60.75, 0}, 90);
 					break;
 			}
 		}
@@ -137,6 +142,10 @@ void autonomous() {
 			case -2:
 				globalRedRing();
 				break;
+			case 3:
+			case -3:
+				autoTest();
+				break;
 		}
 	} else {
 		switch (autonnumber) {
@@ -146,9 +155,8 @@ void autonomous() {
 			case -1:
 				redGoalside();
 				break;
-			case 3:
-			case -3:
-				autoTest();
+			case -5:
+				autoSkills();
 				break;
 		}
 	}
