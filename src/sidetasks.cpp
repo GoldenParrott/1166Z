@@ -17,6 +17,7 @@ void redirect() {
 				// case 1a: if the difference between the starting point and the current point
 				// 			is greater than 700 (meaning that it has gone all the way), 
 				//			turn off the redirect
+				/*
 				if (abs(Transport.get_position() - redirectStartPoint) >= 1500) {
 					redirectOn = false;
 					redirectStartPoint = 0;
@@ -27,12 +28,14 @@ void redirect() {
 				} else {
 					Intake.move(75);
 				}
+				*/
+			Intake.move(128);
+			pros::delay(750);
+			redirectOn = false;
 			}
 			// case 2: redirect is not on, but the distance sensor is at the proper distance
-			else if (Distance.get() < 75) {
+			else if (Distance.get() < 50) {
 				// in this case, the redirect is started and the starting point is stored for later
-				Intake.brake();
-				pros::delay(325);
 				Intake.move(128);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();
@@ -64,7 +67,7 @@ void redirect() {
 void eject() {
 	bool ejectOn = false;
 	int ejectStartPoint = 0;
-	int ejectColor = 1;
+	int ejectColor = 2;
 	Master.print(0,0,"Scoring Blue",NULL);
 	while (true) {
 		// distance sensor (eject)
@@ -98,7 +101,7 @@ void eject() {
 			else if ((
 					((colorSense.get_hue() > 180)                               && (ejectColor == 2)) || // blue
 					((colorSense.get_hue() < 25) && (colorSense.get_hue() > 10) && (ejectColor == 1))   // red
-					) && (Distance.get() < 75))
+					) && (Distance.get() < 50))
 			{
 				// in this case, the redirect is started and the starting point is stored for later
 				pros::delay(60); // the robot waits for the Ring to reach the proper point before starting the eject
@@ -150,7 +153,7 @@ void autoEject() {
 			else if ((((colorSense.get_hue() > 180) && (autonnumber < 0)) || // blue
 				      ((colorSense.get_hue() < 35)  && (autonnumber > 0)) // red
 					 )
-					&& (Distance.get() < 75)
+					&& (Distance.get() < 50)
 					)
 			{
 				// in this case, the redirect is started and the starting point is stored for later

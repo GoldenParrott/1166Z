@@ -244,8 +244,10 @@ Master.rumble(new char('-'));
 		{
 			InputMotor.move(128);
 		} */
-		else if ((Master.get_digital(DIGITAL_RIGHT) == false)
-				  && Master.get_digital(DIGITAL_DOWN) == false && Master.get_digital(DIGITAL_L1) == false) {
+		else if (Master.get_digital(DIGITAL_RIGHT) == false
+				  && Master.get_digital(DIGITAL_DOWN) == false 
+				  && Master.get_digital(DIGITAL_L1) == false 
+				  && Master.get_digital(DIGITAL_R2) == false) {
 			InputMotor.brake();
 		}
 		
