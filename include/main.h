@@ -177,16 +177,17 @@ void bindTurnTrackingWheelHeading();
 
 // odom.cpp
 void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Coordinate offset, int startHeading);
-Coordinate updateLocation(double heading, double dist, Coordinate prevLoc);
-double calculateDistance(Coordinate point1, Coordinate point2);
+Coordinate updateLocation(double heading, double dist);
 void updateCoordinateLoop(void);
-double findHeadingOfLine(Coordinate point1, Coordinate point2);
 
 // math.cpp
-double calculateStandardDeviation(std::deque<double> listOfDifferences);
 double calculateDistance(Coordinate point1, Coordinate point2);
+double calculateStandardDeviation(std::deque<double> listOfDifferences);
 Line calculatePerpendicular(Coordinate point1, Coordinate point2);
 int findEquality(Line line, Coordinate includedPoint);
+Coordinate findIntersection(Line line1, Line line2);
+Line findLineWithHeading(Coordinate point1, int heading);
+double findHeadingOfLine(Coordinate point1, Coordinate point2);
 
 #ifdef __cplusplus
 }

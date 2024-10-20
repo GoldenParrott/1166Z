@@ -14,6 +14,16 @@ void initialize() {
 	Rotational.set_position(0);
 	RotationalTurn.set_position(0);
 	Arm.set_brake_mode(MOTOR_BRAKE_HOLD);
+
+	/*pros::Task hi = pros::Task(
+	[] () {
+		while (true) {
+		pros::lcd::print(0, "x = %f", universalCurrentLocation.x);
+		pros::lcd::print(1, "y = %f", universalCurrentLocation.y);
+		pros::delay(50);
+		}
+	}
+	);*/
 }
 
 /**
@@ -26,13 +36,11 @@ void disabled() {
 	Grabber.set_value(false);
 
 
-	while (true) {
-		pros::lcd::print(3, "x = %f", universalCurrentLocation.x);
-		pros::lcd::print(4, "y = %f", universalCurrentLocation.y);
-	}
+	Master.print(0, 0, "x = %f", universalCurrentLocation.x);
+
 }
 
-/**
+/**x
  * Runs after initialize(), and before autonomous when connected to the Field
  * Management System or the VEX Competition Switch. This is intended for
  * competition-specific initialization routines, such as an autonomous selector
@@ -44,8 +52,8 @@ void disabled() {
 void competition_initialize() {
 
 	//autoSelector_task_ptr = new pros::Task(autonSelect);
-	autonnumber = -2;
-	globalAuton = true;
+	autonnumber = -5;
+	globalAuton = false;
 
 	while (true) {
 		if (globalAuton == true) {
@@ -162,7 +170,7 @@ void autonomous() {
 	}
 
 	// ending commands
-	Master.print(2, 0, "Done");
+	// Master.print(2, 0, "Done");
 
 	pros::delay(1000);
 	AllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);

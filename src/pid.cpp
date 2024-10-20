@@ -24,11 +24,12 @@ void PIDMover(
 
 	// Constants (need to be tuned individually for every robot)
 	ConstantContainer moverConstants;
-	moverConstants.kP = 4.9; // 4
-	moverConstants.kI = 0.07; // 0.1
-	moverConstants.kD = 1; // 2.7
-
+		moverConstants.kP = 4.9; // 4
+		moverConstants.kI = 0.07; // 0.1
+		moverConstants.kD = 1; // 2.7
 	
+
+
 
 
 
@@ -111,12 +112,25 @@ void PIDMover(
 		// fifteen millisecond delay between cycles
 		pros::delay(15);
 
+
+		if (std::isnan(findIntersection(findLineWithHeading(universalCurrentLocation, getAggregatedHeading(Kalman1, Kalman2)), negativeSide).x) ||
+			std::isnan(findIntersection(findLineWithHeading(universalCurrentLocation, getAggregatedHeading(Kalman1, Kalman2)), negativeSide).y)) {
+			continue;
+		}
+		// fixes the goal point to be in front of where we are facing
+		if (autonnumber == -5) {
+			goalPosition = findIntersection(findLineWithHeading(universalCurrentLocation, getAggregatedHeading(Kalman1, Kalman2)), negativeSide);
+			setPoint = calculateDistance(originalPosition, goalPosition);
+		}
+
 		// calculates the distance moved as the difference between the distance left to move
 		// and the total distance to move
 		remainingDistance = calculateDistance(universalCurrentLocation, goalPosition);
 		currentDistanceMovedByWheel = setPoint - remainingDistance;
 
 
+		if ((remainingDistance <= 0 + tolerance) && (remainingDistance >= 0 - tolerance))
+		/*
 		// checks to see if the robot has completed the movement by checking if it is within a range of the perpendicular line of its goal point
 			if (( // handles the cases where the perpendicular line takes the form of y = mx + b or y = k
 				 (!std::isnan(negativeSide.slope)) && 
@@ -128,6 +142,7 @@ void PIDMover(
 				 (universalCurrentLocation.x >= negativeSide.yIntercept - tolerance)
 				)
 			   )
+			*/
 			{
 				if (cyclesAtGoal >= 10) {
 					actionCompleted = true;

@@ -383,6 +383,7 @@ void blueGoalside() {
 
 
 void autoSkills() {
+// QUADRANT 1
 	// sets the time from initialization that the code starts at
 	int startTime = pros::millis();
 
@@ -391,8 +392,8 @@ void autoSkills() {
 	
 	// scores on the Alliance Stake
 	double initialPos = Transport.get_position();
-	Transport.move_relative(-450, 200);
-	waitUntil((Transport.get_position() >= initialPos + 450) || ((pros::millis() - startTime) / 1000 >= 1));
+	Transport.move_relative(-340, 200);
+	waitUntil((Transport.get_position() <= initialPos - 340) || ((pros::millis() - startTime) / 1000 >= 0.7));
 	Transport.move_relative(100, 200);
 	pros::delay(300);
 	
@@ -403,56 +404,81 @@ void autoSkills() {
 	waitUntil(posFN() >= initialPos + 530);
 
 	// turns to a MoGo and moves to it, then grabs it
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-48, 22}), 1);
-	PIDMover({-48, -22}, true, {gripMoGoM}, {22});
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-50, -20}) - 180, 1);
+	PIDMover({-50, -20}, true, {gripMoGoM}, {20});
 
 	// turns and moves to a Ring, then grabs it
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-26, -24}), 2);
 	Intake.move(-128);
-	Arm.move_relative(300, 200);
+	Arm.move_relative(380, 200);
 	PIDMover({-26, -24});
 
 	// turns and moves to the Ring on the line, then grabs it
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-6.25, -49.5}), 2);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-8, -48}), 2);
 	PIDMover({-8, -48});
 
 	// turns and moves to the next three Rings in a line, automatically grabbing them along the way
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57, -42}), 1);
-	PIDMover({-36, -44.571});
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57, -42}), 2);
+	PIDMover({-36, -48});
 	PIDMover({-57, -42});
 	pros::delay(500);
 
 	// turns and moves to the final Ring in this quadrant, then grabs it automatically
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-42, -55}), 1);
-	PIDMover({-42, -55});
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-49.5, -55.5}), 1);
+	PIDMover({-49.5, -55.5});
 
 	// turns to the Corner and places the Mobile Goal there
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-56, -57.5}) + 180, 1);
-	PIDMover({-56, -57.5}, true);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-58, -57.5}) + 180, 1);
+	PIDMover({-58, -57.5}, true);
 	MobileGoalManipulator.set_value(false);
+	Transport.move_relative(30, 200);
+	pros::delay(200);
+
+// QUADRANT 2
+		// moves forward from the Corner
+		initialPos = posFN();
+		AllWheels.move_relative(200, 200);
+		waitUntil(posFN() >= initialPos + 200);
+
+		// turns to face the MoGo on the opposite quadrant, then moves to it and grabs it
+		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-48, 12}) - 180, 2);
+		PIDMover({-48, 12}, true);
+		PIDMover({-48, 15}, true);
+		MobileGoalManipulator.set_value(true);
+		universalCurrentLocation.x = -49.5;
+
+		// turns and moves to a Ring, then grabs it
+		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-26, 24}), 1);
+		Intake.move(-128);
+		PIDMover({-26, 24});
+
+		// turns and moves to the Ring on the line, then grabs it
+		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-8, 48}), 1);
+		PIDMover({-8, 48});
+
+		// turns and moves to the next three Rings in a line, automatically grabbing them along the way
+		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57, 42}), 1);
+		PIDMover({-38, 48});
+		PIDMover({-57, 42});
+		pros::delay(500);
+
+		// turns and moves to the final Ring in this quadrant, then grabs it automatically
+		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-49.5, 55.5}), 2);
+		PIDMover({-49.5, 55.5});
+
+		// turns to the Corner and places the Mobile Goal there
+		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-58, 55.5}) + 180, 2);
+		PIDMover({-58, 55.5}, true);
+		MobileGoalManipulator.set_value(false);
+		Transport.move_relative(30, 200);
+		pros::delay(200);
+		
+
 
 }
 
 
 void autoTest()
 {
-	MobileGoalManipulator.set_value(true);
-	pros::delay(500);
-	// moves back and forth in the corner three times
-	// #1
-	Intake.move(-128);
-	AllWheels.move_relative(480,100);
-	pros::delay(700);
-	AllWheels.move_relative(-250,100);
-	pros::delay(600);
-	// #2
-	AllWheels.move_relative(480,100);
-	pros::delay(600);
-	AllWheels.move_relative(-250,100);
-	pros::delay(600);
-	// #3
-	AllWheels.move_relative(480,100);
-	pros::delay(600);
-	AllWheels.move_relative(-250,100);
-	pros::delay(600);
+	PIDMover({0. -48});
 }

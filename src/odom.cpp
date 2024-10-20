@@ -17,7 +17,7 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotatio
 }
 
 
-Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
+Coordinate updateLocation(double heading, double dist) {
     double originalHeading = heading;
     // switches the heading based on the direction of the turn
     heading = dist >= 0
@@ -62,8 +62,8 @@ Coordinate updateLocation(double heading, double dist, Coordinate prevLoc) {
     }
 
     // sets the final x and y positions to the changes in x and y added to the previous coordinates
-    double xLoc = prevLoc.x + xChange;
-    double yLoc = prevLoc.y + yChange;
+    double xLoc = universalCurrentLocation.x + xChange;
+    double yLoc = universalCurrentLocation.y + yChange;
 
     return {xLoc, yLoc};
 }
@@ -86,7 +86,7 @@ void updateCoordinateLoop() {
             // calculates the change in odometry reading based on the previous measurement
             changeInOdom = cumulativeOdom - previousOdom;
             // updates the location
-            universalCurrentLocation = updateLocation(getAggregatedHeading(Kalman1, Kalman2), changeInOdom, previousLocation);
+            universalCurrentLocation = updateLocation(getAggregatedHeading(Kalman1, Kalman2), changeInOdom);
             // previous location for use in next cycle
             previousLocation = universalCurrentLocation;
             // cumulative odometry value for use in next cycle as previous value
@@ -96,42 +96,4 @@ void updateCoordinateLoop() {
             previousLocation = universalCurrentLocation;
         }
     }
-}
-
-// this is a reversed version of the update coordinate function that finds the heading of a line on a coordinate plane given two poins on the line
-// it is used to find headings for corrective turns
-double findHeadingOfLine(
-    Coordinate point1, // the initial point
-    Coordinate point2 // the final point
-)
-{
-    // finds the difference between the x- and y- values to get the rise and run of the line
-    double xChange = point2.x - point1.x;
-    double yChange = point2.y - point1.y;
-
-    bool yIsPositive = yChange > 0;
-    bool xIsPositive = xChange > 0;
-
-    // finds the positive position of the angle in relation to the previous multiple of 90 degrees
-    double triangleAngle = 0;
-    if ((yIsPositive && xIsPositive) || (!yIsPositive && !xIsPositive)) { // quadrants 1 or 3
-        triangleAngle = std::atan(std::abs(xChange) / std::abs(yChange)); // tangent is opposite/adjacent, and x is opposite in these cases
-    }
-    else { // quadrants 2 or 4
-        triangleAngle = std::atan(std::abs(yChange) / std::abs(xChange)); // tangent is opposite/adjacent, and y is opposite in these cases
-    }
-    triangleAngle = (triangleAngle * 180) / 3.14;
-
-    double heading = 0;
-    if (xIsPositive && yIsPositive) { // quadrant 1
-       heading = triangleAngle;
-    } else if (xIsPositive && !yIsPositive) { // quadrant 2
-        heading = triangleAngle + 90;
-    } else if (!xIsPositive && !yIsPositive) { // quadrant 3
-        heading = triangleAngle + 180;
-    } else if (!xIsPositive && yIsPositive) { // quadrant 4
-        heading = triangleAngle + 270;
-    }
-
-    return heading;
 }

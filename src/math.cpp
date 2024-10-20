@@ -88,3 +88,103 @@ int findEquality(
             return 0; // 0 signifies equal to on the Line structure
     }
 }
+
+Coordinate findIntersection(
+    Line line1, // the first line
+    Line line2 // the second line
+)
+{
+    Coordinate intersect = {0, 0};
+    // first, the x-intersect is found with substitution
+    // this starts with y = ax + b and y = cx + d, which can be substituted into ax + b = cx + d
+    double mergedSlope = line1.slope - line2.slope;  // ax - cx, which leaves one x term on the left side and none on the right: (a-c)x + b = d
+    double mergedYInt = line2.yIntercept - line1.yIntercept; // d - b, which leaves one constant on the right and none on the left: (a-c)x = (d-b)
+    intersect.x = mergedYInt / mergedSlope; // (d-b) divided by (a-c), which leaves x isolated on the left side: x = (a-c)/(d-b)
+
+    // next, the y-intersect is found by substituting the x-intersect into one equation
+    intersect.y = (line1.slope * intersect.x) + line1.yIntercept;
+
+    return intersect;
+}
+
+Line findLineWithHeading(
+    Coordinate point1, // a point on the line
+    int heading // inertial heading
+)
+{
+    // calculates the angle of only the triangle by subtracting from it based on its quadrant
+    double triangleAngle = 0;
+    if (heading < 90) {
+       triangleAngle = heading;
+    } else if (heading < 180) {
+        triangleAngle = heading - 90;
+    } else if (heading < 270) {
+        triangleAngle = heading - 180;
+    } else if (heading < 360) {
+        triangleAngle = heading - 270;
+    }
+    // treats the distance moved as the hypotenuse of and the heading as the base angle of a triangle
+    // and uses them to calculate the value of both legs (the changes in x and y)
+    double xChange = 0;
+    double yChange = 0;
+    double hypotenuse = 1; // because the hypotenuse is an infinite line, the length for this calculation does not matter, so I picked 1 for ease of calculation
+
+    // if the heading is in quadrants 1 or 3, then the x-value is the opposite leg (sine) and the y-value is the adjacent leg (cosine)
+    if ((heading < 90) || (heading >= 180 && heading < 270)) {
+        xChange = std::sin(((triangleAngle * 3.141592) / 180)) * hypotenuse;
+        yChange = std::cos(((triangleAngle * 3.141592) / 180)) * hypotenuse;
+    }
+    // otherwise, if the heading is in quadrants 2 or 4, then the x-value is the adjacent leg (cosine) and the y-value is the opposite leg (sine)
+    else {
+        xChange = std::cos(((triangleAngle * 3.141592) / 180)) * hypotenuse;
+        yChange = std::sin(((triangleAngle * 3.141592) / 180)) * hypotenuse;
+    }
+
+    // slope of line = rise / run
+    double slope = yChange / xChange;
+
+    // calculates the y-intercept with a derived form of the point-slope form of an equation
+    double yIntercept = (-1 * (slope * point1.x)) + point1.y;
+
+    Line line = {slope, yIntercept};
+
+    return line;
+}
+
+// this is a reversed version of the update coordinate function that finds the heading of a line on a coordinate plane given two poins on the line
+// it is used to find headings for corrective turns
+double findHeadingOfLine(
+    Coordinate point1, // the initial point
+    Coordinate point2 // the final point
+)
+{
+    // finds the difference between the x- and y- values to get the rise and run of the line
+    double xChange = point2.x - point1.x;
+    double yChange = point2.y - point1.y;
+
+    bool yIsPositive = yChange > 0;
+    bool xIsPositive = xChange > 0;
+
+    // finds the positive position of the angle in relation to the previous multiple of 90 degrees
+    double triangleAngle = 0;
+    if ((yIsPositive && xIsPositive) || (!yIsPositive && !xIsPositive)) { // quadrants 1 or 3
+        triangleAngle = std::atan(std::abs(xChange) / std::abs(yChange)); // tangent is opposite/adjacent, and x is opposite in these cases
+    }
+    else { // quadrants 2 or 4
+        triangleAngle = std::atan(std::abs(yChange) / std::abs(xChange)); // tangent is opposite/adjacent, and y is opposite in these cases
+    }
+    triangleAngle = (triangleAngle * 180) / 3.14;
+
+    double heading = 0;
+    if (xIsPositive && yIsPositive) { // quadrant 1
+       heading = triangleAngle;
+    } else if (xIsPositive && !yIsPositive) { // quadrant 2
+        heading = triangleAngle + 90;
+    } else if (!xIsPositive && !yIsPositive) { // quadrant 3
+        heading = triangleAngle + 180;
+    } else if (!xIsPositive && yIsPositive) { // quadrant 4
+        heading = triangleAngle + 270;
+    }
+
+    return heading;
+}
