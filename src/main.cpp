@@ -279,7 +279,7 @@ Master.rumble(new char('-'));
 
 	//Mobile Goal Manipulator
 		// ↓↓ Pressing the R1 Button toggles between modes
-		if(Master.get_digital(DIGITAL_R1)){
+		if(Master.get_digital_new_press(DIGITAL_R1)){
 
 			// ↓↓ If the manipulator is open, activate this code
 			if (MobileGoalManipulator.get_value() == false) {
@@ -293,55 +293,46 @@ Master.rumble(new char('-'));
 				// ↓↓ Opens the manipulator to grab an object
 				MobileGoalManipulator.set_value(false);
 			}
-
-			// Sets a condition to exit the code that is the 
-			// opposite of the condition to enter, preventing
-			// us from looping through the code repeatedly ↓↓
-			waitUntil(Master.get_digital(DIGITAL_R1) == false);
 		}
 
 
 	// Arm Piston
-		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+		if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 			if (ArmPiston.get_value() == false) {
 				ArmPiston.set_value(true);
 			}
 			else {
 				ArmPiston.set_value(false);
 			}
-			waitUntil(Master.get_digital(DIGITAL_UP) == false);
 		}
 
 	// Grabber
-		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+		if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
 			if (Grabber.get_value() == false) {
 				Grabber.set_value(true);
 			}
 			else {
 				Grabber.set_value(false);
 			}
-			waitUntil(Master.get_digital(DIGITAL_L2) == false);
 		}
 
 	// Input Piston
-		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+		if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
 			if (InputPiston.get_value() == false) {
 				InputPiston.set_value(true);
 			}
 			else {
 				InputPiston.set_value(false);
 			}
-			waitUntil(Master.get_digital(DIGITAL_A) == false);
 		}
 	// Hang
-		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+		if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
 			if (Hang.get_value() == false) {
 				Hang.set_value(true);
 			}
 			else {
 				Hang.set_value(false);
 			}
-			waitUntil(Master.get_digital(DIGITAL_X) == false);
 		}
 
 	// end-of-cycle delay
