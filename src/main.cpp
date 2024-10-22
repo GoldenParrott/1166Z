@@ -72,7 +72,7 @@ void competition_initialize() {
 					break;
 				case 3:
 				case -3: //Test (?)
-					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 90);
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-48, -48}, 225);
 					break;
 			}
 		} else {
