@@ -443,11 +443,14 @@ void autoSkills() {
 		// turns to face the MoGo on the opposite quadrant, then moves to it and grabs it
 		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-48, 12}) - 180, 2);
 		PIDMover({-48, 12}, true);
-		PIDMover({-48, 17}, true, {gripMoGoM}, {5});
+		AllWheels.move(-128);
+		pros::delay(180);
 		MobileGoalManipulator.set_value(true);
+		pros::delay(20);
+		AllWheels.brake();
 
 		// turns and moves to a Ring, then grabs it
-		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-26, 24}), 1);
+		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-26, 20}), 1);
 		Intake.move(-128);
 		PIDMover({-26, 24});
 
@@ -476,6 +479,9 @@ void autoSkills() {
 		initialPos = posFN();
 		AllWheels.move_relative(200, 200);
 		waitUntil(posFN() >= initialPos + 200);
+
+// QUADRANT 3
+			// hi
 		
 
 
