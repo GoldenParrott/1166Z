@@ -50,10 +50,13 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
+	// For testing, shows x & y on the brain screen
+	pros::Task help(coords);
 
 	//autoSelector_task_ptr = new pros::Task(autonSelect);
 	autonnumber = -5;
 	globalAuton = false;
+
 
 	while (true) {
 		if (globalAuton == true) {

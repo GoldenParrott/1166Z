@@ -443,14 +443,14 @@ void autoSkills() {
 		// turns to face the MoGo on the opposite quadrant, then moves to it and grabs it
 		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-48, 12}) - 180, 2);
 		PIDMover({-48, 12}, true);
-		AllWheels.move(-128);
-		pros::delay(180);
+		AllWheels.move(-80);
+		pros::delay(500);
 		MobileGoalManipulator.set_value(true);
 		pros::delay(20);
 		AllWheels.brake();
 
 		// turns and moves to a Ring, then grabs it
-		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-26, 20}), 1);
+		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-26, 16}), 1);
 		Intake.move(-128);
 		PIDMover({-26, 24});
 
@@ -469,10 +469,10 @@ void autoSkills() {
 		PIDMover({-49.5, 55.5});
 
 		// turns to the Corner and places the Mobile Goal there
-		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57, 60}) - 180, 2);
-		PIDMover({-57, 60}, true);
+		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-54, 59}) - 180, 2);
+		PIDMover({-54, 59}, true);
+		Transport.move_relative(-100, 200);
 		MobileGoalManipulator.set_value(false);
-		Transport.move_relative(30, 200);
 		pros::delay(200);
 
 		// moves forward from the Corner
@@ -482,6 +482,32 @@ void autoSkills() {
 
 // QUADRANT 3
 			// hi
+			// hello
+			// Drives to quadrent 3 to get the ring at (24,48)
+			InputMotor.move(-128);
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {13.5, 44}), 1);
+			PIDMover({13.5, 44});
+
+			// Drives to get the ring at (24,24)
+			Transport.move_relative(-540,100);
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {19,19}), 2);
+			PIDMover({19,19});
+			Transport.move_relative(-300,100);
+
+			// Move and grab theGoal at (48,0)
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {28, 2}) - 180, 1);
+			PIDMover({28, 2}, true);
+			AllWheels.move(-128);
+			pros::delay(300);
+			MobileGoalManipulator.set_value(true);
+			pros::delay(20);
+			AllWheels.brake();
+			Transport.move(-128);
+
+			// Move to grab the middle Ring in the corner
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {35, 35}), 2);
+			PIDMover({42, 35});
+			
 		
 
 

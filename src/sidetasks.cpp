@@ -191,3 +191,11 @@ void unjam() {
 
 	pros::delay(50);
 }
+
+void coords() {
+	while(1){
+		pros::screen::print(TEXT_LARGE, 0, "x = %f",universalCurrentLocation.x);
+		pros::screen::print(TEXT_LARGE, 2, "y = %f",universalCurrentLocation.y);
+		pros::delay(100);
+	}
+}
