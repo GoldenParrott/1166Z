@@ -120,6 +120,7 @@ void autoSkills(void);
 void redirect(void);
 void eject(void);
 void autoEject(void);
+void coords(void);
 
 // draw.cpp
 void autonSelect(void);
