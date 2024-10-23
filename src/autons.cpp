@@ -431,7 +431,7 @@ void autoSkills() {
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-58, -57.5}) + 180, 1);
 	PIDMover({-58, -57.5}, true);
 	MobileGoalManipulator.set_value(false);
-	Transport.move_relative(30, 200);
+	Transport.move_relative(100, 200);
 	pros::delay(200);
 
 // QUADRANT 2
@@ -483,30 +483,47 @@ void autoSkills() {
 // QUADRANT 3
 			// hi
 			// hello
-			// Drives to quadrent 3 to get the ring at (24,48)
+			// sup
+			// Drives to quadrant 3 to get the Ring at (24,48)
 			InputMotor.move(-128);
-			PIDTurner(findHeadingOfLine(universalCurrentLocation, {13.5, 44}), 1);
-			PIDMover({13.5, 44});
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {13.5, 45}), 1);
+			PIDMover({13.5, 45});
 
-			// Drives to get the ring at (24,24)
-			Transport.move_relative(-540,100);
-			PIDTurner(findHeadingOfLine(universalCurrentLocation, {19,19}), 2);
-			PIDMover({19,19});
+			// Drives to get the Ring at (24,24)
+			Transport.move_relative(-480,100);
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {19, 19}), 2);
+			PIDMover({19, 19});
 			Transport.move_relative(-300,100);
 
-			// Move and grab theGoal at (48,0)
-			PIDTurner(findHeadingOfLine(universalCurrentLocation, {28, 2}) - 180, 1);
-			PIDMover({28, 2}, true);
-			AllWheels.move(-128);
-			pros::delay(300);
+			// Move and grab the Goal at (48,0)
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {28, 4}) - 180, 1);
+			PIDMover({28, 4}, true);
+			AllWheels.move(-80);
+			pros::delay(400);
 			MobileGoalManipulator.set_value(true);
-			pros::delay(20);
+			pros::delay(100);
 			AllWheels.brake();
 			Transport.move(-128);
 
 			// Move to grab the middle Ring in the corner
-			PIDTurner(findHeadingOfLine(universalCurrentLocation, {35, 35}), 2);
-			PIDMover({42, 35});
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {38, 36}), 2);
+			PIDMover({38, 36});
+
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {49, 36}), 2);
+			PIDMover({49, 36});
+
+			// turns and moves to Corner
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {72, 45}) - 180, 2);
+			AllWheels.move(-64);
+			pros::delay(600);
+			AllWheels.brake();
+			MobileGoalManipulator.set_value(true);
+
+			// moves forward from the Corner
+			initialPos = posFN();
+			AllWheels.move_relative(200, 200);
+			waitUntil(posFN() >= initialPos + 200);
+
 			
 		
 
