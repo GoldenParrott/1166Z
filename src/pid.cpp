@@ -128,10 +128,8 @@ void PIDMover(
 		remainingDistance = calculateDistance(universalCurrentLocation, goalPosition);
 		currentDistanceMovedByWheel = setPoint - remainingDistance;
 
-
-		if ((remainingDistance <= 0 + tolerance) && (remainingDistance >= 0 - tolerance))
-		/*
-		// checks to see if the robot has completed the movement by checking if it is within a range of the perpendicular line of its goal point
+		if (autonnumber != -5) {
+			// checks to see if the robot has completed the movement by checking if it is within a range of the perpendicular line of its goal point
 			if (( // handles the cases where the perpendicular line takes the form of y = mx + b or y = k
 				 (!std::isnan(negativeSide.slope)) && 
 				 ((universalCurrentLocation.y <= ((negativeSide.slope * universalCurrentLocation.x) + negativeSide.yIntercept) + tolerance) && 
@@ -142,7 +140,7 @@ void PIDMover(
 				 (universalCurrentLocation.x >= negativeSide.yIntercept - tolerance)
 				)
 			   )
-			*/
+			
 			{
 				if (cyclesAtGoal >= 10) {
 					actionCompleted = true;
@@ -153,6 +151,23 @@ void PIDMover(
 			} else {
 				cyclesAtGoal = 0;
 			}
+		}
+		else {
+			if ((remainingDistance <= 0 + tolerance) && (remainingDistance >= 0 - tolerance)) 
+			{
+				if (cyclesAtGoal >= 10) {
+					actionCompleted = true;
+					AllWheels.brake();
+				} else {
+					cyclesAtGoal++;
+				}
+			} else {
+				cyclesAtGoal = 0;
+			}
+		}
+
+		
+
 		
 		// checks to see if the robot has been flipping back and forth in direction at the exit location and stops it if id does
 		/*   if (cyclesFlipping >= 5) {
