@@ -29,14 +29,14 @@ void redirect() {
 					Intake.move(75);
 				}
 				*/
-			Intake.move(128);
+			Intake.move(100);
 			pros::delay(750);
 			redirectOn = false;
 			}
 			// case 2: redirect is not on, but the distance sensor is at the proper distance
 			else if (Distance.get() < 50) {
 				// in this case, the redirect is started and the starting point is stored for later
-				Intake.move(128);
+				Intake.move(100);
 				redirectOn = true;
 				redirectStartPoint = Transport.get_position();
 			}
@@ -133,7 +133,7 @@ void autoEject() {
 	//	on lines 128-132. Also changed  	  //
 	//	red to <25 as it detects better    	  //
 	//									      //
-	////////////////////////////////////////////
+	//////////////////////////////////////////// 
 
 	while (true) {
     // distance sensor (eject)
