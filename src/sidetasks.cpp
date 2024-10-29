@@ -67,17 +67,19 @@ void redirect() {
 void eject() {
 	bool ejectOn = false;
 	int ejectStartPoint = 0;
-	int ejectColor = 2;
-	Master.print(0,0,"Scoring Blue",NULL);
+	if(autonnumber < 0){
+		Master.print(0,0,"Scoring Red ",NULL);
+	}else if(autonnumber > 0){
+		Master.print(0,0,"Scoring Blue ",NULL);
+	}
 	while (true) {
 		// distance sensor (eject)
 		// Changes the eject to be for the opposite color when the button is pressed
 		if (Master.get_digital_new_press(DIGITAL_LEFT)){
-			if(ejectColor == 1){
-				ejectColor = 2;
+			autonnumber *= -1;
+			if(autonnumber < 0){
 				Master.print(0,0,"Scoring Red ",NULL);
-			}else if(ejectColor == 2){
-				ejectColor = 1;
+			}else if(autonnumber > 0){
 				Master.print(0,0,"Scoring Blue ",NULL);
 			}
 		}
@@ -98,10 +100,11 @@ void eject() {
 				}
 			}
 			//case 2: eject is not on, but the distance sensor is at the proper distance and the color sensor has found a correct color
-			else if ((
-					((colorSense.get_hue() > 180)                               && (ejectColor == 2)) || // blue
-					((colorSense.get_hue() < 25) && (colorSense.get_hue() > 10) && (ejectColor == 1))   // red
-					) && (Distance.get() < 50))
+			else if ((((colorSense.get_hue() > 180) && (autonnumber < 0)) || // blue
+				      ((colorSense.get_hue() < 35)  && (autonnumber > 0)) // red
+					 )
+					&& (Distance.get() < 50)
+					)
 			{
 				// in this case, the redirect is started and the starting point is stored for later
 				pros::delay(60); // the robot waits for the Ring to reach the proper point before starting the eject

@@ -274,8 +274,8 @@ void redGoalside() {
 
 	// scores the first Ring on the MoGo, then drops it
 	pros::delay(300);
-	Transport.move_relative(-400, 200);
-	pros::delay(600);
+	Transport.move_relative(-450, 200);
+	pros::delay(650);
 	Transport.brake();
 	MobileGoalManipulator.set_value(false);
 
@@ -297,8 +297,8 @@ void redGoalside() {
 	// moves back and forth in the corner to get the bottom Ring
 	Intake.move(-128);
 	// move in
-	AllWheels.move_relative(550, 100);
-	pros::delay(800);
+	AllWheels.move_relative(600, 125);
+	pros::delay(1000);
 	// back up
 	AllWheels.move(-128);
 	pros::delay(300);
@@ -307,8 +307,8 @@ void redGoalside() {
 	// turns to and moves to the Ladder
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-17, -10}), 2);
 	InputMotor.move(128);
-	Arm.move_relative(-380, 200);
-	PIDMover({-17, -10});
+	// Arm.move_relative(-380, 200);
+	// PIDMover({-17, -10});
 
 }
 
@@ -351,8 +351,8 @@ void blueGoalside() {
 
 	// scores the first Ring on the MoGo, then drops it
 	pros::delay(300);
-	Transport.move_relative(-300, 200);
-	pros::delay(500);
+	Transport.move_relative(-400, 200);
+	pros::delay(550);
 	Transport.brake();
 	MobileGoalManipulator.set_value(false);
 
@@ -370,8 +370,8 @@ void blueGoalside() {
 	// moves back and forth in the corner to get the bottom Ring
 	Intake.move(-128);
 	// move in
-	AllWheels.move_relative(550, 100);
-	pros::delay(800);
+	AllWheels.move_relative(600, 125);
+	pros::delay(1000);
 	// back up
 	AllWheels.move(-100);
 	pros::delay(300);
@@ -379,8 +379,9 @@ void blueGoalside() {
 
 	// turns to and moves to the Ladder
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {0, 0}), 2);
-	Arm.move_relative(-380, 200);
-	PIDMover({13.75, -14.25});
+	InputMotor.move(128);
+	// Arm.move_relative(-380, 200);
+	// PIDMover({13.75, -14.25});
 
 }
 
