@@ -307,8 +307,8 @@ void redGoalside() {
 	// turns to and moves to the Ladder
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-17, -10}), 2);
 	InputMotor.move(128);
-	// Arm.move_relative(-380, 200);
-	// PIDMover({-17, -10});
+	Arm.move_relative(-380, 200);
+	PIDMover({-17, -10});
 
 }
 
@@ -380,8 +380,8 @@ void blueGoalside() {
 	// turns to and moves to the Ladder
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {0, 0}), 2);
 	InputMotor.move(128);
-	// Arm.move_relative(-380, 200);
-	// PIDMover({13.75, -14.25});
+	Arm.move_relative(-380, 200);
+	PIDMover({13.75, -14.25});
 
 }
 
