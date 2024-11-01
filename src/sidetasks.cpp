@@ -199,6 +199,7 @@ void coords() {
 	while(1){
 		pros::screen::print(TEXT_LARGE, 0, "x = %f",universalCurrentLocation.x);
 		pros::screen::print(TEXT_LARGE, 2, "y = %f",universalCurrentLocation.y);
+		pros::screen::print(TEXT_LARGE, 4, "θ = %f",getAggregatedHeading(Kalman1, Kalman2));
 		pros::delay(100);
 	}
 }

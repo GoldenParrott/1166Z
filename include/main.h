@@ -114,6 +114,8 @@ void autoTest(void);
 // specific autons
 void redGoalside(void);
 void blueGoalside(void);
+void redRingside(void);
+void blueRingside(void);
 void autoSkills(void);
 
 // sidetasks.cpp

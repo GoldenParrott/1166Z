@@ -386,6 +386,61 @@ void blueGoalside() {
 }
 
 
+void redRingside() {
+
+	// lambda functions for mid-PID movements (and as convenient macros)
+	auto posFN = []() {return (BackRight.get_position() + BackLeft.get_position() + FrontRight.get_position() + FrontLeft.get_position()) / 4;};
+	double initialPos;
+
+	// raises the arm and scores on the Alliance Stake with it
+	Arm.move_relative(100, 200);
+	pros::delay(200);
+	Arm.move_relative(-100, 200);
+	pros::delay(300);
+	Arm.move_relative(325, 150);
+	pros::delay(125);
+	InputMotor.move(128);
+	initialPos = posFN();
+	AllWheels.move_relative(-90, 500);
+	waitUntil(posFN() <= initialPos - 90);
+	AllWheels.brake();
+	pros::delay(1000);
+	initialPos = posFN();
+	AllWheels.move_relative(370, 500);
+	waitUntil(posFN() >= initialPos + 370);
+	AllWheels.brake();
+	Arm.move_relative(-130, 200);
+
+	// backs up from the Alliance Stake
+	initialPos = posFN();
+	AllWheels.move_relative(-360, 500);
+	waitUntil(posFN() <= initialPos - 360);
+	AllWheels.brake();
+	Arm.move_relative(-130, 200);
+
+	// backs into MoGo and grips it
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-30.125, 18.5}) - 180, 2);
+	PIDMover({-30.125, 18.5}, true);
+	AllWheels.move(-128);
+	pros::delay(200);
+	MobileGoalManipulator.set_value(true);
+	pros::delay(50);
+	AllWheels.brake();
+
+	// 
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-24, 42}), 2);
+	Intake.move(-128);
+	PIDMover({-24, 42});
+
+
+}
+
+
+void blueRingside() {
+
+}
+
+
 void autoSkills() {
 // QUADRANT 1
 	// sets the time from initialization that the code starts at

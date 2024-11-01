@@ -54,7 +54,7 @@ void competition_initialize() {
 	pros::Task help(coords);
 
 	autoSelector_task_ptr = new pros::Task(autonSelect);
-	//autonnumber = -5;
+	//autonnumber = -2;
 	//globalAuton = false;
 
 
@@ -85,6 +85,12 @@ void competition_initialize() {
 					break;
 				case -1:
 					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-49.25, -60.325}, 69);
+					break;
+				case 2:
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {0, 0}, 0);
+					break;
+				case -2:
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-54, 12.5}, 232);
 					break;
 				case -5:
 					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-60.75, 0}, 90);
@@ -165,6 +171,12 @@ void autonomous() {
 				break;
 			case -1:
 				redGoalside();
+				break;
+			case 2:
+				blueRingside();
+				break;
+			case -2:
+				redRingside();
 				break;
 			case -5:
 				autoSkills();
