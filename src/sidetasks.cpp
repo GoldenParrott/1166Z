@@ -203,3 +203,31 @@ void coords() {
 		pros::delay(100);
 	}
 }
+
+
+void CutoffPID(Coordinate goalPoint, bool reverse, double maxAllowableTime) {
+	pros::Task movement = pros::Task([goalPoint, reverse] () {PIDMover(goalPoint, reverse);});
+	pros::delay(maxAllowableTime);
+	movement.remove();
+	AllWheels.brake();
+}
+
+void CutoffTurnPID(Coordinate goalPoint, bool reverse, double maxAllowableTime, int direction) {
+	// the turn movement
+	auto movement = [goalPoint, direction] () {PIDTurner(findHeadingOfLine(universalCurrentLocation, goalPoint), direction);};
+	// finds the heading's inverse when it is positive
+	auto determineInverse = [] (double angle) -> double {
+		return angle > 180 ? angle - 180 : angle + 180;
+	};
+	// the reversed form of the turn movement
+	auto revMovement = [goalPoint, direction, determineInverse] () {PIDTurner(determineInverse(findHeadingOfLine(universalCurrentLocation, goalPoint)), direction);};
+	pros::Task* movement_task = NULL;
+	if (!reverse) {
+		movement_task = new pros::Task(movement);
+	} else {
+		movement_task = new pros::Task(revMovement);
+	}
+	pros::delay(maxAllowableTime);
+	movement_task->remove();
+	AllWheels.brake();
+}

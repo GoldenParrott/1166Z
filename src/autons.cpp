@@ -280,18 +280,18 @@ void redGoalside() {
 	MobileGoalManipulator.set_value(false);
 
 	// turns around, then moves to the other MoGo and grabs it
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-24, -24}) - 180, 1);
-	PIDMover({-24, -24}, true);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-22, -26}) - 180, 1);
+	PIDMover({-22, -26}, true);
 	AllWheels.move(-128);
-	pros::delay(180);
+	pros::delay(200);
 	MobileGoalManipulator.set_value(true);
 	pros::delay(20);
 	AllWheels.brake();
 
 	// starts intaking and moves to the Corner
 	Intake.move(-128);
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-52, -54}), 2);
-	PIDMover({-52, -54}, false);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-51, -55}), 2);
+	PIDMover({-51, -55}, false);
 	pros::delay(300);
 
 	// moves back and forth in the corner to get the bottom Ring
@@ -305,10 +305,10 @@ void redGoalside() {
 	AllWheels.brake();
 
 	// turns to and moves to the Ladder
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-17, -10}), 2);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-18, -8}), 2);
 	InputMotor.move(128);
 	Arm.move_relative(-380, 200);
-	PIDMover({-17, -10});
+	PIDMover({-18, -8});
 
 }
 
@@ -363,8 +363,8 @@ void blueGoalside() {
 
 	// starts intaking and moves to the Corner
 	Intake.move(-128);
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {69.5, -72}), 1);
-	PIDMover({53.5, -56}, false);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {51, -55}), 1);
+	PIDMover({51, -55}, false);
 	pros::delay(300);
 
 	// moves back and forth in the corner to get the bottom Ring
@@ -378,10 +378,10 @@ void blueGoalside() {
 	AllWheels.brake();
 
 	// turns to and moves to the Ladder
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {0, 0}), 2);
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {17, -12}), 2);
 	InputMotor.move(128);
 	Arm.move_relative(-380, 200);
-	PIDMover({13.75, -14.25});
+	PIDMover({17, -12});
 
 }
 
@@ -474,21 +474,21 @@ void autoSkills() {
 
 	// turns and moves to the Ring on the line, then grabs it
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-8, -48}), 2);
-	PIDMover({-8, -48});
+	CutoffPID({-8, -48}, false, 3000);
 
 	// turns and moves to the next three Rings in a line, automatically grabbing them along the way
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57, -42}), 2);
-	PIDMover({-36, -48});
-	PIDMover({-57, -42});
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57, -43}), 2);
+	CutoffPID({-36, -49}, false, 2750);
+	CutoffPID({-57, -43}, false, 2000);
 	pros::delay(500);
 
 	// turns and moves to the final Ring in this quadrant, then grabs it automatically
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-49.5, -55.5}), 1);
-	PIDMover({-49.5, -55.5});
+	CutoffTurnPID({-49.5, -55.5}, false, 1000, 1);
+	CutoffPID({-49.5, -55.5}, false, 1500);
 
 	// turns to the Corner and places the Mobile Goal there
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-58, -57.5}) + 180, 1);
-	PIDMover({-58, -57.5}, true);
+	CutoffTurnPID({-58, -57.5}, true, 1800, 1);
+	CutoffPID({-58, -57.5}, true, 1500);
 	MobileGoalManipulator.set_value(false);
 	Transport.move_relative(100, 200);
 	pros::delay(200);
@@ -517,21 +517,21 @@ void autoSkills() {
 
 		// turns and moves to the Ring on the line, then grabs it
 		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-5, 48}), 1);
-		PIDMover({-5, 48});
+		CutoffPID({-5, 48}, false, 3000);
 
 		// turns and moves to the next three Rings in a line, automatically grabbing them along the way
 		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-57, 48}), 1);
-		PIDMover({-38, 58});
-		PIDMover({-57, 48});
+		CutoffPID({-38, 58}, false, 2750);
+		CutoffPID({-57, 48}, false, 2000);
 		pros::delay(500);
 
 		// turns and moves to the final Ring in this quadrant, then grabs it automatically
-		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-49.5, 55.5}), 2);
-		PIDMover({-49.5, 55.5});
+		CutoffTurnPID({-49.5, 55.5}, false, 1650, 2);
+		CutoffPID({-49.5, 55.5}, false, 1500);
 
 		// turns to the Corner and places the Mobile Goal there
-		PIDTurner(findHeadingOfLine(universalCurrentLocation, {-54, 59}) - 180, 2);
-		PIDMover({-54, 59}, true);
+		CutoffTurnPID({-54, 59}, true, 1750, 2);
+		CutoffPID({-54, 59}, true, 1750);
 		Transport.move_relative(-100, 200);
 		MobileGoalManipulator.set_value(false);
 		pros::delay(200);
@@ -549,11 +549,13 @@ void autoSkills() {
 			InputMotor.move(-128);
 			PIDTurner(findHeadingOfLine(universalCurrentLocation, {13.5, 45}), 1);
 			PIDMover({13.5, 45});
+			CutoffPID({13.5, 45}, false, 2250);
 
 			// Drives to get the Ring at (24,24)
 			Transport.move_relative(-480,100);
 			PIDTurner(findHeadingOfLine(universalCurrentLocation, {19, 19}), 2);
 			PIDMover({19, 19});
+			CutoffPID({19, 19}, false, 2000);
 			Transport.move_relative(-300,100);
 
 			// Move and grab the Goal at (48,0)
@@ -574,11 +576,12 @@ void autoSkills() {
 			PIDMover({49, 36});
 
 			// turns and moves to Corner
-			PIDTurner(findHeadingOfLine(universalCurrentLocation, {72, 45}) - 180, 2);
+			//PIDTurner(findHeadingOfLine(universalCurrentLocation, {72, 45}) - 180, 2);
+			PIDTurner(210, 2);
+			MobileGoalManipulator.set_value(false);
 			AllWheels.move(-64);
 			pros::delay(600);
 			AllWheels.brake();
-			MobileGoalManipulator.set_value(true);
 
 			// moves forward from the Corner
 			initialPos = posFN();

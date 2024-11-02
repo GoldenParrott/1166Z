@@ -123,6 +123,8 @@ void redirect(void);
 void eject(void);
 void autoEject(void);
 void coords(void);
+void CutoffPID(Coordinate goalPoint, bool reverse, double maxAllowableTime);
+void CutoffTurnPID(Coordinate goalPoint, bool reverse, double maxAllowableTime, int direction);
 
 // draw.cpp
 void autonSelect(void);
