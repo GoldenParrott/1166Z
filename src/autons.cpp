@@ -554,7 +554,6 @@ void autoSkills() {
 			// Drives to get the Ring at (24,24)
 			Transport.move_relative(-480,100);
 			PIDTurner(findHeadingOfLine(universalCurrentLocation, {19, 19}), 2);
-			PIDMover({19, 19});
 			CutoffPID({19, 19}, false, 2000);
 			Transport.move_relative(-300,100);
 
