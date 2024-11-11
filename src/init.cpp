@@ -21,7 +21,7 @@
     pros::Motor Transport(4, pros::E_MOTOR_GEAR_200, 1);
     pros::Motor_Group Intake({InputMotor, Transport});
 
-    pros::Motor Arm(13, pros::E_MOTOR_GEAR_200, 1);
+    pros::Motor Arm(18, pros::E_MOTOR_GEAR_200, 1);
 
 /*
 ABCDEFGH

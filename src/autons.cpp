@@ -291,7 +291,7 @@ void redGoalside() {
 	// starts intaking and moves to the Corner
 	Intake.move(-128);
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-51, -55}), 2);
-	PIDMover({-51, -55}, false);
+	PIDMover({-51, -55});
 	pros::delay(300);
 
 	// moves back and forth in the corner to get the bottom Ring
@@ -364,7 +364,7 @@ void blueGoalside() {
 	// starts intaking and moves to the Corner
 	Intake.move(-128);
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {51, -55}), 1);
-	PIDMover({51, -55}, false);
+	PIDMover({51, -55});
 	pros::delay(300);
 
 	// moves back and forth in the corner to get the bottom Ring

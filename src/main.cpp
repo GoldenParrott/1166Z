@@ -57,8 +57,8 @@ void competition_initialize() {
 	pros::Task help(coords);
 
 	autoSelector_task_ptr = new pros::Task(autonSelect);
-	autonnumber = -5;
-	globalAuton = false;
+	//autonnumber = -5;
+	//globalAuton = false;
 
 
 	while (true) {
@@ -240,8 +240,6 @@ Master.rumble(new char('-'));
 	pros::Task redirectOn(redirect);
 	pros::Task ejectOn(eject);
 
-	bool raisingArm = false;
-
 	while (true) {
 //Master.print(0, 0, "x = %f", universalCurrentLocation.x);
 //Master.print(1, 0, "y = %f", universalCurrentLocation.y);
@@ -290,12 +288,10 @@ Master.rumble(new char('-'));
 	// Arm (Motor)
 		if (Master.get_digital(DIGITAL_Y)) {
 			Arm.move(128);
-			raisingArm = false;
 		} else if (Master.get_digital(DIGITAL_B)) {
 			Arm.move(-128);
-			raisingArm = false;
 		}
-		else if (!raisingArm) {
+		else {
 			Arm.brake();
 		}
 
@@ -351,8 +347,6 @@ Master.rumble(new char('-'));
 		if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
 			if (Hang.get_value() == false) {
 				Hang.set_value(true);
-				Arm.move_relative(250, 200);
-				raisingArm = true;
 			}
 			else {
 				Hang.set_value(false);
