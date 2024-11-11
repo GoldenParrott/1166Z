@@ -107,7 +107,7 @@ void eject() {
 					)
 			{
 				// in this case, the redirect is started and the starting point is stored for later
-				pros::delay(60); // the robot waits for the Ring to reach the proper point before starting the eject
+				pros::delay(45); // the robot waits for the Ring to reach the proper point before starting the eject
 				Transport.move(128);
 				ejectOn = true;
 				ejectStartPoint = Transport.get_position();
