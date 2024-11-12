@@ -57,8 +57,8 @@ void competition_initialize() {
 	pros::Task help(coords);
 
 	autoSelector_task_ptr = new pros::Task(autonSelect);
-	//autonnumber = -5;
-	//globalAuton = false;
+	autonnumber = -5;
+	globalAuton = false;
 
 
 	while (true) {
