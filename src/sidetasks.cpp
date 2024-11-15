@@ -30,7 +30,7 @@ void redirect() {
 				}
 				*/
 			Intake.move(100);
-			pros::delay(750);
+			pros::delay(1000);
 			redirectOn = false;
 			}
 			// case 2: redirect is not on, but the distance sensor is at the proper distance
@@ -221,6 +221,26 @@ void CutoffTurnPID(Coordinate goalPoint, bool reverse, double maxAllowableTime, 
 	};
 	// the reversed form of the turn movement
 	auto revMovement = [goalPoint, direction, determineInverse] () {PIDTurner(determineInverse(findHeadingOfLine(universalCurrentLocation, goalPoint)), direction);};
+	pros::Task* movement_task = NULL;
+	if (!reverse) {
+		movement_task = new pros::Task(movement);
+	} else {
+		movement_task = new pros::Task(revMovement);
+	}
+	pros::delay(maxAllowableTime);
+	movement_task->remove();
+	AllWheels.brake();
+}
+
+void CutoffTurnHeadingPID(int goalHeading, bool reverse, double maxAllowableTime, int direction) {
+	// the turn movement
+	auto movement = [goalHeading, direction] () {PIDTurner(goalHeading, direction);};
+	// finds the heading's inverse when it is positive
+	auto determineInverse = [] (double angle) -> double {
+		return angle > 180 ? angle - 180 : angle + 180;
+	};
+	// the reversed form of the turn movement
+	auto revMovement = [goalHeading, direction, determineInverse] () {PIDTurner(determineInverse(goalHeading), direction);};
 	pros::Task* movement_task = NULL;
 	if (!reverse) {
 		movement_task = new pros::Task(movement);
