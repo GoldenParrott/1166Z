@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "hi luke",
+    "project_name": "1166Z",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -310,7 +310,7 @@
     },
     "upload_options": {
       "after": "screen",
-      "slot": 2,
+      "slot": 1,
       "icon": "pros",
       "description": ":D"
     },

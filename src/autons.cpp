@@ -380,8 +380,8 @@ void blueGoalside() {
 	// turns to and moves to the Ladder
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {17, -12}), 2);
 	InputMotor.move(128);
-	//Arm.move_relative(-380, 200);
-	//PIDMover({17, -12});
+	Arm.move_relative(-380, 200);
+	PIDMover({17, -12});
 
 }
 
@@ -474,7 +474,7 @@ void autoSkills() {
 
 	// turns and moves to the Ring on the line, then grabs it
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-8, -48}), 2);
-	CutoffPID({-8, -48}, false, 1900);
+	CutoffPID({-8, -48}, false, 2200);
 
 	// turns and moves to the next three Rings in a line, automatically grabbing them along the way
 	Transport.brake();
@@ -566,8 +566,8 @@ void autoSkills() {
 			Transport.move_relative(-300,100);
 
 			// Move and grab the Goal at (48,0)
-			PIDTurner(findHeadingOfLine(universalCurrentLocation, {28, 4}) - 180, 1);
-			PIDMover({28, 4}, true);
+			PIDTurner(findHeadingOfLine(universalCurrentLocation, {30, 4}) - 180, 1);
+			PIDMover({30, 4}, true);
 			AllWheels.move(-80);
 			pros::delay(500);
 			MobileGoalManipulator.set_value(true);
@@ -594,11 +594,12 @@ void autoSkills() {
 
 			// moves forward from the Corner
 			CutoffPID({38, 36}, false, 1000);
-			PIDTurner(350, 2);
+			PIDTurner(347, 2);
 			AllWheels.move(-128);
-			pros::delay(3000);
+			pros::delay(1500);
 			AllWheels.move(128);
 			pros::delay(500);
+			AllWheels.brake();
 
 
 
