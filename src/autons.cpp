@@ -380,8 +380,8 @@ void blueGoalside() {
 	// turns to and moves to the Ladder
 	PIDTurner(findHeadingOfLine(universalCurrentLocation, {17, -12}), 2);
 	InputMotor.move(128);
-	Arm.move_relative(-380, 200);
-	PIDMover({17, -12});
+	//Arm.move_relative(-380, 200);
+	PIDMover({17, -17});
 
 }
 
