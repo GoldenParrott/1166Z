@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "1166Z skills",
+    "project_name": "SKILLZ",
     "target": "v5",
     "templates": {
       "kernel": {
