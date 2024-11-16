@@ -567,7 +567,7 @@ void autoSkills() {
 
 			// Move and grab the Goal at (48,0)
 			PIDTurner(findHeadingOfLine(universalCurrentLocation, {30, 4}) - 180, 1);
-			PIDMover({30, 4}, true);
+			CutoffPID({30, 4}, true, 1000);
 			AllWheels.move(-80);
 			pros::delay(500);
 			MobileGoalManipulator.set_value(true);

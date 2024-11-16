@@ -57,7 +57,7 @@ Pnuematics
     KalmanFilter Kalman2 = KalmanFilter(&Inertial2, &RotationalTurn);
 
 //Variables
-int autonnumber = 1;
+int autonnumber = 0;
 bool globalAuton = true;
 int logoCount = 0;
 
