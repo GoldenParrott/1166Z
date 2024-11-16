@@ -485,7 +485,9 @@ void autoSkills() {
 	pros::delay(500);
 
 	// turns and moves to the final Ring in this quadrant, then grabs it automatically
+	Transport.brake();
 	CutoffTurnPID({-49.5, -55.5}, false, 1000, 1);
+	Transport.move(-128);
 	CutoffPID({-49.5, -53.5}, false, 1500);
 
 	// turns to the Corner and places the Mobile Goal there
@@ -567,9 +569,10 @@ void autoSkills() {
 
 			// Move and grab the Goal at (48,0)
 			PIDTurner(findHeadingOfLine(universalCurrentLocation, {30, 4}) - 180, 1);
-			CutoffPID({30, 4}, true, 1000);
-			AllWheels.move(-80);
-			pros::delay(500);
+			PIDMover({30, 4}, true);
+			pros::delay(100);
+			AllWheels.move(-40);
+			pros::delay(600);
 			MobileGoalManipulator.set_value(true);
 			pros::delay(100);
 			AllWheels.brake();
@@ -594,11 +597,11 @@ void autoSkills() {
 
 			// moves forward from the Corner
 			CutoffPID({38, 36}, false, 1000);
-			PIDTurner(347, 2);
+			PIDTurner(349, 2);
 			AllWheels.move(-128);
 			pros::delay(1500);
-			AllWheels.move(128);
-			pros::delay(500);
+			AllWheels.move(70);
+			pros::delay(750);
 			AllWheels.brake();
 
 
