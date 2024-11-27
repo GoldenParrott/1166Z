@@ -60,25 +60,29 @@ Pnuematics
     extern KalmanFilter Kalman2;
 
 // Variables
-extern int autonnumber;
-extern bool globalAuton;
-extern int logoCount;
 
-extern int drvtrDZ;
-extern int drvtrFB;
-extern int drvtrLR;
-// upright = 1900, upleft = -1900
+    extern int autonnumber;
+    extern bool globalAuton;
+    extern int logoCount;
 
-extern bool toggleColorSensor;
-extern int colorDelay;
-extern bool ejectIsEjecting;
+    extern int drvtrDZ;
+    extern int drvtrFB;
+    extern int drvtrLR;
+    // upright = 1900, upleft = -1900
 
-extern bool presettingA;
-extern bool presettingX;
+    extern bool toggleColorSensor;
+    extern int colorDelay;
+    extern bool ejectIsEjecting;
+
+    extern bool presettingA;
+    extern bool presettingX;
+
+    extern Coordinate endCoords;
+    extern bool endReverse;
 
 // declared in initialize(), not init.cpp
-extern Coordinate universalCurrentLocation;
+    extern Coordinate universalCurrentLocation;
 
-extern pros::screen_touch_status_s_t status;
+    extern pros::screen_touch_status_s_t status;
 
 #endif

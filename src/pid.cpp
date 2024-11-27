@@ -1,5 +1,10 @@
 #include "init.h"
 
+void PIDMoverBasic(void){
+
+	PIDMover(endCoords,endReverse);
+}
+
 void PIDMover(
 		Coordinate goalPosition, // goal coordinate position
 		bool reverse, // defaults to false- explicitly set to true to reverse the robot

@@ -365,23 +365,35 @@ void blueGoalside() {
 
     // starts intaking and moves to the Corner
     Intake.move(-128);
-    PIDTurner(findHeadingOfLine(universalCurrentLocation, {54, -55}), 1);
-    //PIDMover({50, -55});
-    CutoffPID({50, -55}, false, 1750);
+	//Previously (54, -55) and (50,-55)
+    PIDTurner(findHeadingOfLine(universalCurrentLocation, {55, -58}), 1);
+    //PIDMover({50, -58});
+    CutoffPID({55, -58}, false, 1750);
     pros::delay(300);
 
     // moves back and forth in the corner to get the bottom Ring
     Intake.move(-128);
+
+	/*
     // move in
     AllWheels.move_relative(600, 125);
     pros::delay(1000);
     // back up
     AllWheels.move(-100);
-    pros::delay(300);
+    pros::delay(400);
     AllWheels.brake();
 
+	AllWheels.move(75);
+	pros::delay(800);
+    AllWheels.brake();
+
+	AllWheels.move(-100);
+    pros::delay(200);
+    AllWheels.brake();
+
+	/**/
     // turns to and moves to the Ladder
-    PIDTurner(findHeadingOfLine(universalCurrentLocation, {17, -12}), 2);
+    //PIDTurner(findHeadingOfLine(universalCurrentLocation, {17, -12}), 2);
     //InputMotor.move(128);
     //Arm.move_relative(-380, 200);
     //Arm.move_relative(50, 200);

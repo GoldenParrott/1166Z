@@ -206,10 +206,13 @@ void coords() {
 
 
 void CutoffPID(Coordinate goalPoint, bool reverse, double maxAllowableTime) {
-	pros::Task movement = pros::Task([goalPoint, reverse] () {PIDMover(goalPoint, reverse);});
+	endCoords = goalPoint;
+	endReverse = reverse;
+	pros::Task movement = pros::Task(PIDMoverBasic);
 	pros::delay(maxAllowableTime);
 	movement.remove();
 	AllWheels.brake();
+	
 }
 
 void CutoffTurnPID(Coordinate goalPoint, bool reverse, double maxAllowableTime, int direction) {

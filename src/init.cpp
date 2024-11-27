@@ -57,21 +57,24 @@ Pnuematics
     KalmanFilter Kalman2 = KalmanFilter(&Inertial2, &RotationalTurn);
 
 //Variables
-int autonnumber = 0;
-bool globalAuton = true;
-int logoCount = 0;
+    int autonnumber = 0;
+    bool globalAuton = true;
+    int logoCount = 0;
 
-int drvtrDZ = 10;
-int drvtrFB;
-int drvtrLR;
-// upright = 1900, upleft = -1900
+    int drvtrDZ = 10;
+    int drvtrFB;
+    int drvtrLR;
+    // upright = 1900, upleft = -1900
 
-bool toggleColorSensor = false;
-int colorDelay = 0;
-bool ejectIsEjecting = false;
+    bool toggleColorSensor = false;
+    int colorDelay = 0;
+    bool ejectIsEjecting = false;
 
-bool presettingA = false;
-bool presettingX = false;
+    bool presettingA = false;
+    bool presettingX = false;
+
+    Coordinate endCoords;
+    bool endReverse;
 
 Coordinate universalCurrentLocation = {0, 0};
 
