@@ -367,20 +367,27 @@ void blueGoalside() {
     Intake.move(-128);
 	//Previously (54, -55) and (50,-55)
     PIDTurner(findHeadingOfLine(universalCurrentLocation, {55, -58}), 1);
-    //PIDMover({50, -58});
-    CutoffPID({55, -58}, false, 1750);
+    PIDMover({55, -58});
     pros::delay(300);
 
     // moves back and forth in the corner to get the bottom Ring
     Intake.move(-128);
 
-	/*
+	
     // move in
     AllWheels.move_relative(600, 125);
     pros::delay(1000);
     // back up
     AllWheels.move(-100);
-    pros::delay(400);
+    pros::delay(500);
+    AllWheels.brake();
+
+	AllWheels.move(75);
+	pros::delay(800);
+    AllWheels.brake();
+
+	AllWheels.move(-100);
+    pros::delay(200);
     AllWheels.brake();
 
 	AllWheels.move(75);

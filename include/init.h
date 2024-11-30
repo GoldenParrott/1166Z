@@ -79,6 +79,7 @@ Pnuematics
 
     extern Coordinate endCoords;
     extern bool endReverse;
+    extern bool endended;
 
 // declared in initialize(), not init.cpp
     extern Coordinate universalCurrentLocation;

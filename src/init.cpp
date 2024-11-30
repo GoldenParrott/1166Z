@@ -75,6 +75,7 @@ Pnuematics
 
     Coordinate endCoords;
     bool endReverse;
+    bool endended;
 
 Coordinate universalCurrentLocation = {0, 0};
 

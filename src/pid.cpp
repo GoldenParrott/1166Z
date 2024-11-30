@@ -3,6 +3,9 @@
 void PIDMoverBasic(void){
 
 	PIDMover(endCoords,endReverse);
+	endended == true;
+	pros::delay(50);
+	endended == false;
 }
 
 void PIDMover(
