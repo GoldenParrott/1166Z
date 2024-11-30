@@ -296,16 +296,47 @@ void redGoalside() {
 
 	// moves back and forth in the corner to get the bottom Ring
 	Intake.move(-128);
+
 	// move in
-	AllWheels.move_relative(600, 125);
-	pros::delay(1000);
+    AllWheels.move_relative(600, 125);
+    pros::delay(1000);
+	AllWheels.move(100);
+	pros::delay(200);
+    AllWheels.brake();
+	pros::delay(200);
+
+    // back up
+    AllWheels.move(-100);
+    pros::delay(250);
+    AllWheels.brake();
+	pros::delay(200);
+
+	// move in
+	AllWheels.move(50);
+	pros::delay(400);
+    AllWheels.brake();
+	pros::delay(200);
+
 	// back up
-	AllWheels.move(-128);
-	pros::delay(300);
-	AllWheels.brake();
+	AllWheels.move(-100);
+    pros::delay(250);
+    AllWheels.brake();
+	pros::delay(200);
+
+	// move in
+	AllWheels.move(55);
+	pros::delay(400);
+    AllWheels.brake();
+	pros::delay(200);
+
+	// back up
+	AllWheels.move(-100);
+    pros::delay(250);
+    AllWheels.brake();
+	pros::delay(200);
 
 	// turns to and moves to the Ladder
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-18, -8}), 2);
+	//PIDTurner(findHeadingOfLine(universalCurrentLocation, {-18, -8}), 2);
 	//InputMotor.move(128);
 	//Arm.move_relative(-380, 200);
 	//Arm.move_relative(50, 200);
@@ -338,7 +369,7 @@ void blueGoalside() {
     // intakes the first Ring into the robot, moves backward with the MoGo yoinked, then ungrabs the MoGo
     auto posFN = []() {return (BackRight.get_position() + BackLeft.get_position() + FrontRight.get_position() + FrontLeft.get_position()) / 4;};
     double initialPos = posFN();
-    AllWheels.move_relative(-750, 200);
+    AllWheels.move_relative(-780, 200);
     waitUntil(posFN() <= initialPos - 750);
     Grabber.set_value(false);
 
@@ -366,9 +397,8 @@ void blueGoalside() {
     // starts intaking and moves to the Corner
     Intake.move(-128);
 	//Previously (54, -55) and (50,-55)
-    PIDTurner(findHeadingOfLine(universalCurrentLocation, {55, -58}), 1);
-    PIDMover({55, -58});
-    pros::delay(300);
+    PIDTurner(findHeadingOfLine(universalCurrentLocation, {53, -55}), 1);
+    PIDMover({52, -54});
 
     // moves back and forth in the corner to get the bottom Ring
     Intake.move(-128);
@@ -377,26 +407,40 @@ void blueGoalside() {
     // move in
     AllWheels.move_relative(600, 125);
     pros::delay(1000);
+	AllWheels.move(100);
+	pros::delay(200);
+    AllWheels.brake();
+	pros::delay(200);
+
     // back up
     AllWheels.move(-100);
-    pros::delay(500);
+    pros::delay(250);
     AllWheels.brake();
+	pros::delay(200);
 
-	AllWheels.move(75);
-	pros::delay(800);
+	// move in
+	AllWheels.move(50);
+	pros::delay(400);
     AllWheels.brake();
+	pros::delay(200);
 
+	// back up
 	AllWheels.move(-100);
-    pros::delay(200);
+    pros::delay(250);
     AllWheels.brake();
+	pros::delay(200);
 
-	AllWheels.move(75);
-	pros::delay(800);
+	// move in
+	AllWheels.move(55);
+	pros::delay(400);
     AllWheels.brake();
+	pros::delay(200);
 
+	// back up
 	AllWheels.move(-100);
-    pros::delay(200);
+    pros::delay(250);
     AllWheels.brake();
+	pros::delay(200);
 
 	/**/
     // turns to and moves to the Ladder
