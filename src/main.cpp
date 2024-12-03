@@ -65,7 +65,7 @@ void competition_initialize() {
 		if (globalAuton == true) {
 			switch (autonnumber) {
 				case 1: //Blue Mogo
-					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {-55, 12}, 148);
+					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {50, -36}, 251);
 					break;
 				case 2:
 					initializeRobotOnCoordinate(&Rotational, &Inertial1, &Inertial2, {54.5, 13.125}, 208);

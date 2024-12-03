@@ -62,7 +62,12 @@ void autonSelect(){
         pros::screen::print(TEXT_MEDIUM_CENTER,138,173,"BLUE MOGO",NULL);
             // Global Switch
         pros::screen::set_pen(COLOR_WHITE);
-        pros::screen::print(TEXT_MEDIUM_CENTER,315,53,"UNIVERSAL",NULL);
+        if(autonnumber == 2){
+            pros::screen::print(TEXT_MEDIUM_CENTER,315,53,"SAFETY",NULL);
+        }else{
+            pros::screen::print(TEXT_MEDIUM_CENTER,315,53,"UNIVERSAL",NULL);
+        }
+        
         pros::screen::print(TEXT_MEDIUM_CENTER,330,173,"UNIQUE",NULL);
 
         /* Guides
