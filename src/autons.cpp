@@ -143,62 +143,79 @@ void globalBlueGoal() {
 
 void globalRedGoal() {
 
-	auto gripMoGoM = []() {MobileGoalManipulator.set_value(true);};
-	auto stopTransport = []() {Transport.brake();};
+	// mid-PID actions
+	auto triggerGrabber = []() {Grabber.set_value(true);};
+	auto untriggerGrabber = []() {Grabber.set_value(false);};
+	auto moveTransportIn = []() {Transport.move_relative(-200, 100);};
+	auto raiseArm = []() {Arm.move_relative(380, 100);};
+	auto grabMoGo = []() {MobileGoalManipulator.set_value(true);};
+	auto dropMoGo = []() {MobileGoalManipulator.set_value(false);};
+	auto stopIntake = []() {Intake.brake();};
 
-	// starts the autonomous by raising the arm and moving to the first Ring
-	Arm.move_relative(180, 200);
-	InputPiston.set_value(true);
-	pros::delay(100);
-	AllWheels.move_relative(230, 100);
-	pros::delay(400);
-
-	// picks up the first Ring
+	// Moves to the middle MoGo and intakes the Ring along the way (with time cutoff)
 	InputMotor.move(-128);
-	InputPiston.set_value(false);
-	pros::delay(600);
-	InputMotor.brake();
-	Transport.move_relative(-210, 200);
+	pros::Task toMoGo = pros::Task([raiseArm, moveTransportIn] () {PIDMover({-17.375, -48.125}, false, {raiseArm, moveTransportIn}, {1, 33});});
+	pros::delay(925);
+	toMoGo.remove();
+	AllWheels.brake();
+	Grabber.set_value(true);
+	pros::delay(200);
 
-	// turns to the Rings next to the Alliance Stake and moves to them
-	pros::delay(500);
-	InputMotor.move(128);
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {12, 72}), 2);
-	PIDMover({54.25, 0.75}, true);
-
-	// turns to face the intake to the Alliance Stake and moves to it, then scores on it
-	PIDTurner(270, 1);
-	AllWheels.move_relative(-250,100);
-	pros::delay(552);
-	Transport.move(-128);
-	pros::delay(260);
-	Transport.brake();
-
-
-	// moves forward from the Alliance Stake
+	// intakes the first Ring into the robot, moves backward with the MoGo yoinked, then ungrabs the MoGo
 	auto posFN = []() {return (BackRight.get_position() + BackLeft.get_position() + FrontRight.get_position() + FrontLeft.get_position()) / 4;};
 	double initialPos = posFN();
-	AllWheels.move_relative(320, 200);
-	waitUntil(posFN() >= initialPos + 320);
-	
-	// moves to MoGo
-	PIDTurner((findHeadingOfLine(universalCurrentLocation, {38, 24}) - 180), 1);
-	PIDMover({32, 17.25}, true); // ensures that the robot approaches the MoGo slow enough by splitting it into two movements
-	Arm.move_relative(-160, 200);
-	PIDMover({21, 27.75}, true, {gripMoGoM}, {5.75});
+	AllWheels.move_relative(-750, 200);
+	waitUntil(posFN() <= initialPos - 750);
+	Grabber.set_value(false);
 
-	// turns to, moves to, and intakes Rings in middle of quadrant
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {28, 40}), 1);
+	// turns around and grips the MoGo (with time cutoff)
+	pros::delay(125);
+	PIDTurner(265, 1);
+	toMoGo = pros::Task([raiseArm, moveTransportIn] () {PIDMover({-21, -42.75}, true);});
+	pros::delay(575);
+	toMoGo.remove();
+	AllWheels.brake();
+	MobileGoalManipulator.set_value(true);
+
+	// scores the first Ring on the MoGo, then drops it
+	pros::delay(300);
+	Transport.move_relative(-450, 200);
+	pros::delay(650);
+	Transport.brake();
+	MobileGoalManipulator.set_value(false);
+
+	// turns around, then moves to the other MoGo and grabs it
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-22, -26}) - 180, 1);
+	PIDMover({-22, -26}, true);
+	AllWheels.move(-128);
+	pros::delay(200);
+	MobileGoalManipulator.set_value(true);
+	pros::delay(20);
+	AllWheels.brake();
+
+	// starts intaking and moves to the Corner
 	Intake.move(-128);
-	PIDMover({24, 40});
+	PIDTurner(findHeadingOfLine(universalCurrentLocation, {-50, -55}), 2);
+	PIDMover({-50, -55});
+	pros::delay(300);
 
-	// turns to, moves to, and touches Ladder
-	PIDTurner(findHeadingOfLine(universalCurrentLocation, {18, 11}), 1);
-	InputMotor.brake();
-	Transport.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	PIDMover({14, 13}, false, {stopTransport}, {36});
+	// moves back and forth in the corner to get the bottom Ring
+	Intake.move(-128);
+
+	// move in
+    AllWheels.move_relative(600, 125);
+    pros::delay(1000);
+	AllWheels.move(100);
+	pros::delay(200);
+    AllWheels.brake();
+	pros::delay(200);
+
+    // back up
+    AllWheels.move(-100);
+    pros::delay(250);
+    AllWheels.brake();
+	pros::delay(200);
 }
-
 
 void globalRedRing() {
 
