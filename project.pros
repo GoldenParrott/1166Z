@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "1166Z",
+    "project_name": "Increased PID Tolerance",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -310,7 +310,7 @@
     },
     "upload_options": {
       "after": "screen",
-      "slot": 1,
+      "slot": 3,
       "icon": "pros",
       "description": ":D"
     },

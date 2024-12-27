@@ -24,7 +24,7 @@ void PIDMover(
 	// General Variables
 	double power = 0;
 
-	double tolerance = 1;
+	double tolerance = 1.5;
 	std::vector<bool> customsCompleted(customs.size(), false);
 	bool actionCompleted = false;
 	int cyclesAtGoal = 0;
