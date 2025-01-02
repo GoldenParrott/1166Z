@@ -3,7 +3,7 @@
 void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotational sensor
                           pros::Imu *imu1, // first inertial sensor
                           pros::Imu *imu2, // second inertial sensor
-                          Coordinate offset, // an ordered pair representing the current 
+                          Point offset, // an ordered pair representing the current 
                                              // location of the robot in relation to the origin
                           int startHeading // starting heading in relation to the absolute zero heading
                         ) 
@@ -17,7 +17,7 @@ void initializeRobotOnCoordinate(pros::Rotation *rotational, // parallel rotatio
 }
 
 
-Coordinate updateLocation(double heading, double dist) {
+Point updateLocation(double heading, double dist) {
     double originalHeading = heading;
     // switches the heading based on the direction of the turn
     heading = dist >= 0
@@ -72,7 +72,7 @@ Coordinate updateLocation(double heading, double dist) {
 void updateCoordinateLoop() {
 
     // declaration of previous location
-    Coordinate previousLocation = universalCurrentLocation;
+    Point previousLocation = universalCurrentLocation;
     // calculates the change in odometry for the location update
     double changeInOdom = 0;
     double previousOdom = 0;

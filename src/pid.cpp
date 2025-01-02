@@ -9,7 +9,7 @@ void PIDMoverBasic(void){
 }
 
 void PIDMover(
-		Coordinate goalPosition, // goal coordinate position
+		Point goalPosition, // goal coordinate position
 		bool reverse, // defaults to false- explicitly set to true to reverse the robot
 
 		std::vector<std::function<void(void)>> customs, // a lambda function that will execute during the PID (optional)
@@ -42,13 +42,13 @@ void PIDMover(
 
 
 // sets the set point to the difference between the current point and the goal point
-	Coordinate originalPosition = universalCurrentLocation;
+	Point originalPosition = universalCurrentLocation;
 	double setPoint = calculateDistance(originalPosition, goalPosition);
 	double remainingDistance = setPoint;
 	bool greaterThanNegativeLine = false;
 
 // finds the part of the coordinate plane in which the robot has passed its destination
-	Line negativeSide = calculatePerpendicular(originalPosition, goalPosition);
+	Inequality negativeSide = calculatePerpendicularInequality(originalPosition, goalPosition);
 
 // Odometry Measurement Setup
 	bool isPositive = setPoint > 0; // Checks if the movement is positive or negative
@@ -121,13 +121,13 @@ void PIDMover(
 		pros::delay(15);
 
 
-		if (std::isnan(findIntersection(findLineWithHeading(universalCurrentLocation, getAggregatedHeading(Kalman1, Kalman2)), negativeSide).x) ||
-			std::isnan(findIntersection(findLineWithHeading(universalCurrentLocation, getAggregatedHeading(Kalman1, Kalman2)), negativeSide).y)) {
+		if (std::isnan(findIntersection(findLineWithHeading(universalCurrentLocation, getAggregatedHeading(Kalman1, Kalman2)), {negativeSide.slope, negativeSide.yIntercept}).x) ||
+			std::isnan(findIntersection(findLineWithHeading(universalCurrentLocation, getAggregatedHeading(Kalman1, Kalman2)), {negativeSide.slope, negativeSide.yIntercept}).y)) {
 			continue;
 		}
 		// fixes the goal point to be in front of where we are facing
 		if (autonnumber == -5) {
-			goalPosition = findIntersection(findLineWithHeading(universalCurrentLocation, getAggregatedHeading(Kalman1, Kalman2)), negativeSide);
+			goalPosition = findIntersection(findLineWithHeading(universalCurrentLocation, getAggregatedHeading(Kalman1, Kalman2)), {negativeSide.slope, negativeSide.yIntercept});
 			setPoint = calculateDistance(originalPosition, goalPosition);
 		}
 

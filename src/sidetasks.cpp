@@ -207,7 +207,7 @@ void coords() {
 }
 
 
-void CutoffPID(Coordinate goalPoint, bool reverse, double maxAllowableTime) {
+void CutoffPID(Point goalPoint, bool reverse, double maxAllowableTime) {
 	endCoords = goalPoint;
 	endReverse = reverse;
 	pros::Task movement = pros::Task(PIDMoverBasic);
@@ -215,7 +215,7 @@ void CutoffPID(Coordinate goalPoint, bool reverse, double maxAllowableTime) {
 	
 }
 
-void CutoffTurnPID(Coordinate goalPoint, bool reverse, double maxAllowableTime, int direction) {
+void CutoffTurnPID(Point goalPoint, bool reverse, double maxAllowableTime, int direction) {
 	// the turn movement
 	auto movement = [goalPoint, direction] () {PIDTurner(findHeadingOfLine(universalCurrentLocation, goalPoint), direction);};
 	// finds the heading's inverse when it is positive

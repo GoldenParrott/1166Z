@@ -9,24 +9,11 @@
 void initialize() {
 
 	pros::lcd::initialize();
+	pros::lcd::print(1, "I SUCK");
+	Master.print(0, 0, "I REFUSE TO WORK");
 
-	colorSense.set_led_pwm(100);
-	Rotational.set_position(0);
-	RotationalTurn.set_position(0);
-	Arm.set_brake_mode(MOTOR_BRAKE_HOLD);
-
-	autonnumber = -2;
-	globalAuton = false;
-
-	/*pros::Task hi = pros::Task(
-	[] () {
-		while (true) {
-		pros::lcd::print(0, "x = %f", universalCurrentLocation.x);
-		pros::lcd::print(1, "y = %f", universalCurrentLocation.y);
-		pros::delay(50);
-		}
-	}
-	);*/
+	Intake.move_relative(1000, 600);
+	
 }
 
 /**
@@ -34,16 +21,9 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {
+void disabled() {}
 
-	Grabber.set_value(false);
-
-
-	Master.print(0, 0, "x = %f", universalCurrentLocation.x);
-
-}
-
-/**x
+/**
  * Runs after initialize(), and before autonomous when connected to the Field
  * Management System or the VEX Competition Switch. This is intended for
  * competition-specific initialization routines, such as an autonomous selector
@@ -53,10 +33,8 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-	// For testing, shows x & y on the brain screen
-	pros::Task help(coords);
 
-	autoSelector_task_ptr = new pros::Task(autonSelect);
+	// autoSelector_task_ptr = new pros::Task(drawAutonSelector);
 	autonnumber = -5;
 	globalAuton = false;
 
@@ -130,9 +108,6 @@ void autonomous() {
 	// autonomous setup
 	colorSense.set_led_pwm(100);
 
-	AllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
-
-	Intake.set_encoder_units(MOTOR_ENCODER_DEGREES);
 	Intake.tare_position();
 
 	Arm.set_encoder_units(MOTOR_ENCODER_DEGREES);
@@ -142,63 +117,39 @@ void autonomous() {
 	Kalman1.startFilter();
 	Kalman2.startFilter();
 
-	pros::Task* autoEjecter_task_ptr = new pros::Task(autoEject);
 
 
 
-	
- 
-	if (globalAuton == true) {
-		switch (autonnumber) {
-			case 1:
-				globalBlueGoal();
-				break;
-			case 2:
-				globalBlueRing();
-				break;
-			case -1:
-				globalRedGoal();
-				break;
-			case -2:
-				globalRedRing();
-				break;
-			case 3:
-			case -3:
-				autoTest();
-				break;
-		}
-	} else {
-		switch (autonnumber) {
-			case 1:
-				blueGoalside();
-				break;
-			case -1:
-				redGoalside();
-				break;
-			case 2:
-				blueRingside();
-				break;
-			case -2:
-				redRingside();
-				break;
-			case -5:
-				autoSkills();
-				break;
-		}
-	}
 
-	// ending commands
-	// Master.print(2, 0, "Done");
 
-	pros::delay(1000);
-	AllWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 
-	Grabber.set_value(false);
 
+
+
+
+	auto RPMtoMPS = [] (double gearset, double gearRatio, double diameter) {
+        return (gearset * gearRatio * (3.14 * diameter)) / 60;
+    };
+
+    // ROBOT CONFIG
+    double gearRatio = 0.75;
+    double maxRPM = 600;
+    double diameter = 3.25;
+    double distBetweenWheels = 10.5;
+
+
+    double numPoints = 1000;
+
+    double maxSpeed = RPMtoMPS(maxRPM, gearRatio, diameter); // in meters per second
+
+
+    
+    CubicHermiteSpline mySpline = CubicHermiteSpline({0, 0}, {0, -1}, {0.5, -0.5}, {1, -0.5});
+    MotionProfile* myProfile = new MotionProfile(mySpline.entirePath(numPoints), maxSpeed);
+    VelocityController myController = VelocityController(diameter, distBetweenWheels, gearRatio, maxRPM);
+    myController.queueProfile(myProfile);
+    myController.startQueuedProfile(false);
 }
-
-
-
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -213,147 +164,88 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-
 void opcontrol() {
-Master.rumble(new char('-'));
-	if (coordinateUpdater_task_ptr != NULL) {
-		coordinateUpdater_task_ptr->remove();
-	}
-	if (rotationalBinder_task_ptr != NULL) {
-		rotationalBinder_task_ptr->remove();
-	}
 
-	ArmPiston.set_value(true);
-	// ends the Kalman Filters from autonomous
-	Kalman1.endFilter();
-	Kalman2.endFilter();
+	Master.print(0, 0, "sup");
+	// Front, Middle, Rear
+	LeftWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	RightWheels.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	Intake.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	Arm.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	bool clampOn = true;
 
-	// resets all pistons
-	Grabber.set_value(false);
-	
-	AllWheels.move_velocity(1000);
-	AllWheels.set_encoder_units(MOTOR_ENCODER_DEGREES);
-	AllWheels.set_brake_modes(MOTOR_BRAKE_COAST);
-
-
-	// starts the redirect and eject as side tasks
-	pros::Task redirectOn(redirect);
-	pros::Task ejectOn(eject);
+	// Drving variables
+	int drvfb;
+	int drvlr;
+	int drvtrdz = 10;
 
 	while (true) {
-//Master.print(0, 0, "x = %f", universalCurrentLocation.x);
-//Master.print(1, 0, "y = %f", universalCurrentLocation.y);
-	//Drivetrain
-    	drvtrFB = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-    	drvtrLR = Master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		
+	//Drivetrain Control 
+		drvfb = Master.get_analog(ANALOG_LEFT_Y);
+		drvlr = Master.get_analog(ANALOG_RIGHT_X);
 
-		if ((abs(drvtrFB) > drvtrDZ) || (abs(drvtrLR) > drvtrDZ)) {
+		if ((abs(drvfb) > drvtrdz) || (abs(drvlr) > drvtrdz)) {
       		// ^^ Checks to see if either joystick has moved out of the deadzone
-			RightWheels.move((drvtrFB-(drvtrLR)));
-      		LeftWheels.move((drvtrFB+(drvtrLR)));	
+			RightWheels.move((drvfb-(drvlr)));
+      		LeftWheels.move((drvfb+(drvlr)));	
     	} else {
 			RightWheels.brake();
       		LeftWheels.brake();
-    	}  
-
-	// Intake Conveyor (Transport) and Input
-		if(Master.get_digital(DIGITAL_DOWN)){
-			Intake.move(128);
-		}
-
-	// Input only
-		if (Master.get_digital(DIGITAL_L1)) 
-		{
-			InputMotor.move(-128);
-		}
-		/* else if(Master.get_digital(DIGITAL_X))
-		{
-			InputMotor.move(128);
-		} */
-		else if (Master.get_digital(DIGITAL_RIGHT) == false
-				  && Master.get_digital(DIGITAL_DOWN) == false 
-				  && Master.get_digital(DIGITAL_L1) == false 
-				  && Master.get_digital(DIGITAL_R2) == false) {
-			InputMotor.brake();
-		}
-		
-	// Transport braking
-		if ((Master.get_digital(DIGITAL_RIGHT) == false) 
-			&& (Master.get_digital(DIGITAL_DOWN) == false) && (Master.get_digital(DIGITAL_L2) == false)
-			&& (Master.get_digital(DIGITAL_R2) == false) && (Master.get_digital(DIGITAL_LEFT) == false)) {
-			Transport.brake();
-		}
-
+    	} 
 	
-	// Arm (Motor)
-		if (Master.get_digital(DIGITAL_Y)) {
-			Arm.move(128);
-		} else if (Master.get_digital(DIGITAL_B)) {
-			Arm.move(-128);
+	//Intake Control
+	//Arm up Y
+	//Arm down B
+		if(Master.get_digital(DIGITAL_RIGHT))
+		{
+			Intake.move(127);
 		}
-		else {
-			Arm.brake();
+		else if(Master.get_digital(DIGITAL_DOWN))
+		{
+			Intake.move(-127);
+		}
+		else if(Master.get_digital(DIGITAL_R2))
+		{
+			Preroller.move(127);
+		}
+		else
+		{
+			Intake.brake();
 		}
 
-	//Mobile Goal Manipulator
-		// ↓↓ Pressing the R1 Button toggles between modes
+	//Arm Control
+		if(Master.get_digital(DIGITAL_Y))
+		{
+			Arm.move(127);
+		}
+		else if(Master.get_digital(DIGITAL_B))
+		{
+			Arm.move(-127);
+		}
+		else
+		{
+			Arm.brake();
+		}			
+
+		//Mogo
 		if(Master.get_digital_new_press(DIGITAL_R1)){
 
 			// ↓↓ If the manipulator is open, activate this code
-			if (MobileGoalManipulator.get_value() == false) {
+			if (Clamp.get_value() == false) {
 
 				// ↓↓ Closes the manipulator to grab an object
-				MobileGoalManipulator.set_value(true);
+				Clamp.set_value(true);
 
 			// ↓↓ If the manipulator is closed, activate this code
-			} else if (MobileGoalManipulator.get_value() == true){
+			} else if (Clamp.get_value() == true){
 
 				// ↓↓ Opens the manipulator to grab an object
-				MobileGoalManipulator.set_value(false);
+				Clamp.set_value(false);
 			}
 		}
-
-
-	// Arm Piston
-		if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-			if (ArmPiston.get_value() == false) {
-				ArmPiston.set_value(true);
-			}
-			else {
-				ArmPiston.set_value(false);
-			}
-		}
-
-	// Grabber
-		if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
-			if (Grabber.get_value() == false) {
-				Grabber.set_value(true);
-			}
-			else {
-				Grabber.set_value(false);
-			}
-		}
-
-	// Input Piston
-		if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
-			if (InputPiston.get_value() == false) {
-				InputPiston.set_value(true);
-			}
-			else {
-				InputPiston.set_value(false);
-			}
-		}
-	// Hang
-		if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-			if (Hang.get_value() == false) {
-				Hang.set_value(true);
-			}
-			else {
-				Hang.set_value(false);
-			}
-		}
-
-	// end-of-cycle delay
-	pros::delay(10);
+		
+		
+		pros::delay(20);
 	}
 }

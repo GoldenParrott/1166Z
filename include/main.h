@@ -40,7 +40,10 @@
  * You should add more #includes here
  */
 //#include "okapi/api.hpp"
-//#include "pros/api_legacy.h"
+#include "profiling.h"
+#include <list>
+#include <deque>
+
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
@@ -53,7 +56,7 @@
 // using namespace pros;
 // using namespace pros::literals;
 // using namespace okapi;
-#define waitUntil(condition) while (!(condition)) { pros::delay(50); }
+
 /**
  * Prototypes for the competition control tasks are redefined here to ensure
  * that they can be called from user code (i.e. calling autonomous from a
@@ -62,7 +65,24 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+/**
+ * You can add C++-only headers here
+ */
+//#include <iostream>
+#endif
+
 // structures
+struct Inequality {
+    double slope;
+    double yIntercept;
+    int equality;
+};
 struct PIDReturn {
     double prevError;
     double prevIntegral; 
@@ -73,75 +93,15 @@ struct ConstantContainer {
     double kI;
     double kD;
 };
-struct Coordinate {
-    double x;
-    double y;
-};
-struct Line {
-    double slope;
-    double yIntercept;
-    int equality = 0; /*
-                        -2 is <=
-                        -1 is <
-                         0 is =
-                         1 is >
-                         2 is >=
-                  */
-};
 
-// main.cpp
+
 void autonomous(void);
 void initialize(void);
 void disabled(void);
 void competition_initialize(void);
-void armraiser(void);
 void opcontrol(void);
 
-// pid.cpp
-void PIDMoverBasic(void);
-void PIDMover(Coordinate goalPosition, bool reverse = false,                 std::vector<std::function<void(void)>> custom = {}, std::vector<double> executeAts = {});
-void PIDTurner(int setPoint, int direction,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
-void PIDArc(int chordLength, int maxDist, int direction,                std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
-
-PIDReturn PIDCalc(double distanceMoved, double setPoint, bool isPositive, ConstantContainer constants, PIDReturn lastCycle);
-
-// autons.cpp
-// global autons
-void globalBlueGoal(void);
-void globalBlueRing(void);
-void globalRedGoal(void);
-void globalRedRing(void);
-void autoTest(void);
-// specific autons
-void redGoalside(void);
-void blueGoalside(void);
-void redRingside(void);
-void blueRingside(void);
-void autoSkills(void);
-
-// sidetasks.cpp
-void redirect(void);
-void eject(void);
-void autoEject(void);
-void coords(void);
-void CutoffPID(Coordinate goalPoint, bool reverse, double maxAllowableTime);
-void CutoffTurnPID(Coordinate goalPoint, bool reverse, double maxAllowableTime, int direction);
-void CutoffTurnHeadingPID(int goalHeading, bool reverse, double maxAllowableTime, int direction);
-
-// draw.cpp
-void autonSelect(void);
-
 // kalman.cpp
-#ifdef __cplusplus
-}
-#endif
-
-#include <deque>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 class KalmanFilter {
     private:
         // instance variables
@@ -174,6 +134,61 @@ class KalmanFilter {
         void startFilter(void);
         void endFilter(void);
 };
+
+// pid.cpp
+void PIDMoverBasic(void);
+void PIDMover(Point goalPosition, bool reverse = false,                 std::vector<std::function<void(void)>> custom = {}, std::vector<double> executeAts = {});
+void PIDTurner(int setPoint, int direction,                 std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
+void PIDArc(int chordLength, int maxDist, int direction,                std::vector<std::function<void(void)>> custom = {}, std::vector<int> executeAt = {});
+
+PIDReturn PIDCalc(double distanceMoved, double setPoint, bool isPositive, ConstantContainer constants, PIDReturn lastCycle);
+
+// autons.cpp
+    // global autons
+    void globalBlueGoal(void);
+    void globalBlueRing(void);
+    void globalRedGoal(void);
+    void globalRedRing(void);
+    void autoTest(void);
+
+    // specific autons
+    void redGoalside(void);
+    void blueGoalside(void);
+    void redRingside(void);
+    void blueRingside(void);
+    void autoSkills(void);
+
+// sidetasks.cpp
+void redirect(void);
+void eject(void);
+void autoEject(void);
+void coords(void);
+void CutoffPID(Point goalPoint, bool reverse, double maxAllowableTime);
+void CutoffTurnPID(Point goalPoint, bool reverse, double maxAllowableTime, int direction);
+void CutoffTurnHeadingPID(int goalHeading, bool reverse, double maxAllowableTime, int direction);
+
+// draw.cpp
+void drawAutonSelector(void);
+
+// odom.cpp
+void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Point offset, int startHeading);
+Point updateLocation(double heading, double dist);
+void updateCoordinateLoop(void);
+
+// math.cpp
+double calculateDistance(Point point1, Point point2);
+double calculateStandardDeviation(std::deque<double> listOfDifferences);
+Line calculatePerpendicularNonInequality(Point point1, Point point2);
+Inequality calculatePerpendicularInequality(Point point1, Point point2);
+int findEquality(Inequality line, Point includedPoint);
+Point findIntersection(Line line1, Line line2);
+Line findLineWithHeading(Point point1, int heading);
+double findHeadingOfLine(Point point1, Point point2);
+Line findLineWithPoints(Point point1, Point point2);
+QuadraticPolyData derivativeOfCubicPoly(CubicPolyData cubicPoly);
+Line derivativeOfQuadratic(QuadraticPolyData quadPoly);
+double fixAngle(double originalAngle);
+
 // tracking.cpp
 double calculateSingleDegree(double wheelDiameter);
 double readOdomPod(pros::Rotation odom);
@@ -182,33 +197,5 @@ double readOdomAngle(pros::Rotation turnOdom);
 double getAggregatedHeading(KalmanFilter inertial1, KalmanFilter inertial2);
 void bindTurnTrackingWheelHeading();
 
-// odom.cpp
-void initializeRobotOnCoordinate(pros::Rotation *rotational, pros::Imu *imu1, pros::Imu *imu2, Coordinate offset, int startHeading);
-Coordinate updateLocation(double heading, double dist);
-void updateCoordinateLoop(void);
-
-// math.cpp
-double calculateDistance(Coordinate point1, Coordinate point2);
-double calculateStandardDeviation(std::deque<double> listOfDifferences);
-Line calculatePerpendicular(Coordinate point1, Coordinate point2);
-int findEquality(Line line, Coordinate includedPoint);
-Coordinate findIntersection(Line line1, Line line2);
-Line findLineWithHeading(Coordinate point1, int heading);
-double findHeadingOfLine(Coordinate point1, Coordinate point2);
-
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-/**
- * You can add C++-only headers here
- */
-//#include <iostream>
-#include <list>
-#include <cmath>
-#include <functional>
-#include <vector>
-#endif
 
 #endif  // _PROS_MAIN_H_
